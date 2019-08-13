@@ -1,0 +1,30 @@
+:root {
+  --mainBlue: rgb(12, 51, 182);
+  --lightBlue: rgb(92, 84, 202);
+  --mainWhite: #ffffff;
+  --mainDark: rgb(109, 113, 131);
+  --mainYellow: rgb(0, 225, 255);
+  --mainAccent: pink;
+}
+
+body {
+  /* font-family: 'Montserrat', sans-serif !important; */
+  color: var(--mainDark);
+  background: var(--mainWhite) !important;
+}
+
+.text-title {
+  /* font-family: 'Space Mono', monospace !important; */
+}
+
+.text-blue {
+  color: var(--mainDark)
+}
+.text-bright {
+  color: var(--mainDark) !important;
+}
+
+.br-primary {
+  background: var(--mainDark);
+}
+

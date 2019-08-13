@@ -1,0 +1,73 @@
+.xth_random0 {
+  position: relative;
+  display: flex;
+  /* width: 120px; */
+  height: 80px;
+  min-width: 60px;
+  /* padding-left: 16px; */
+  align-items: center;
+  flex: 0 auto;
+}
+
+.x_randomize_0 {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.x_randomize {
+  position: absolute;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 240px;
+  height: 240px;
+  justify-content: center;
+  align-items: center;
+  border-style: solid;
+  border-width: 0px;
+  border-color: #fff;
+  border-radius: 100px;
+  background-image: radial-gradient(circle farthest-corner at 100% 100%, #0ff 31%, #ff00d4 37%, #04f 60%, #ff8c00 63%, #fbff00 79%);
+  box-shadow: inset -5px -5px 8px -4px #06f, inset 1px 1px 3px 0 rgba(243, 0, 37, 0.27), 0 0 9px -2px #0bf;
+  -webkit-transition: all 575ms cubic-bezier(.175, .885, .32, 1.275);
+  transition: all 575ms cubic-bezier(.175, .885, .32, 1.275);
+  font-family: Materialicons, sans-serif;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.x_randomize:hover {
+  transform: none;
+}
+
+.x_randomize.x_randomize--rotated {
+  transform: rotate(140deg);
+}
+
+.x_randomize.x_randomize--rotated:hover {
+  transform: rotate(279deg);
+}
+
+
+.xicon_white {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 20px;
+  height: 20px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100px;
+  background-color: #fff;
+  color: rgba(255, 0, 162, 0.82);
+  font-size: 18px;
+}
