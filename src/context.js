@@ -1,11 +1,8 @@
 import React, { Component } from "react";
-import { detailProduct } from "./data";
 import Cookie from "./components/Cookie";
+import {changeItemQuantityCart, createCart, removeItemFromCart, getPsTokenBuyCart} from "./components/StoreLoader";
 
-const ProductContext = React
-  .createContext
-  // {setPsToken: () => {}}
-  ();
+const ProductContext = React.createContext();
 //Provider
 //Consumer
 
@@ -49,22 +46,29 @@ class ProductProvider extends Component {
 
       cartShown: false,
       cart: [],
+      cartId: null,
 
-      detailProduct: detailProduct, //TODO убрать
       psToken: "",
 
       theme: theme
     };
   }
 
-  // constructor(props) {
-  //   super(props);
-  //   // this.dataUrl = 'https://storefront.xsolla.com/virtual-goods/?token=w9pn7QCKNLuK0X4zQ6pUqbiMaEV9GPfw';
-  //   // this.dataUrl = 'https://store.xsolla.com/api/v1/project/40702/items/digital_content';
-  //   // this.dataUrl = 'https://04ce9cdf-8325-47de-a11e-04d9ccbaaed2.mock.pstmn.io/api/v1/project/17558/items/digital_content';
-  //   // this.dataUrl = 'https://c82d9a4f-7d0a-4a90-aef7-a891c39631e5.mock.pstmn.io/api/v1/publisher/2340/digital_content';
-  //   // this.dataUrl = 'https://secure.xsolla.com/paystation2/api/virtualitems/items?access_token=mepkTkWA4JGBBMBdMBa093KJJSHjHGGK&group_id=9161';
-  // }
+  showCart = () => {
+    this.setState({
+      cartShown: !this.state.cartShown
+    })
+  };
+
+  createCart = function() {
+    let cartIdPromise = createCart(this.state.logToken);
+    cartIdPromise.then(response => {
+        this.setState({
+          cartId: response.data["id"],
+          cart: []
+        });
+    });
+  }.bind(this);
 
   changeTheme = newTheme => {
     let newColor = null;
@@ -97,6 +101,25 @@ class ProductProvider extends Component {
     this.changeTheme(newTheme);
   };
 
+  clearCart = () => {
+    this.showCart();
+    this.createCart();
+  };
+
+  payStationHandler = (event, data) => {
+    this.clearCart();
+  };
+
+  buyCart = () => {
+    let psTokenPromise = getPsTokenBuyCart(this.state.cartId, this.state.logToken);
+    psTokenPromise.then(response => {
+      this.setState({psToken: response.data["token"]});
+      window.xPayStationInit(this.state.psToken);
+      window.XPayStationWidget.open();
+      window.XPayStationWidget.on(window.XPayStationWidget.eventTypes.STATUS_DONE, (event, data) => this.payStationHandler(event, data));
+    });
+  };
+
   setPsToken = function(psToken) {
     this.setState({ psToken: psToken });
   }.bind(this);
@@ -113,18 +136,78 @@ class ProductProvider extends Component {
   }.bind(this);
 
   addToCart = product => {
-    this.state.cart
-      ? this.setState({
-          cart: [...this.state.cart, product],
+    if (this.state.cart) {
+      let indexFind = this.state.cart.findIndex(elem => {
+        return elem.product === product;
+      });
+      if (indexFind !== -1) {
+        // let cart = this.state.cart;
+        // cart.splice(
+        //     indexFind,
+        //     1,
+        //     {
+        //       product: product,
+        //       quantity: this.state.cart[indexFind].quantity + 1
+        //     }
+        // );
+        // this.setState({
+        //   cart: cart,
+        //   cartShown: true
+        // });
+        // changeItemQuantityCart(product, cart[indexFind].quantity, this.state.cartId, this.state.logToken);
+        this.setState({
           cartShown: true
-        })
-      : this.setState({
-          cart: [product]
         });
+      } else {
+        this.setState({
+          cart: [...this.state.cart,  { product: product, quantity: 1 }],
+          cartShown: true
+        });
+        changeItemQuantityCart(product, 1, this.state.cartId, this.state.logToken);
+      }
+    } else {
+      this.setState({
+        cart: [{ product: product, quantity: 1 }]
+      });
+      changeItemQuantityCart(product, 1, this.state.cartId, this.state.logToken);
+    }
+  };
+
+  removeFromCart = product => {
+    if (this.state.cart) {
+      this.setState({
+        cart: this.state.cart.filter(function (prod) {
+          return prod.product !== product;
+        })
+      });
+    }
+  };
+
+  changeItemQuantityInCart = (product, quantity) => {
+    if (quantity <= 0) {
+      removeItemFromCart(product, this.state.cartId, this.state.logToken);
+      this.removeFromCart(product);
+    } else {
+      let indexFind = this.state.cart.findIndex(elem => {
+        return elem.product === product;
+      });
+      let cart = this.state.cart;
+      cart.splice(
+          indexFind,
+          1,
+          {
+            product: product,
+            quantity: quantity
+          }
+      );
+      this.setState({
+        cart: cart
+      });
+      changeItemQuantityCart(product, quantity, this.state.cartId, this.state.logToken);
+    }
   };
 
   setGroups = function(virtualItems) {
-    console.log("virtualItems ", virtualItems);
     this.setState({
       virtualItems: virtualItems,
       fetching: false
@@ -132,9 +215,6 @@ class ProductProvider extends Component {
   }.bind(this);
 
   setCurrs = function(resolvedData) {
-    console.log("resolvedGroups", resolvedData["virtualItems"]);
-    console.log("resolvedCurrency ", resolvedData["currency"]);
-    console.log("resolvedSubscriptions ", resolvedData["subscriptions"]);
     this.setState({
       fetching: false,
       virtualItems: resolvedData["virtualItems"],
@@ -151,7 +231,6 @@ class ProductProvider extends Component {
   };
 
   setProducts = function(storeProducts) {
-    console.log("virtualItems ", storeProducts);
     this.setState({
       storeProducts: storeProducts
     });
@@ -175,10 +254,15 @@ class ProductProvider extends Component {
           setProducts: this.setProducts,
           setStateFrom: this.setStateFrom,
           setCurrs: this.setCurrs,
-          addToCart: this.props.addCart,
+          addToCart: this.addToCart,
           getTheme: this.getTheme.bind(this),
           changeTheme: this.changeTheme,
-          changeCardSize: this.changeCardSize
+          changeCardSize: this.changeCardSize,
+          createCart: this.createCart,
+          removeFromCart: this.removeFromCart,
+          showCart: this.showCart,
+          changeItemQuantityInCart: this.changeItemQuantityInCart,
+          buyCart: this.buyCart
         }}
       >
         {this.props.children}

@@ -58,20 +58,27 @@ function Cart({ style = {} }) {
                     return (
                       <div key={`cartitem${i}`}>
                         <Product
-                          key={oneCartItem.id}
+                          product={oneCartItem.product}
+                          key={oneCartItem.product.id}
                           order={i}
                           initClass="initialFlow1"
-                          sku={oneCartItem.sku}
-                          title={oneCartItem.name}
-                          description={oneCartItem.description}
-                          price={oneCartItem.amount}
-                          image_url={oneCartItem.image_url}
-                          currency={oneCartItem.currency}
+                          sku={oneCartItem.product.sku}
+                          title={oneCartItem.product.name}
+                          description={oneCartItem.product.description}
+                          price={oneCartItem.product.price.amount}
+                          image_url={oneCartItem.product.image_url}
+                          currency={oneCartItem.product.price.currency}
                           cardType="cart"
+                          cartId={valueFromContext.cartId}
+                          logToken={valueFromContext.logToken}
+                          removeFromCart={valueFromContext.removeFromCart}
+                          changeItemQuantityInCart={valueFromContext.changeItemQuantityInCart}
+                          quantity={oneCartItem.quantity}
                         />
                       </div>
                     );
                   })}
+                {valueFromContext.cart && valueFromContext.cart.length <= 0 && (<p>Empty cart</p>)}
               </CssCartList>
 
               <CssCartB
@@ -86,7 +93,7 @@ function Cart({ style = {} }) {
                 }}
               >
                 <div className="" />
-                <Button variant="contained">Check out</Button>
+                <Button variant="contained" onClick={valueFromContext.buyCart}>Check out</Button>
               </CssCartB>
             </div>
           </CartB>
@@ -121,7 +128,7 @@ const Cart0 = styled.div`
   justify-content: center;
   align-items: center;
   position: fixed;
-  left: 20%;
+  left: 0;
   right: 0;
   top: 0;
   bottom: 0;

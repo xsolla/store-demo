@@ -29,7 +29,7 @@ const eatCookie = () => {
   }
 
   let o;
-  console.log("let = ");
+  //console.log("let = ");
   if (window.location.search) {
     o = getQueryParams(window.location.search).token;
   }
@@ -40,7 +40,7 @@ const eatCookie = () => {
     o = getCookie("xsolla_login_token");
   }
   if (o && o !== "undefined") {
-    console.log("o = ", o);
+    //console.log("o = ", o);
     return o;
   } else {
     return null;

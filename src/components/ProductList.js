@@ -11,7 +11,6 @@ class ProductList extends Component {
     super(props);
     this.ProductRef = React.createRef();
     this.state = {};
-    this.psToken = this.psToken;
     this.changeGroupHandler = this.changeGroupHandler.bind(this);
     this.changeGlobalHandler = this.changeGlobalHandler.bind(this);
   }
@@ -25,9 +24,9 @@ class ProductList extends Component {
   };
 
   componentDidMount() {
-    console.log("this.props = ", this.props);
+    //console.log("this.props = ", this.props);
 
-    if (this.props.psToken && !this.props.virtualItems) {
+    if (this.props.logToken && !this.props.virtualItems) {
       this.props.setStateFrom("fetching", true);
       StoreLoader(window.xProjectId, this.props.logToken).then(allData => {
         this.props.setCurrs(allData);
@@ -121,9 +120,9 @@ class ProductList extends Component {
                                               description={
                                                 oneProduct.description
                                               }
-                                              price={oneProduct.amount}
+                                              price={oneProduct.price.amount}
                                               image_url={oneProduct.image_url}
-                                              currency={oneProduct.currency}
+                                              currency={oneProduct.price.currency}
                                               product={oneProduct}
                                               addToCart={
                                                 valueFromContext.addToCart
@@ -131,6 +130,9 @@ class ProductList extends Component {
                                               getTheme={valueFromContext.getTheme.bind(
                                                 this
                                               )}
+                                              cartId={valueFromContext.cartId}
+                                              logToken={valueFromContext.logToken}
+                                              changeItemQuantityInCart={valueFromContext.changeItemQuantityInCart}
                                             />
                                           );
                                         }
@@ -140,72 +142,6 @@ class ProductList extends Component {
                               );
                             }
                           })}
-                      </CssProductList>
-                    )}
-
-                  {valueFromContext.activeModule === "subscriptions" &&
-                    valueFromContext.subscriptions && (
-                      <CssProductList>
-                        <СssTitle
-                          getTheme={valueFromContext.getTheme.bind(this)}
-                        >
-                          Subscriptions
-                        </СssTitle>
-                        <СssGroup>
-                          {valueFromContext.subscriptions["packages"].map(
-                            (oneSubscr, key) => {
-                              return (
-                                <div key={"key" + oneSubscr["id"]}>
-                                  <Product
-                                    ref={this.ProductRef}
-                                    key={key}
-                                    order={key}
-                                    initClass="initialFlow1"
-                                    sku={key}
-                                    title={oneSubscr.name}
-                                    description={oneSubscr.description}
-                                    price={oneSubscr.charge_amount}
-                                    image_url="https://cdn.xsolla.net/img/misc/images/49a8c22603d1f89b69c0fa290d99e8fa.png"
-                                    currency={oneSubscr.currency}
-                                  />
-                                </div>
-                              );
-                            }
-                          )}
-                        </СssGroup>
-                      </CssProductList>
-                    )}
-
-                  {valueFromContext.activeModule === "currency" &&
-                    valueFromContext.currency && (
-                      <CssProductList>
-                        <СssTitle
-                          getTheme={valueFromContext.getTheme.bind(this)}
-                        >
-                          Virtual Currency
-                        </СssTitle>
-                        <СssGroup>
-                          {valueFromContext.currency["list"].map(
-                            (oneCurr, i) => {
-                              return (
-                                <div key={"curr" + i}>
-                                  <Product
-                                    ref={this.ProductRef}
-                                    key={i}
-                                    order={i}
-                                    initClass="initialFlow1"
-                                    sku={i}
-                                    title={oneCurr.label}
-                                    description={oneCurr.description}
-                                    image_url={oneCurr.image}
-                                    price={oneCurr.sum}
-                                    currency={oneCurr.currency}
-                                  />
-                                </div>
-                              );
-                            }
-                          )}
-                        </СssGroup>
                       </CssProductList>
                     )}
                 </CssStore00>

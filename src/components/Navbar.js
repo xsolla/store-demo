@@ -6,7 +6,11 @@ import { eraseCookie } from "./Cookie";
 import XLogin from "./XLogin.js";
 import { ProductContext } from "../context";
 
-export default function Navbar() {
+export default function Navbar({
+                                 showCart = () => {
+                                   void 0;
+                                 }
+}) {
   const [state, setState] = React.useState({
     shown: false
   });
@@ -21,9 +25,9 @@ export default function Navbar() {
     setState({ shown: true });
   };
 
-  const showCart = () => {
-    React.useContext(ProductContext).setStateFrom("cartShown", true);
-  };
+  // const showCart = () => {
+  //   React.useContext(ProductContext).setStateFrom("cartShown", true);
+  // };
 
   return (
     <NavWrapper

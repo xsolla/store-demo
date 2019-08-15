@@ -6,8 +6,9 @@ import { withStyles } from "@material-ui/core/styles";
 import CardContent from "@material-ui/core/CardContent";
 import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
+import IconAdd from "@material-ui/icons/AddBox";
+import IconRem from "@material-ui/icons/IndeterminateCheckBox";
 import red from "@material-ui/core/colors/red";
-import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShoppingCart from "@material-ui/icons/ShoppingCart";
 import IconDelete from "@material-ui/icons/Delete";
 import { ProductContext } from "../context";
@@ -71,6 +72,12 @@ const RecipeReviewCard = ({
   addToCart = () => {
     void 0;
   },
+  removeFromCart = () => {
+    void 0;
+  },
+  changeItemQuantityInCart = () => {
+    void 0;
+  },
   product,
   order,
   cardType = null,
@@ -82,21 +89,25 @@ const RecipeReviewCard = ({
   description,
   getTheme = () => {
     void 0;
-  }
+  },
+  quantity
 }) => {
   const [state, setState] = React.useState({
     expanded: false,
-    // favorited: props.product.name
     favorited: false,
     cardShown: false
   });
 
-  const handleExpandClick = () => {
-    setState(state => ({ expanded: !state.expanded }));
-  };
+  let [cartState, setCartState] = React.useState(
+      cardType === "cart" ? quantity : 0
+  );
 
   const handleCartClick = () => {
     addToCart(product);
+  };
+
+  const calcPrice = (price, q) => {
+    return price * q
   };
 
   const handleFavClick = event => {
@@ -108,8 +119,6 @@ const RecipeReviewCard = ({
     }
     console.log("fav");
   };
-
-  // toggle = props.toggle.bind(this);
 
   React.useEffect(() => {
     // debugger;
@@ -169,18 +178,18 @@ const RecipeReviewCard = ({
         {cardType !== "cart" && (
           <CssCardActions cardType={cardType} getTheme={getTheme}>
             <CssTypographyPrice getTheme={getTheme}>
-              {currency} {price}
+              {currency} {Math.round(price * 100) / 100}
             </CssTypographyPrice>
 
-            <IconButton
-              style={{
-                color: React.useContext(ProductContext).getTheme("colorText")
-              }}
-              aria-label="Add to favorites"
-              onClick={handleFavClick}
-            >
-              <FavoriteIcon />
-            </IconButton>
+            {/*<IconButton*/}
+              {/*style={{*/}
+                {/*color: React.useContext(ProductContext).getTheme("colorText")*/}
+              {/*}}*/}
+              {/*aria-label="Add to favorites"*/}
+              {/*onClick={handleFavClick}*/}
+            {/*>*/}
+              {/*<FavoriteIcon />*/}
+            {/*</IconButton>*/}
 
             {/* <Link to='/cart'> */}
             <IconButton
@@ -210,29 +219,51 @@ const RecipeReviewCard = ({
 
         {cardType === "cart" && (
           <CssCardActions cardType={cardType} getTheme={getTheme}>
-            <CssTypographyPrice getTheme={getTheme}>
-              {currency} {price}
-            </CssTypographyPrice>
+            <CssCartQs>
 
-            {/* <Link to='/cart'> */}
-            <IconButton
-              style={{
-                color: React.useContext(ProductContext).getTheme("colorText")
-              }}
-              aria-label="Add to Cart"
-              onClick={handleCartClick}
-            >
-              <div
-                style={{
-                  marginTop: -20,
-                  height: 44,
-                  width: 44
-                }}
-              >
-                <IconDelete />
-              </div>
-            </IconButton>
-            {/* </Link> */}
+
+              {cartState <= 1 && <IconDelete
+                  style={{
+                    opacity: 0.4,
+                  }}
+                  onClick={() => {
+                    changeItemQuantityInCart(product, cartState - 1 );
+                    setCartState(cartState--);
+                  }} />
+              }
+
+
+              {cartState > 1 && <IconRem
+                  style={{
+                    opacity: 0.4,
+                  }}
+                  onClick={() => {
+                    changeItemQuantityInCart(product, cartState - 1);
+                    setCartState(cartState - 1);
+                  }}
+              />}
+              <CssCartQ>{cartState}</CssCartQ>
+              <IconAdd
+                  onClick={() => {
+                    changeItemQuantityInCart(product, cartState + 1);
+                    setCartState(cartState + 1);
+                  }}
+              />
+            </CssCartQs>
+            <div>
+
+              <CssTypographyPrice getTheme={getTheme}>
+                {currency} {calcPrice(price, cartState)}
+              </CssTypographyPrice>
+
+              {/* <Link to='/cart'> */}
+
+              {/* </Link> */}
+            </div>
+
+            {cartState > 1 && <CssTypographyPriceSm getTheme={getTheme}>
+              {currency} {Math.round(price * 100) / 100} for one item
+            </CssTypographyPriceSm>}
           </CssCardActions>
         )}
 
@@ -244,9 +275,19 @@ const RecipeReviewCard = ({
   );
 };
 
-// RecipeReviewCard.propTypes = {
-//   classes: PropTypes.object.isRequired,
-// };
+const CssCartQs  = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`
+const CssCartQ  = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bolder;
+  min-width: 44px;
+  font-size: 1.2em;
+`
 
 const CssCardAppear = styled.div`
   position: relative;
@@ -270,6 +311,7 @@ const CssCard = styled.div`
     display: flex;
     flex-direction: column;
     max-width: ${props => `${props.getTheme("cardWidth")}px`};
+    min-width: ${props => `${props.getTheme("cardWidth")}px`};
     height: ${props => `${props.getTheme("cardWidth")}px`};
     /* height: 360px; */
     margin: ${2 * 8}px;
@@ -353,16 +395,13 @@ const CssCardActions = styled.div`
   ${props =>
     props.cardType &&
     css`
-      padding: 16px;
+      padding: 16px 0;
+      width: 160px;
       display: grid;
-      grid-template-columns: auto auto;
-      place-content: start center;
+      grid-template-columns: auto;
+      grid-row-gap: 8px;
+      place-content: start start;
     `}
-`;
-
-const CssCardActionsBorder = styled.div`
-  border-top: 1px solid var(--mainDark);
-  width: 100%;
 `;
 
 const CssCardMedia = styled.div`
@@ -384,8 +423,12 @@ const CssTypographyPrice = styled.div`
   font-weight: 600;
 `;
 
-export default withStyles(styles)(RecipeReviewCard);
+const CssTypographyPriceSm = styled.div`
+  flex-grow: 1;
+  font-size: 0.8em;
+  /* color: ${props => props.getTheme('colorAccent')}; */
+  /* font-weight: 600; */
+  opacity: 0.3;
+`
 
-/* flex-direction: ${(props) => {return (props.style === 'cart') ? 'column' : 'row'}} ; */
-/* flexDirection: ${props.cardType} ? row : column; */
-/* flexDirection: ${props => props.cardType ? 'row' : 'column'} */
+export default withStyles(styles)(RecipeReviewCard);
