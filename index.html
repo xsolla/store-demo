@@ -9,10 +9,10 @@
       var xProjectId;
       if (urlParams && urlParams.get('project_id')) {
         xProjectId = parseInt(urlParams.get('project_id'));
-        eraseCookie('xsolla_login_token');
+        //eraseCookie('xsolla_login_token');
         localStorage.setItem('xsolla_react_store_project', xProjectId);
       } else {
-        xProjectId = localStorage.getItem('xsolla_react_store_project') || '30810';
+        xProjectId = localStorage.getItem('xsolla_react_store_project') || '47278';
         xProjectId = parseInt(xProjectId);
       }
 
@@ -21,24 +21,25 @@
         xLoginId = urlParams.get('login_id');
         localStorage.setItem('xsolla_react_store_login', xLoginId);
       } else {
-        xLoginId = localStorage.getItem('xsolla_react_store_login') || 'cead843a-68bc-11e9-9244-42010aa80004';
+        xLoginId = localStorage.getItem('xsolla_react_store_login') || 'fb2d7c69-bf25-11e9-9244-42010aa80004';
       }
 
-      var mainURL = 'https://xsolla.github.io/store-demo/';
+      //var mainURL = 'https://xsolla.github.io/store-demo/';
       //var mainURL = 'http://localhost:3002/';
 
       XL.init({
         projectId: xLoginId,
-        loginUrl: mainURL,
+        loginUrl: window.location.href,
         locale: 'en_US',
         onlyWidgets: true,
-        fields: 'email'
+        fields: 'email',
+        theme: 'c938011b4be8c1fe72b3bc351a44dce0.css'
       });
       const element_id = 'xl_auth';
       const options = {
-        'width': 600,
-        'height': 550,
-        // route: XL.ROUTES.REGISTRATION //TODO: регистрация
+        // 'width': 600,
+        // 'height': 550,
+        //route: XL.ROUTES.REGISTRATION //TODO: регистрация
       };
 
       function XloginInit (){
@@ -51,4 +52,4 @@
           access_token: accessToken,
           sandbox: true
         });
-      }</script><script>!function(l){function e(e){for(var r,t,n=e[0],o=e[1],u=e[2],f=0,i=[];f<n.length;f++)t=n[f],p[t]&&i.push(p[t][0]),p[t]=0;for(r in o)Object.prototype.hasOwnProperty.call(o,r)&&(l[r]=o[r]);for(s&&s(e);i.length;)i.shift()();return c.push.apply(c,u||[]),a()}function a(){for(var e,r=0;r<c.length;r++){for(var t=c[r],n=!0,o=1;o<t.length;o++){var u=t[o];0!==p[u]&&(n=!1)}n&&(c.splice(r--,1),e=f(f.s=t[0]))}return e}var t={},p={2:0},c=[];function f(e){if(t[e])return t[e].exports;var r=t[e]={i:e,l:!1,exports:{}};return l[e].call(r.exports,r,r.exports,f),r.l=!0,r.exports}f.m=l,f.c=t,f.d=function(e,r,t){f.o(e,r)||Object.defineProperty(e,r,{enumerable:!0,get:t})},f.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},f.t=function(r,e){if(1&e&&(r=f(r)),8&e)return r;if(4&e&&"object"==typeof r&&r&&r.__esModule)return r;var t=Object.create(null);if(f.r(t),Object.defineProperty(t,"default",{enumerable:!0,value:r}),2&e&&"string"!=typeof r)for(var n in r)f.d(t,n,function(e){return r[e]}.bind(null,n));return t},f.n=function(e){var r=e&&e.__esModule?function(){return e.default}:function(){return e};return f.d(r,"a",r),r},f.o=function(e,r){return Object.prototype.hasOwnProperty.call(e,r)},f.p="/store-demo/";var r=window.webpackJsonp=window.webpackJsonp||[],n=r.push.bind(r);r.push=e,r=r.slice();for(var o=0;o<r.length;o++)e(r[o]);var s=n;a()}([])</script><script src="/store-demo/static/js/1.f4c0e8ec.chunk.js"></script><script src="/store-demo/static/js/main.8c4ef9f2.chunk.js"></script></body></html>
+      }</script><script>!function(l){function e(e){for(var r,t,n=e[0],o=e[1],u=e[2],f=0,i=[];f<n.length;f++)t=n[f],p[t]&&i.push(p[t][0]),p[t]=0;for(r in o)Object.prototype.hasOwnProperty.call(o,r)&&(l[r]=o[r]);for(s&&s(e);i.length;)i.shift()();return c.push.apply(c,u||[]),a()}function a(){for(var e,r=0;r<c.length;r++){for(var t=c[r],n=!0,o=1;o<t.length;o++){var u=t[o];0!==p[u]&&(n=!1)}n&&(c.splice(r--,1),e=f(f.s=t[0]))}return e}var t={},p={2:0},c=[];function f(e){if(t[e])return t[e].exports;var r=t[e]={i:e,l:!1,exports:{}};return l[e].call(r.exports,r,r.exports,f),r.l=!0,r.exports}f.m=l,f.c=t,f.d=function(e,r,t){f.o(e,r)||Object.defineProperty(e,r,{enumerable:!0,get:t})},f.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},f.t=function(r,e){if(1&e&&(r=f(r)),8&e)return r;if(4&e&&"object"==typeof r&&r&&r.__esModule)return r;var t=Object.create(null);if(f.r(t),Object.defineProperty(t,"default",{enumerable:!0,value:r}),2&e&&"string"!=typeof r)for(var n in r)f.d(t,n,function(e){return r[e]}.bind(null,n));return t},f.n=function(e){var r=e&&e.__esModule?function(){return e.default}:function(){return e};return f.d(r,"a",r),r},f.o=function(e,r){return Object.prototype.hasOwnProperty.call(e,r)},f.p="/store-demo/";var r=window.webpackJsonp=window.webpackJsonp||[],n=r.push.bind(r);r.push=e,r=r.slice();for(var o=0;o<r.length;o++)e(r[o]);var s=n;a()}([])</script><script src="/store-demo/static/js/1.68022364.chunk.js"></script><script src="/store-demo/static/js/main.16c3c7a3.chunk.js"></script></body></html>
