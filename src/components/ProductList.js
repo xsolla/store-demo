@@ -112,7 +112,7 @@ class ProductList extends Component {
                                           return (
                                             <Product
                                               ref={this.ProductRef}
-                                              key={oneProduct.id}
+                                              key={oneProduct.sku}
                                               order={key}
                                               initClass="initialFlow1"
                                               sku={oneProduct.sku}
@@ -122,7 +122,9 @@ class ProductList extends Component {
                                               }
                                               price={oneProduct.price.amount}
                                               image_url={oneProduct.image_url}
-                                              currency={oneProduct.price.currency}
+                                              currency={
+                                                oneProduct.price.currency
+                                              }
                                               product={oneProduct}
                                               addToCart={
                                                 valueFromContext.addToCart
@@ -131,8 +133,12 @@ class ProductList extends Component {
                                                 this
                                               )}
                                               cartId={valueFromContext.cartId}
-                                              logToken={valueFromContext.logToken}
-                                              changeItemQuantityInCart={valueFromContext.changeItemQuantityInCart}
+                                              logToken={
+                                                valueFromContext.logToken
+                                              }
+                                              changeItemQuantityInCart={
+                                                valueFromContext.changeItemQuantityInCart
+                                              }
                                             />
                                           );
                                         }

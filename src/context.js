@@ -1,6 +1,11 @@
 import React, { Component } from "react";
 import Cookie from "./components/Cookie";
-import {changeItemQuantityCart, createCart, removeItemFromCart, getPsTokenBuyCart} from "./components/StoreLoader";
+import {
+  changeItemQuantityCart,
+  createCart,
+  removeItemFromCart,
+  getCart
+} from "./components/StoreLoader";
 
 const ProductContext = React.createContext();
 //Provider
@@ -45,8 +50,16 @@ class ProductProvider extends Component {
       subscriptions: null,
 
       cartShown: false,
-      cart: [],
-      cartId: null,
+      cart: {
+        cartId: null,
+        items: [],
+        price: {
+          amount: 0,
+          amount_without_discount: 0
+        }
+      },
+
+      isFetching: false,
 
       psToken: "",
 
@@ -57,16 +70,38 @@ class ProductProvider extends Component {
   showCart = () => {
     this.setState({
       cartShown: !this.state.cartShown
-    })
+    });
+  };
+
+  getCart = () => {
+    let cartPromise = getCart(this.state.cart.cartId, this.state.logToken);
+    cartPromise.then(response => {
+      if (!cartPromise.isCancel && response) {
+        this.setState(prevState => ({
+          cart: {
+            cartId: response.data["cart_id"],
+            items: response.data["items"].sort(this.compareItems),
+            price: response.data["price"]
+          },
+          isFetching: false
+        }));
+      }
+    });
   };
 
   createCart = function() {
     let cartIdPromise = createCart(this.state.logToken);
     cartIdPromise.then(response => {
-        this.setState({
+      this.setState(prevState => ({
+        cart: {
           cartId: response.data["id"],
-          cart: []
-        });
+          items: [],
+          price: {
+            amount: 0,
+            amount_without_discount: 0
+          }
+        }
+      }));
     });
   }.bind(this);
 
@@ -110,16 +145,6 @@ class ProductProvider extends Component {
     this.clearCart();
   };
 
-  buyCart = () => {
-    let psTokenPromise = getPsTokenBuyCart(this.state.cartId, this.state.logToken);
-    psTokenPromise.then(response => {
-      this.setState({psToken: response.data["token"]});
-      window.xPayStationInit(this.state.psToken);
-      window.XPayStationWidget.open();
-      window.XPayStationWidget.on(window.XPayStationWidget.eventTypes.STATUS_DONE, (event, data) => this.payStationHandler(event, data));
-    });
-  };
-
   setPsToken = function(psToken) {
     this.setState({ psToken: psToken });
   }.bind(this);
@@ -135,10 +160,20 @@ class ProductProvider extends Component {
     });
   }.bind(this);
 
+  compareItems = (a, b) => {
+    if (a.sku > b.sku) {
+      return 1;
+    }
+    if (a.sku < b.sku) {
+      return -1;
+    }
+    return 0;
+  };
+
   addToCart = product => {
     if (this.state.cart) {
-      let indexFind = this.state.cart.findIndex(elem => {
-        return elem.product === product;
+      let indexFind = this.state.cart.items.findIndex(elem => {
+        return elem.sku === product.sku;
       });
       if (indexFind !== -1) {
         // let cart = this.state.cart;
@@ -155,55 +190,113 @@ class ProductProvider extends Component {
         //   cartShown: true
         // });
         // changeItemQuantityCart(product, cart[indexFind].quantity, this.state.cartId, this.state.logToken);
+        this.getCart();
         this.setState({
           cartShown: true
         });
       } else {
         this.setState({
-          cart: [...this.state.cart,  { product: product, quantity: 1 }],
-          cartShown: true
+          isFetching: true,
+          cart: {
+            ...this.state.cart,
+            items: [{ ...product, quantity: 1 }, ...this.state.cart.items].sort(
+              this.compareItems
+            ),
+            price: {
+              ...this.state.cart.price,
+              amount:
+                this.state.cart.price &&
+                this.state.cart.price.amount + product.price.amount,
+              amount_without_discount:
+                this.state.cart.price &&
+                this.state.cart.price.amount_without_discount +
+                  product.price.amount_without_discount
+            }
+          }
         });
-        changeItemQuantityCart(product, 1, this.state.cartId, this.state.logToken);
+        changeItemQuantityCart(
+          product,
+          1,
+          this.state.cart.cartId,
+          this.state.logToken
+        ).then(response => {
+          this.getCart();
+        });
+        this.showCart();
       }
     } else {
-      this.setState({
-        cart: [{ product: product, quantity: 1 }]
+      this.setState({ isFetching: true });
+      changeItemQuantityCart(
+        product,
+        1,
+        this.state.cart.cartId,
+        this.state.logToken
+      ).then(response => {
+        this.getCart();
       });
-      changeItemQuantityCart(product, 1, this.state.cartId, this.state.logToken);
+      this.showCart();
     }
   };
 
   removeFromCart = product => {
     if (this.state.cart) {
       this.setState({
-        cart: this.state.cart.filter(function (prod) {
-          return prod.product !== product;
-        })
+        isFetching: true,
+        cart: {
+          ...this.state.cart,
+          items: this.state.cart.items
+            .filter(function(prod) {
+              return prod.sku !== product.sku;
+            })
+            .sort(this.compareItems),
+          price: {
+            ...this.state.cart.price,
+            amount:
+              this.state.cart.price.amount -
+              product.price.amount * product.quantity,
+            amount_without_discount:
+              this.state.cart.price.amount_without_discount -
+              product.price.amount_without_discount * product.quantity
+          }
+        }
       });
     }
   };
 
   changeItemQuantityInCart = (product, quantity) => {
     if (quantity <= 0) {
-      removeItemFromCart(product, this.state.cartId, this.state.logToken);
       this.removeFromCart(product);
+      removeItemFromCart(
+        product,
+        this.state.cart.cartId,
+        this.state.logToken
+      ).then(() => {
+        this.getCart();
+      });
     } else {
-      let indexFind = this.state.cart.findIndex(elem => {
-        return elem.product === product;
+      let indexFind = this.state.cart.items.findIndex(elem => {
+        return elem.sku === product.sku;
       });
-      let cart = this.state.cart;
-      cart.splice(
-          indexFind,
-          1,
-          {
-            product: product,
-            quantity: quantity
-          }
-      );
+      let cartItems = this.state.cart.items;
+      cartItems.splice(indexFind, 1, {
+        ...product,
+        quantity: quantity
+      });
       this.setState({
-        cart: cart
+        isFetching: true,
+        cart: {
+          ...this.state.cart,
+          items: cartItems.sort(this.compareItems)
+        }
       });
-      changeItemQuantityCart(product, quantity, this.state.cartId, this.state.logToken);
+      changeItemQuantityCart(
+        product,
+        quantity,
+        this.state.cart.cartId,
+        this.state.logToken
+      ).then(() => {
+        this.getCart();
+      });
     }
   };
 
@@ -259,10 +352,10 @@ class ProductProvider extends Component {
           changeTheme: this.changeTheme,
           changeCardSize: this.changeCardSize,
           createCart: this.createCart,
-          removeFromCart: this.removeFromCart,
           showCart: this.showCart,
           changeItemQuantityInCart: this.changeItemQuantityInCart,
-          buyCart: this.buyCart
+          buyCart: this.buyCart,
+          payStationHandler: this.payStationHandler
         }}
       >
         {this.props.children}

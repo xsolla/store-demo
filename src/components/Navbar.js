@@ -7,10 +7,12 @@ import XLogin from "./XLogin.js";
 import { ProductContext } from "../context";
 
 export default function Navbar({
-                                 showCart = () => {
-                                   void 0;
-                                 }
+  showCart = () => {
+    void 0;
+  }
 }) {
+  const valueFromContext = React.useContext(ProductContext);
+
   const [state, setState] = React.useState({
     shown: false
   });
@@ -25,18 +27,12 @@ export default function Navbar({
     setState({ shown: true });
   };
 
-  // const showCart = () => {
-  //   React.useContext(ProductContext).setStateFrom("cartShown", true);
-  // };
-
   return (
     <NavWrapper
       style={{
         zIndex: 100,
-        color: React.useContext(ProductContext).getTheme("colorAccentText"),
-        backgroundColor: React.useContext(ProductContext).getTheme(
-          "colorAccent"
-        )
+        color: valueFromContext.getTheme("colorAccentText"),
+        backgroundColor: valueFromContext.getTheme("colorAccent")
       }}
       // className="navbar navbar-expand-sm  px-sm-5"
     >
@@ -55,32 +51,27 @@ export default function Navbar({
       <NavUl>
         <li style={{ display: "flex", justifyContent: "center" }}>
           <CssLoginPanel>
-            {!React.useContext(ProductContext).logToken && (
+            {!valueFromContext.logToken && (
               <CssLoginButton onClick={logInButtonHandler}>
                 Log In
               </CssLoginButton>
             )}
-            {React.useContext(ProductContext).logToken &&
-              React.useContext(ProductContext).user && (
-                <CssLogin>
-                  <CssLoginEmail>
-                    {React.useContext(ProductContext).user.email}
-                  </CssLoginEmail>
-                  <CssLoginButton
-                    onClick={logOutHandler}
-                    style={{
-                      color: React.useContext(ProductContext).getTheme(
-                        "colorAccent"
-                      ),
-                      backgroundColor: React.useContext(
-                        ProductContext
-                      ).getTheme("colorAccentText")
-                    }}
-                  >
-                    Log Out
-                  </CssLoginButton>
-                </CssLogin>
-              )}
+            {valueFromContext.logToken && valueFromContext.user && (
+              <CssLogin>
+                <CssLoginEmail>{valueFromContext.user.email}</CssLoginEmail>
+                <CssLoginButton
+                  onClick={logOutHandler}
+                  style={{
+                    color: valueFromContext.getTheme("colorAccent"),
+                    backgroundColor: valueFromContext.getTheme(
+                      "colorAccentText"
+                    )
+                  }}
+                >
+                  Log Out
+                </CssLoginButton>
+              </CssLogin>
+            )}
           </CssLoginPanel>
 
           <XLogin />

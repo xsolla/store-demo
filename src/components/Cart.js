@@ -4,15 +4,51 @@ import Product from "./Product";
 import IconClose from "@material-ui/icons/Close";
 import Button from "@material-ui/core/Button";
 import Colorer from "color";
+import { getFormattedCurrency } from "./formatCurrency";
 
 import { ProductContext } from "../context";
+import { getPsTokenBuyCart } from "./StoreLoader";
 
 function Cart({ style = {} }) {
+  let [buyButtonDisabled, setBuyButtonDisabled] = React.useState(false);
+
+  const valueFromContext = React.useContext(ProductContext);
+
   const hideCart = () => {
     valueFromContext.setStateFrom("cartShown", false);
   };
 
-  const valueFromContext = React.useContext(ProductContext);
+  const calculateSubtotal = cart => {
+    let subtotal = 0;
+    cart.forEach(function(element) {
+      subtotal += element.price.amount * element.quantity;
+    });
+    return Math.round(subtotal * 100) / 100;
+  };
+
+  const buyButtonAction = () => {
+    setBuyButtonDisabled(true);
+    let psTokenPromise = getPsTokenBuyCart(
+      valueFromContext.cart.cartId,
+      valueFromContext.logToken
+    );
+    psTokenPromise
+      .then(response => {
+        window.xPayStationInit(response.data["token"]);
+        window.XPayStationWidget.open();
+        window.XPayStationWidget.on(
+          window.XPayStationWidget.eventTypes.CLOSE,
+          (event, data) => {
+            setBuyButtonDisabled(false);
+          }
+        );
+        window.XPayStationWidget.on(
+          window.XPayStationWidget.eventTypes.STATUS_DONE,
+          (event, data) => valueFromContext.payStationHandler(event, data)
+        );
+      })
+      .catch(e => {});
+  };
 
   return (
     <div>
@@ -54,31 +90,34 @@ function Cart({ style = {} }) {
 
               <CssCartList>
                 {valueFromContext.cart &&
-                  valueFromContext.cart.map((oneCartItem, i) => {
+                  valueFromContext.cart.items.map((oneCartItem, i) => {
                     return (
                       <div key={`cartitem${i}`}>
                         <Product
-                          product={oneCartItem.product}
-                          key={oneCartItem.product.id}
+                          product={oneCartItem}
+                          key={oneCartItem.sku}
                           order={i}
                           initClass="initialFlow1"
-                          sku={oneCartItem.product.sku}
-                          title={oneCartItem.product.name}
-                          description={oneCartItem.product.description}
-                          price={oneCartItem.product.price.amount}
-                          image_url={oneCartItem.product.image_url}
-                          currency={oneCartItem.product.price.currency}
+                          sku={oneCartItem.sku}
+                          title={oneCartItem.name}
+                          description={oneCartItem.description}
+                          price={oneCartItem.price.amount}
+                          image_url={oneCartItem.image_url}
+                          currency={oneCartItem.price.currency}
                           cardType="cart"
-                          cartId={valueFromContext.cartId}
+                          cartId={valueFromContext.cart.cartId}
                           logToken={valueFromContext.logToken}
                           removeFromCart={valueFromContext.removeFromCart}
-                          changeItemQuantityInCart={valueFromContext.changeItemQuantityInCart}
+                          changeItemQuantityInCart={
+                            valueFromContext.changeItemQuantityInCart
+                          }
                           quantity={oneCartItem.quantity}
                         />
                       </div>
                     );
                   })}
-                {valueFromContext.cart && valueFromContext.cart.length <= 0 && (<p>Empty cart</p>)}
+                {valueFromContext.cart &&
+                  valueFromContext.cart.items.length <= 0 && <p>Empty cart</p>}
               </CssCartList>
 
               <CssCartB
@@ -93,7 +132,40 @@ function Cart({ style = {} }) {
                 }}
               >
                 <div className="" />
-                <Button variant="contained" onClick={valueFromContext.buyCart}>Check out</Button>
+                {valueFromContext.cart &&
+                  valueFromContext.cart.items.length > 0 && (
+                    <CssSubtotal>
+                      Subtotal:
+                      <div
+                        style={{
+                          minWidth: 80,
+                          textAlign: "right"
+                        }}
+                      >
+                        {valueFromContext.isFetching &&
+                          getFormattedCurrency(
+                            calculateSubtotal(valueFromContext.cart.items),
+                            valueFromContext.cart.items[0].price.currency
+                          ).formattedCurrency}
+                        {!valueFromContext.isFetching &&
+                          getFormattedCurrency(
+                            valueFromContext.cart.price.amount,
+                            valueFromContext.cart.price.currency
+                          ).formattedCurrency}
+                      </div>
+                    </CssSubtotal>
+                  )}
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    !(
+                      buyButtonDisabled ||
+                      valueFromContext.cart.items.length <= 0
+                    ) && buyButtonAction();
+                  }}
+                >
+                  Check out
+                </Button>
               </CssCartB>
             </div>
           </CartB>
@@ -176,9 +248,15 @@ const CssCartB = styled.div`
   /* height: 64px; */
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   z-index: 10;
   padding: 24px 0 24px 0;
+`;
+
+const CssSubtotal = styled.div`
+  display: flex;
+  padding: 0 24px 0 24px;
+  font-weight: bold;
 `;
 
 export default Cart;

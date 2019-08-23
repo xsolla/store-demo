@@ -99,7 +99,7 @@ const RecipeReviewCard = ({
   });
 
   let [cartState, setCartState] = React.useState(
-      cardType === "cart" ? quantity : 0
+    cardType === "cart" ? quantity : 0
   );
 
   const handleCartClick = () => {
@@ -107,7 +107,7 @@ const RecipeReviewCard = ({
   };
 
   const calcPrice = (price, q) => {
-    return price * q
+    return Math.round(price * q * 100) / 100;
   };
 
   const handleFavClick = event => {
@@ -182,13 +182,13 @@ const RecipeReviewCard = ({
             </CssTypographyPrice>
 
             {/*<IconButton*/}
-              {/*style={{*/}
-                {/*color: React.useContext(ProductContext).getTheme("colorText")*/}
-              {/*}}*/}
-              {/*aria-label="Add to favorites"*/}
-              {/*onClick={handleFavClick}*/}
+            {/*style={{*/}
+            {/*color: React.useContext(ProductContext).getTheme("colorText")*/}
+            {/*}}*/}
+            {/*aria-label="Add to favorites"*/}
+            {/*onClick={handleFavClick}*/}
             {/*>*/}
-              {/*<FavoriteIcon />*/}
+            {/*<FavoriteIcon />*/}
             {/*</IconButton>*/}
 
             {/* <Link to='/cart'> */}
@@ -220,40 +220,40 @@ const RecipeReviewCard = ({
         {cardType === "cart" && (
           <CssCardActions cardType={cardType} getTheme={getTheme}>
             <CssCartQs>
-
-
-              {cartState <= 1 && <IconDelete
+              {quantity <= 1 && (
+                <IconDelete
                   style={{
-                    opacity: 0.4,
+                    opacity: 0.4
                   }}
                   onClick={() => {
-                    changeItemQuantityInCart(product, cartState - 1 );
-                    setCartState(cartState--);
-                  }} />
-              }
+                    changeItemQuantityInCart(product, quantity - 1);
+                    //setCartState(cartState--);
+                  }}
+                />
+              )}
 
-
-              {cartState > 1 && <IconRem
+              {quantity > 1 && (
+                <IconRem
                   style={{
-                    opacity: 0.4,
+                    opacity: 0.4
                   }}
                   onClick={() => {
-                    changeItemQuantityInCart(product, cartState - 1);
-                    setCartState(cartState - 1);
+                    changeItemQuantityInCart(product, quantity - 1);
+                    //setCartState(cartState - 1);
                   }}
-              />}
-              <CssCartQ>{cartState}</CssCartQ>
+                />
+              )}
+              <CssCartQ>{quantity}</CssCartQ>
               <IconAdd
-                  onClick={() => {
-                    changeItemQuantityInCart(product, cartState + 1);
-                    setCartState(cartState + 1);
-                  }}
+                onClick={() => {
+                  changeItemQuantityInCart(product, quantity + 1);
+                  //setCartState(cartState + 1);
+                }}
               />
             </CssCartQs>
             <div>
-
               <CssTypographyPrice getTheme={getTheme}>
-                {currency} {calcPrice(price, cartState)}
+                {currency} {calcPrice(price, quantity)}
               </CssTypographyPrice>
 
               {/* <Link to='/cart'> */}
@@ -261,9 +261,11 @@ const RecipeReviewCard = ({
               {/* </Link> */}
             </div>
 
-            {cartState > 1 && <CssTypographyPriceSm getTheme={getTheme}>
-              {currency} {Math.round(price * 100) / 100} for one item
-            </CssTypographyPriceSm>}
+            {quantity > 1 && (
+              <CssTypographyPriceSm getTheme={getTheme}>
+                {currency} {Math.round(price * 100) / 100} for one item
+              </CssTypographyPriceSm>
+            )}
           </CssCardActions>
         )}
 
@@ -275,19 +277,19 @@ const RecipeReviewCard = ({
   );
 };
 
-const CssCartQs  = styled.div`
+const CssCartQs = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-`
-const CssCartQ  = styled.div`
+`;
+const CssCartQ = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bolder;
   min-width: 44px;
   font-size: 1.2em;
-`
+`;
 
 const CssCardAppear = styled.div`
   position: relative;
@@ -426,9 +428,9 @@ const CssTypographyPrice = styled.div`
 const CssTypographyPriceSm = styled.div`
   flex-grow: 1;
   font-size: 0.8em;
-  /* color: ${props => props.getTheme('colorAccent')}; */
+  /* color: ${props => props.getTheme("colorAccent")}; */
   /* font-weight: 600; */
   opacity: 0.3;
-`
+`;
 
 export default withStyles(styles)(RecipeReviewCard);

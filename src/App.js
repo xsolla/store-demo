@@ -30,25 +30,27 @@ class App extends Component {
               <div className="">
                 <Navbar showCart={valueFromContext.showCart} />
                 <div
-                  style={{
-                    // backgroundColor: valueFromContext.getTheme("colorBg"),
-                    // minHeight: "100vh",
-                    // fontFamily: valueFromContext.getTheme("fontFamily"),
-                    // display: "grid",
-                    // gridTemplateColumns: "280px minmax(600px, 100%)",
-                    // height: "100vh"
-                  }}
+                  style={
+                    {
+                      // backgroundColor: valueFromContext.getTheme("colorBg"),
+                      // minHeight: "100vh",
+                      // fontFamily: valueFromContext.getTheme("fontFamily"),
+                      // display: "grid",
+                      // gridTemplateColumns: "280px minmax(600px, 100%)",
+                      // height: "100vh"
+                    }
+                  }
                 >
                   {/*<CssSb0>*/}
-                    {/*/!*<StoreSb0 />*!/*/}
+                  {/*/!*<StoreSb0 />*!/*/}
                   {/*</CssSb0>*/}
 
                   <CssStore0>
                     <CssCart />
                     {/*<Switch>*/}
-                      {/*<Route exact path="/" />*/}
-                      {/*<Route path="/details" component={Details} />*/}
-                      {/*<Route component={Default} />*/}
+                    {/*<Route exact path="/" />*/}
+                    {/*<Route path="/details" component={Details} />*/}
+                    {/*<Route component={Default} />*/}
                     {/*</Switch>*/}
 
                     <ProductList {...valueFromContext} />
