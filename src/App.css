@@ -10,7 +10,7 @@
 body {
   /* font-family: 'Montserrat', sans-serif !important; */
   color: var(--mainDark);
-  background: var(--mainWhite) !important;
+  background: var(--mainDark) !important;
 }
 
 .text-title {
@@ -28,3 +28,24 @@ body {
   background: var(--mainDark);
 }
 
+.global-background {
+  background-image: url(https://res.cloudinary.com/maiik/image/upload/v1549624607/Xsolla/HomePage_Hero_Illustration_1440_oabqmk.jpg);
+  z-index: 0;
+  background-size: cover;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.global-background-tint {
+  background-color: #011627;
+  opacity: 0.8;
+  z-index: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}

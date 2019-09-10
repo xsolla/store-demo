@@ -1,10 +1,13 @@
 import React from "react";
-import { ButtonContainer } from "./Button";
+import { NavLink } from 'react-router-dom';
+
 import "react-interactions/dist/main.css";
 import styled from "styled-components";
 import { eraseCookie } from "./Cookie";
 import XLogin from "./XLogin.js";
 import { ProductContext } from "../context";
+
+import '../styles/Navbar.css';
 
 export default function Navbar({
   showCart = () => {
@@ -32,22 +35,18 @@ export default function Navbar({
       style={{
         zIndex: 100,
         color: valueFromContext.getTheme("colorAccentText"),
-        backgroundColor: valueFromContext.getTheme("colorAccent")
+        backgroundColor: '#011627'
       }}
-      // className="navbar navbar-expand-sm  px-sm-5"
     >
-      {/* https://www.iconfinder.com/icons/1243689/call_phone_icon Creative Commons (Attribution 3.0 Unported); https://www.iconfinder.com/Makoto_msk */}
-      {/* <Link to='/' className="navbar-nav align-items-center">
-                  <img src={logo} alt="store" className="navbar-brand" />
-                  <Tap scale fade waves light/>
-                </Link> */}
-      {/* <Link style={{display:'flex', justifyContent:'center'}} to='/' className='link'> */}
-      {/* <CssName>Xsolla Store</CssName> */}
-      {/* </Link> */}
+      <div className="navbar-links">
+        <NavLink activeClassName="navbar-link_active" exact to="/">
+          <span className="navbar-link">Store</span>
+        </NavLink>
+        <NavLink activeClassName="navbar-link_active" to="/inventory">
+          <span className="navbar-link">Inventory</span>
+        </NavLink>
+      </div>
 
-      {/* <Link style={{ justifyContent:'center'}} to="/cart"> */}
-
-      {/* </Link> */}
       <NavUl>
         <li style={{ display: "flex", justifyContent: "center" }}>
           <CssLoginPanel>
@@ -59,17 +58,6 @@ export default function Navbar({
             {valueFromContext.logToken && valueFromContext.user && (
               <CssLogin>
                 <CssLoginEmail>{valueFromContext.user.email}</CssLoginEmail>
-                <CssLoginButton
-                  onClick={logOutHandler}
-                  style={{
-                    color: valueFromContext.getTheme("colorAccent"),
-                    backgroundColor: valueFromContext.getTheme(
-                      "colorAccentText"
-                    )
-                  }}
-                >
-                  Log Out
-                </CssLoginButton>
               </CssLogin>
             )}
           </CssLoginPanel>
@@ -78,11 +66,19 @@ export default function Navbar({
         </li>
       </NavUl>
 
-      <ButtonContainer onClick={e => showCart(e)}>
+      {
+        valueFromContext.logToken && valueFromContext.user && 44056 !== valueFromContext.projectId &&
+        <div className="navbar-logout" onClick={logOutHandler}>
+          <span className="mr-10">
+            <i className="fas fa-sign-out-alt"></i>
+          </span>
+        </div>
+      }
+      <div className="navbar-cart" onClick={e => showCart(e)}>
         <span className="mr-10">
           <i className="fas fa-cart-plus"></i> cart
         </span>
-      </ButtonContainer>
+      </div>
     </NavWrapper>
   );
 }
@@ -108,35 +104,26 @@ const CssLoginButton = styled.div`
   border-radius: 4px;
   padding: 0 0.6rem;
   cursor: pointer;
-  /* border: 1px solid red; */
 `;
 
 const CssLoginEmail = styled.div`
-  /* font-size:0.8rem; */
   font-family: "Roboto";
-  color: "var(--mainWhite)";
-  /* background: 'var(--mainDark)'; */
-  /* color: 'var(--mainLight)'; */
+  color: #ff005b;
   margin: 0 1rem;
 `;
 
 const NavWrapper = styled.div`
   font-family: "Helvetica Neue", "Roboto", Arial, Helvetica, sans-serif;
   color: var(--mainWhite);
-  /* background-color: var(--mainBlue); */
   position: relative;
   display: flex;
-  /* flex-grow:1; */
-  /* flex-direction: row; */
   align-items: center;
   z-index: 10;
 `;
 
 const CssLogin = styled.div`
-  /* text-align:center; */
   display: flex;
   flex-direction: row;
-  /* padding: 0 1em; */
 `;
 
 const NavUl = styled.ul`
@@ -147,26 +134,7 @@ const NavUl = styled.ul`
   justify-content: flex-end;
   color: var(--mainWhite);
   list-style-type: none;
-  /* background-color: var(--mainBlue); */
   position: relative;
   z-index: 10;
   margin-bottom: 0;
-`;
-
-const CssName = styled.div`
-  color: var(--mainWhite);
-  opacity: 0.5;
-  position: relative;
-  z-index: 10;
-  display: flex;
-  justify-content: center;
-  flex-flow: column nowrap;
-  text-transform: uppercase;
-  flex-grow: 1;
-  font-size: 1.4rem;
-  line-height: 1.4rem;
-  cursor: pointer;
-  &:hover {
-    opacity: 1;
-  }
 `;

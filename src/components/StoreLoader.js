@@ -4,14 +4,8 @@ const CancelToken = axios.CancelToken;
 let cancel;
 
 export default async function StoreLoader(projectId, loginToken) {
-  let result = {};
+  let result;
   let all = [];
-  // let allGroup = await loadUngroup(projectId).then(allGroup => {
-  //   //console.log("allGroup = ", allGroup);
-  //   return allGroup;
-  // });
-  // all.push(allGroup);
-  // await response of fetch call
   let responseGroups = await fetch(
     "https://store.xsolla.com/api/v1/project/" + projectId + "/items/groups",
     {
@@ -21,7 +15,6 @@ export default async function StoreLoader(projectId, loginToken) {
       }
     }
   );
-  //console.log("responseGroups = ", responseGroups);
   if (responseGroups) {
     // only proceed once promise is resolved
     let resolvedGroups = await responseGroups.json();
@@ -39,8 +32,6 @@ export default async function StoreLoader(projectId, loginToken) {
     });
     all = all.concat(fulfilledGroups);
   }
-
-  //console.log("result = ", all);
 
   result = {
     virtualItems: all
@@ -60,33 +51,6 @@ function loadByGroup(projectId, group) {
       .then(json => {
         let products = json["items"];
         group["products"] = products;
-        resolve(group);
-      })
-      .catch(function(error) {
-        //console.log("Products ERROR = ", error.message);
-        reject(error.message);
-      });
-  });
-}
-
-function loadUngroup(projectId) {
-  return new Promise((resolve, reject) => {
-    fetch(
-      "https://store.xsolla.com/api/v1/project/" +
-        projectId +
-        "/items/virtual_items"
-    )
-      .then(response => response.json())
-      .then(json => {
-        let products = json["items"];
-        let group = {
-          id: 0,
-          external_id: "0_all",
-          description: "all",
-          name: "all"
-        };
-        group["products"] = products;
-        //console.log("all = ", group);
         resolve(group);
       })
       .catch(function(error) {

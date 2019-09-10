@@ -174,7 +174,6 @@ function Cart({ style = {} }) {
           {/* </Link> */}
         </Cart0>
       )}
-      }
     </div>
   );
 }
@@ -213,7 +212,7 @@ const CartB = styled.div`
   max-width: 680px;
   z-index: 1;
   max-height: 80vh;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding-top: 64px;
 `;
 
