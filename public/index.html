@@ -72,10 +72,9 @@
       var xProjectId;
       if (urlParams && urlParams.get('project_id')) {
         xProjectId = parseInt(urlParams.get('project_id'));
-        //eraseCookie('xsolla_login_token');
         localStorage.setItem('xsolla_react_store_project', xProjectId);
       } else {
-        xProjectId = localStorage.getItem('xsolla_react_store_project') || '47278';
+        xProjectId = localStorage.getItem('xsolla_react_store_project') || '44056';
         xProjectId = parseInt(xProjectId);
       }
 
@@ -84,11 +83,10 @@
         xLoginId = urlParams.get('login_id');
         localStorage.setItem('xsolla_react_store_login', xLoginId);
       } else {
-        xLoginId = localStorage.getItem('xsolla_react_store_login') || 'fb2d7c69-bf25-11e9-9244-42010aa80004';
+        xLoginId = localStorage.getItem('xsolla_react_store_login') || 'e6dfaac6-78a8-11e9-9244-42010aa80004';
       }
 
       var mainURL = 'https://xsolla.github.io/store-demo/';
-      //var mainURL = 'http://localhost:3000/';
 
       XL.init({
         projectId: xLoginId,
@@ -112,7 +110,6 @@
       function xPayStationInit(accessToken) {
         XPayStationWidget.init({
           access_token: accessToken,
-          sandbox: true,
           lightbox: {
             height: 600
           }

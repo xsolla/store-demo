@@ -40,6 +40,7 @@ class ProductProvider extends Component {
     super(props);
 
     this.state = {
+      projectId: props.projectId,
       logToken: Cookie(),
 
       activeGroup: "first",
@@ -48,6 +49,7 @@ class ProductProvider extends Component {
       virtualItems: null,
       currency: null,
       subscriptions: null,
+      inventoryItems: null,
 
       cartShown: false,
       cart: {
@@ -72,6 +74,13 @@ class ProductProvider extends Component {
       cartShown: !this.state.cartShown
     });
   };
+
+  setInventoryItems = (inventoryItems) => {
+    this.setState({
+      inventoryItems,
+      fetching: false
+    })
+  }
 
   getCart = () => {
     let cartPromise = getCart(this.state.cart.cartId, this.state.logToken);
@@ -176,20 +185,6 @@ class ProductProvider extends Component {
         return elem.sku === product.sku;
       });
       if (indexFind !== -1) {
-        // let cart = this.state.cart;
-        // cart.splice(
-        //     indexFind,
-        //     1,
-        //     {
-        //       product: product,
-        //       quantity: this.state.cart[indexFind].quantity + 1
-        //     }
-        // );
-        // this.setState({
-        //   cart: cart,
-        //   cartShown: true
-        // });
-        // changeItemQuantityCart(product, cart[indexFind].quantity, this.state.cartId, this.state.logToken);
         this.getCart();
         this.setState({
           cartShown: true
@@ -347,6 +342,7 @@ class ProductProvider extends Component {
           setProducts: this.setProducts,
           setStateFrom: this.setStateFrom,
           setCurrs: this.setCurrs,
+          setInventoryItems: this.setInventoryItems,
           addToCart: this.addToCart,
           getTheme: this.getTheme.bind(this),
           changeTheme: this.changeTheme,

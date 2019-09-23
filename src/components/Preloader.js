@@ -36,5 +36,4 @@ const CssPreloader = styled.div`
   right: 0;
   bottom: 0;
   top: 0;
-  background: white;
 `;

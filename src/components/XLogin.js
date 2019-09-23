@@ -14,19 +14,13 @@ export default class XLogin extends Component {
   }
 
   unauthorizedFlow = () => {
-    //console.log("unauthorizedFlow");
     this.setState({ logToken: null });
-    this.flow = "unauthorized";
     this.setState({ shown: true });
   };
 
   authorizedFlow = tkn => {
-    //console.log("authorizedFlow", tkn);
     this.setState({ logToken: tkn, shown: false });
     this.user = parseJwt(tkn);
-    this.flow = "authorized";
-    this.userToken = tkn;
-    let self = this;
     this.setStateFrom("user", this.user);
     this.createCart();
   };
@@ -37,8 +31,6 @@ export default class XLogin extends Component {
         <ProductConsumer>
           {valueFromContext => {
             this.setStateFrom = valueFromContext.setStateFrom;
-            this.setPsToken = valueFromContext.setPsToken;
-            this.logToken = valueFromContext.logToken;
             this.createCart = valueFromContext.createCart;
 
             return (
@@ -59,7 +51,7 @@ export default class XLogin extends Component {
                       {myProjects.map((onePr, i) => {
                         let pr = onePr["project_id"];
                         let login = onePr["login_id"];
-                        let url = `https://xsolla.github.io/store-demo`;
+                        let url = `https://xsolla.github.io/store-demo/#/`;
                         let urlFull = `${url}?project_id=${pr}&login_id=${login}`;
                         return (
                           <div key={pr + i} style={{ marginBottom: "1em" }}>
@@ -74,7 +66,7 @@ export default class XLogin extends Component {
                       <p>
                         Open any Xsolla Store using GET parameters <br />
                         <b>project_id</b> and <b>login_id</b> (login must point
-                        back to https://xsolla.github.io/store-demo/)
+                        back to https://xsolla.github.io/store-demo/#/)
                       </p>
                     </CssLoginInfo>
                   </CssXpopB>
@@ -93,18 +85,10 @@ export default class XLogin extends Component {
     let cke = Cookie();
     cke ? this.authorizedFlow(cke) : this.unauthorizedFlow();
   }
-
-  componentWillUpdate(nextProps, nextState) {
-    // this.setPsToken = this.props.setPsToken;
-    // console.log('this.props.psToken = ', nextState.psToken);
-  }
-
-  componentDidUpdate() {}
 }
 
 const CssXpop = styled.div`
   position: fixed;
-  /* overflow-y: scroll; */
   top: 0;
   left: 0;
   right: 0;
@@ -148,10 +132,7 @@ const CssLoginInfo = styled.div`
   flex-direction: column;
   flex-grow: 1;
   font-size: 22px;
-  /* flex-basis: 50%; */
   width: 600px;
-  /* text-align: center; */
-  /* padding: 36px; */
   & a {
     /* font-family: 'PS Mono', Courier, monospace; */
     text-decoration: underline;
@@ -165,9 +146,7 @@ const CssLoginPop = styled.div`
   justify-content: center;
   text-align: center;
   padding: 36px;
-  /* background: white; */
   overflow: hidden;
-  /* width: 460px; */
   margin: 0 70px;
   border-radius: 8px;
 `;

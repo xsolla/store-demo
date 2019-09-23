@@ -2,43 +2,37 @@ import React from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import {
-  makeStyles,
-  useStyles,
   MuiThemeProvider,
-  createMuiTheme
+  createMuiTheme,
+  makeStyles
 } from "@material-ui/core/styles";
-import styled from "styled-components";
 
 import { ProductContext } from "../context";
 
-export function MenuMaterial({
-  value = 0,
-  virtualItems = [],
-  activeGroup = activeGroup === "first" ? virtualItems[0]["id"] : activeGroup,
-  changeGroupHandler = () => {
-    void 0;
+const useTabStyles = makeStyles({
+  root: {
+    justifyContent: "center"
   },
-  changeGlobalHandler = () => {
+  scroller: {
+    flexGrow: "0"
+  }
+});
+
+export function MenuMaterial({
+  virtualItems = [],
+  activeGroup,
+  changeGroupHandler = () => {
     void 0;
   }
 }) {
-  const [state, setState] = React.useState({
-    value: 0,
-    virtualItems: virtualItems,
-    activeGroup: activeGroup === "first" ? virtualItems[0]["id"] : activeGroup
-  });
+  activeGroup = 'first' === activeGroup ? virtualItems[0].id : activeGroup;
 
-  const handleChange = (event, data, value) => {
-    setState({
-      value: value,
-      activeGroup: data["id"]
-    });
+  const classes = useTabStyles();
+
+  const handleChange = (event, data) => {
     changeGroupHandler(data["id"]);
-    changeGlobalHandler(data["id"]);
-    // setStateFrom('activeGroup', data['id'])
   };
 
-  // const classes = useStyles();
   return (
     <MuiThemeProvider
       theme={createMuiTheme({
@@ -50,25 +44,27 @@ export function MenuMaterial({
       })}
     >
       <Tabs
-        value={state.value}
+        value={activeGroup}
         indicatorColor="primary"
         textColor="primary"
         style={{
           color: React.useContext(ProductContext).getTheme("colorAccent")
-          // backgroundColor: React.useContext(ProductContext).getTheme('colorBg'),
         }}
         centered
+        classes={{ root: classes.root, scroller: classes.scroller }}
+        variant="scrollable"
+        scrollButtons="on"
       >
         {virtualItems &&
-          virtualItems.map((oneGroup, key) => {
+          virtualItems.map((oneGroup) => {
             return (
               <Tab
+                value={oneGroup["id"]}
                 key={oneGroup["id"]}
-                // textColor={React.useContext(ProductContext).getTheme('colorAccent')}
                 color="secondary"
                 textColor="secondary"
                 label={oneGroup["name"]}
-                onClick={e => handleChange(e, oneGroup, key)}
+                onClick={e => handleChange(e, oneGroup)}
                 style={{
                   color: React.useContext(ProductContext).getTheme("colorText")
                 }}
@@ -79,9 +75,5 @@ export function MenuMaterial({
     </MuiThemeProvider>
   );
 }
-
-const CssTabs = styled(Tabs)`
-  background-color: ${props => props.colorBg};
-`;
 
 export default MenuMaterial;
