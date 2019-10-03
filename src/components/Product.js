@@ -2,7 +2,7 @@ import React from "react";
 
 import styled, { css } from "styled-components";
 
-import { withStyles } from "@material-ui/core/styles";
+import {makeStyles, withStyles} from "@material-ui/core/styles";
 import CardContent from "@material-ui/core/CardContent";
 import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
@@ -11,8 +11,11 @@ import IconRem from "@material-ui/icons/IndeterminateCheckBox";
 import red from "@material-ui/core/colors/red";
 import ShoppingCart from "@material-ui/icons/ShoppingCart";
 import IconDelete from "@material-ui/icons/Delete";
+import AvatarVC from "@material-ui/core/Avatar";
 import { ProductContext } from "../context";
 import Colorer from "color";
+import Button from "@material-ui/core/Button";
+import Avatar from "./Navbar";
 
 const styles = theme => ({
   paper: {
@@ -68,6 +71,14 @@ const styles = theme => ({
   }
 });
 
+const useStyles = makeStyles({
+  currencies: {
+    height: 24,
+    width: 24,
+    marginRight: 4
+  }
+});
+
 const RecipeReviewCard = ({
   addToCart = () => {
     void 0;
@@ -78,6 +89,10 @@ const RecipeReviewCard = ({
   changeItemQuantityInCart = () => {
     void 0;
   },
+  buyByVC = () => {
+    void 0;
+  },
+  activeGroup,
   product,
   order,
   cardType = null,
@@ -98,6 +113,8 @@ const RecipeReviewCard = ({
     cardShown: false
   });
 
+  const classes = useStyles();
+
   let [cartState, setCartState] = React.useState(
     cardType === "cart" ? quantity : 0
   );
@@ -106,18 +123,33 @@ const RecipeReviewCard = ({
     addToCart(product);
   };
 
+  const handleBuyByVirtualCurrency = () => {
+    buyByVC(product);
+  };
+
   const calcPrice = (price, q) => {
     return Math.round(price * q * 100) / 100;
   };
 
-  const handleFavClick = event => {
-    setState(state => ({ favorited: !state.favorited }));
-    if (state.favorited === false) {
-      event.currentTarget.style.backgroundColor = "var(--mainAccent)";
-    } else {
-      event.currentTarget.style.backgroundColor = "transparent";
+  const getPrice = (sku) => {
+    switch (sku) {
+      case "keys_1":
+        return 5;
+      case "booster_mega_1":
+        return 200;
+      case "lootbox_2":
+        return 6;
+      case"keys_2":
+        return 5;
+      case"booster_mega_2":
+        return 200;
+      case"booster_min_2":
+        return 15;
+      case"lootbox_1":
+        return 6;
+      default:
+        return 0;
     }
-    console.log("fav");
   };
 
   React.useEffect(() => {
@@ -131,36 +163,14 @@ const RecipeReviewCard = ({
     }
   });
 
-  // const { classes } = props;
-  // const { sku, name, image_url, description, amount, currency } = props;
-
   return (
     <CssCardAppear className={!state.cardShown ? initClass : ""}>
-      {/* <CssCard> */}
       <CssCard cardType={cardType} getTheme={getTheme}>
-        {/* <CardHeader className={classes.cardHeader}
-          // avatar={
-          //   <Avatar aria-label="Recipe" className={classes.avatar}>
-          //     R
-          //   </Avatar>
-          // }
-          action={
-            <IconButton>
-              <MoreVertIcon />
-            </IconButton>
-          }
-          // title={title}
-          // subheader={info}
-        /> */}
-
-        {/* <Link to='/details'> */}
         <CssCardMedia
-          // className={classes.media}
-          // title={title}
           style={{}}
           image={image_url}
           theme={
-            cardType === "cart"
+            cardType === "cart" || cardType === "buy_by_vc"
               ? {
                   width: 140,
                   height: 140
@@ -168,53 +178,41 @@ const RecipeReviewCard = ({
               : {}
           }
         />
-        {/* </Link> */}
-
         <CssCardContent>
           <CssCardH1>{title}</CssCardH1>
           <CssDescEllipsis>{description}</CssDescEllipsis>
         </CssCardContent>
 
-        {cardType !== "cart" && (
-          <CssCardActions cardType={cardType} getTheme={getTheme}>
-            <CssTypographyPrice getTheme={getTheme}>
-              {currency} {Math.round(price * 100) / 100}
-            </CssTypographyPrice>
-
-            {/*<IconButton*/}
-            {/*style={{*/}
-            {/*color: React.useContext(ProductContext).getTheme("colorText")*/}
-            {/*}}*/}
-            {/*aria-label="Add to favorites"*/}
-            {/*onClick={handleFavClick}*/}
-            {/*>*/}
-            {/*<FavoriteIcon />*/}
-            {/*</IconButton>*/}
-
-            {/* <Link to='/cart'> */}
-            <IconButton
-              style={{
-                color: React.useContext(ProductContext).getTheme("colorText")
-              }}
-              aria-label="Add to Cart"
-              onClick={handleCartClick}
-            >
-              <ShoppingCart />
-            </IconButton>
-            {/* </Link> */}
-
-            {/* <IconButton
-            className={classnames(classes.expand, {
-              [classes.expandOpen]: state.expanded,
-            })}
-            onClick={handleExpandClick}
-            aria-expanded={state.expanded}
-            aria-label="Show more"
-          >
-            <ExpandMoreIcon />
-          </IconButton> */}
-            {/* </CssCardActionsBorder> */}
-          </CssCardActions>
+        {cardType !== "cart" && cardType !== "buy_by_vc" && (
+          activeGroup === 16 ?
+            <CssCardVCActions cardType={cardType} getTheme={getTheme}>
+              <AvatarVC src={'http://cdn3.xsolla.com/img/misc/images/e0c58028450a6e880f0d2bb67399f167.png'} className={classes.currencies}/>
+              <CssTypographyPrice getTheme={getTheme}>
+                {getPrice(product.sku)}
+              </CssTypographyPrice>
+              <Button
+                  getTheme={getTheme}
+                  variant="contained"
+                  onClick={handleBuyByVirtualCurrency}
+              >
+                Buy now
+              </Button>
+            </CssCardVCActions>
+            :
+            <CssCardActions cardType={cardType} getTheme={getTheme}>
+              <CssTypographyPrice getTheme={getTheme}>
+                {currency} {Math.round(price * 100) / 100}
+              </CssTypographyPrice>
+              <IconButton
+                  style={{
+                    color: React.useContext(ProductContext).getTheme("colorText")
+                  }}
+                  aria-label="Add to Cart"
+                  onClick={handleCartClick}
+              >
+                <ShoppingCart />
+              </IconButton>
+            </CssCardActions>
         )}
 
         {cardType === "cart" && (
@@ -227,7 +225,6 @@ const RecipeReviewCard = ({
                   }}
                   onClick={() => {
                     changeItemQuantityInCart(product, quantity - 1);
-                    //setCartState(cartState--);
                   }}
                 />
               )}
@@ -239,7 +236,6 @@ const RecipeReviewCard = ({
                   }}
                   onClick={() => {
                     changeItemQuantityInCart(product, quantity - 1);
-                    //setCartState(cartState - 1);
                   }}
                 />
               )}
@@ -247,7 +243,6 @@ const RecipeReviewCard = ({
               <IconAdd
                 onClick={() => {
                   changeItemQuantityInCart(product, quantity + 1);
-                  //setCartState(cartState + 1);
                 }}
               />
             </CssCartQs>
@@ -255,10 +250,6 @@ const RecipeReviewCard = ({
               <CssTypographyPrice getTheme={getTheme}>
                 {currency} {calcPrice(price, quantity)}
               </CssTypographyPrice>
-
-              {/* <Link to='/cart'> */}
-
-              {/* </Link> */}
             </div>
 
             {quantity > 1 && (
@@ -389,6 +380,32 @@ const CssCardActions = styled.div`
       border-top: 1px solid
         ${props =>
           Colorer(props.getTheme("colorText"))
+            .alpha(0.1)
+            .string()};
+      padding: 8px 0 0 0;
+      margin: 0px 16px 0 16px;
+    `}
+  ${props =>
+    props.cardType &&
+    css`
+      padding: 16px 0;
+      width: 160px;
+      display: grid;
+      grid-template-columns: auto;
+      grid-row-gap: 8px;
+      place-content: start start;
+    `}
+`;
+
+const CssCardVCActions = styled.div`
+  ${props =>
+    !props.cardType &&
+    css`
+      display: flex;
+      align-items: center;
+      border-top: 1px solid
+        ${props =>
+        Colorer(props.getTheme("colorText"))
             .alpha(0.1)
             .string()};
       padding: 8px 0 0 0;

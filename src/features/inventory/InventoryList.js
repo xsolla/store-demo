@@ -9,6 +9,7 @@ export class InventoryList extends PureComponent {
   componentDidMount() {
     if (this.props.logToken && null === this.props.inventoryItems) {
       this.updateInventory();
+      this.props.updateVirtualCurrencyBalance();
     }
   }
 
@@ -19,8 +20,13 @@ export class InventoryList extends PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.cart.cartId !== this.props.cart.cartId
-        && prevProps.cart.items.length > 0) {
+    if (
+        (prevProps.cart.cartId !== this.props.cart.cartId
+        && prevProps.cart.items.length > 0)
+        || (
+            this.props.cartWithItemsBuyingByVC.items.length !== prevProps.cartWithItemsBuyingByVC.items.length
+        )
+    ) {
       this.updateInventory();
     }
   }
@@ -46,20 +52,23 @@ export class InventoryList extends PureComponent {
             {
               inventoryItems && inventoryItems.length
                 ?
-                inventoryItems.map(
-                  (oneProduct, key) => {
-                    return (
-                      <InventoryItem
-                        key={oneProduct.sku}
-                        order={key}
-                        initClass="initialFlow1"
-                        title={oneProduct.name}
-                        description={oneProduct.description}
-                        imageUrl={oneProduct.image_url}
-                        quantity={oneProduct.quantity}
-                      />
-                    );
-                  })
+                inventoryItems
+                    .filter(product => product.type === 'virtual_good')
+                    .map(
+                      (oneProduct, key) => {
+                        return (
+                          <InventoryItem
+                            key={oneProduct.sku}
+                            order={key}
+                            initClass="initialFlow1"
+                            title={oneProduct.name}
+                            description={oneProduct.description}
+                            imageUrl={oneProduct.image_url}
+                            quantity={oneProduct.quantity}
+                          />
+                        );
+                      }
+                    )
                 :
                 <div>
                   Oops, you have nothing bought yet!

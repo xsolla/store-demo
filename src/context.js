@@ -4,7 +4,7 @@ import {
   changeItemQuantityCart,
   createCart,
   removeItemFromCart,
-  getCart
+  getCart, getVirtualCurrencyBalance
 } from "./components/StoreLoader";
 
 const ProductContext = React.createContext();
@@ -42,11 +42,13 @@ class ProductProvider extends Component {
     this.state = {
       projectId: props.projectId,
       logToken: Cookie(),
+      userBalanceVirtualCurrency: [],
 
       activeGroup: "first",
       loginShown: true,
       activeModule: "virtualItems",
       virtualItems: null,
+      virtualCurrencyPackages: null,
       currency: null,
       subscriptions: null,
       inventoryItems: null,
@@ -59,6 +61,11 @@ class ProductProvider extends Component {
           amount: 0,
           amount_without_discount: 0
         }
+      },
+
+      cartWithItemsBuyingByVCShown: false,
+      cartWithItemsBuyingByVC: {
+        items: []
       },
 
       isFetching: false,
@@ -80,7 +87,7 @@ class ProductProvider extends Component {
       inventoryItems,
       fetching: false
     })
-  }
+  };
 
   getCart = () => {
     let cartPromise = getCart(this.state.cart.cartId, this.state.logToken);
@@ -148,6 +155,7 @@ class ProductProvider extends Component {
   clearCart = () => {
     this.showCart();
     this.createCart();
+    this.updateVirtualCurrencyBalance();
   };
 
   payStationHandler = (event, data) => {
@@ -177,6 +185,26 @@ class ProductProvider extends Component {
       return -1;
     }
     return 0;
+  };
+
+  buyByVC = product => {
+    this.setState({
+      cartWithItemsBuyingByVCShown: true,
+      cartWithItemsBuyingByVC: {
+        items: [product]
+      }
+    });
+  };
+
+  clearVCCart = () => {
+    this.setState({
+      cartWithItemsBuyingByVCShown: false,
+      cartWithItemsBuyingByVC: {
+        items: []
+      }
+    });
+
+    this.updateVirtualCurrencyBalance();
   };
 
   addToCart = product => {
@@ -295,6 +323,13 @@ class ProductProvider extends Component {
     }
   };
 
+  hideCart = function () {
+    this.setState({
+      cartShown: false,
+      cartWithItemsBuyingByVCShown: false
+    })
+  }.bind(this);
+
   setGroups = function(virtualItems) {
     this.setState({
       virtualItems: virtualItems,
@@ -307,7 +342,8 @@ class ProductProvider extends Component {
       fetching: false,
       virtualItems: resolvedData["virtualItems"],
       currency: resolvedData["currency"],
-      subscriptions: resolvedData["subscriptions"]
+      subscriptions: resolvedData["subscriptions"],
+      virtualCurrencyPackages: resolvedData["virtualCurrencyPackages"],
     });
   }.bind(this);
 
@@ -325,6 +361,14 @@ class ProductProvider extends Component {
   }.bind(this);
 
   componentWillUpdate(nextProps, nextState) {}
+
+  updateVirtualCurrencyBalance = () => {
+    getVirtualCurrencyBalance(this.state.logToken).then((reps) => {
+      this.setState({
+        userBalanceVirtualCurrency: reps.data.items
+      });
+    });
+  };
 
   componentDidMount() {}
 
@@ -344,6 +388,8 @@ class ProductProvider extends Component {
           setCurrs: this.setCurrs,
           setInventoryItems: this.setInventoryItems,
           addToCart: this.addToCart,
+          buyByVC: this.buyByVC,
+          clearVCCart: this.clearVCCart,
           getTheme: this.getTheme.bind(this),
           changeTheme: this.changeTheme,
           changeCardSize: this.changeCardSize,
@@ -351,7 +397,9 @@ class ProductProvider extends Component {
           showCart: this.showCart,
           changeItemQuantityInCart: this.changeItemQuantityInCart,
           buyCart: this.buyCart,
-          payStationHandler: this.payStationHandler
+          payStationHandler: this.payStationHandler,
+          updateVirtualCurrencyBalance: this.updateVirtualCurrencyBalance,
+          hideCart: this.hideCart
         }}
       >
         {this.props.children}

@@ -7,7 +7,8 @@ import Colorer from "color";
 import { getFormattedCurrency } from "./formatCurrency";
 
 import { ProductContext } from "../context";
-import { getPsTokenBuyCart } from "./StoreLoader";
+import { getPsTokenBuyCart, quickPurchaseBuyVirtualCurrency } from "./StoreLoader";
+import Preloader from "./Preloader";
 
 function Cart({ style = {} }) {
   let [buyButtonDisabled, setBuyButtonDisabled] = React.useState(false);
@@ -15,7 +16,7 @@ function Cart({ style = {} }) {
   const valueFromContext = React.useContext(ProductContext);
 
   const hideCart = () => {
-    valueFromContext.setStateFrom("cartShown", false);
+    valueFromContext.hideCart();
   };
 
   const calculateSubtotal = cart => {
@@ -49,6 +50,19 @@ function Cart({ style = {} }) {
       })
       .catch(e => {});
   };
+
+    const buyByVirtualCurrencyButtonAction = (product) => {
+        setBuyButtonDisabled(true);
+        quickPurchaseBuyVirtualCurrency(product, valueFromContext.logToken)
+            .then(response => {
+                valueFromContext.clearVCCart();
+                setBuyButtonDisabled(false);
+                this.props.updateVirtualCurrencyBalance();
+            })
+            .catch(reason => {
+                setBuyButtonDisabled(false);
+            })
+    };
 
   return (
     <div>
@@ -174,6 +188,105 @@ function Cart({ style = {} }) {
           {/* </Link> */}
         </Cart0>
       )}
+        {valueFromContext.cartWithItemsBuyingByVCShown && (
+            <Cart0>
+                <CartB
+                    style={{
+                        padding: "0 32px 0 32px",
+                        borderRadius: valueFromContext.getTheme("borderRadius"),
+                        backgroundColor: valueFromContext.getTheme("colorBg"),
+                        color: valueFromContext.getTheme("colorText")
+                    }}
+                >
+                    <div
+                        style={{
+                            backgroundColor: valueFromContext.getTheme("colorBg"),
+                            color: valueFromContext.getTheme("colorText")
+                        }}
+                    >
+                        <CssCartH
+                            style={{
+                                backgroundColor: `${valueFromContext.getTheme("colorBg")}`,
+                                borderBottom: `1px solid ${Colorer(
+                                    valueFromContext.getTheme("colorText")
+                                )
+                                    .alpha(0.1)
+                                    .string()}`
+                            }}
+                        >
+                            <h4>Confirm</h4>
+                            <IconClose
+                                style={{
+                                    cursor: "pointer"
+                                }}
+                                onClick={e => hideCart(e)}
+                            />
+                        </CssCartH>
+
+                        <CssCartList>
+                            {valueFromContext.cartWithItemsBuyingByVC &&
+                            valueFromContext.cartWithItemsBuyingByVC.items.map((oneCartItem, i) => {
+                                return (
+                                    <div key={`cartitem${i}`}>
+                                        <Product
+                                            product={oneCartItem}
+                                            key={oneCartItem.sku}
+                                            order={i}
+                                            initClass="initialFlow1"
+                                            sku={oneCartItem.sku}
+                                            title={oneCartItem.name}
+                                            description={oneCartItem.description}
+                                            price={oneCartItem.price.amount}
+                                            image_url={oneCartItem.image_url}
+                                            currency={oneCartItem.price.currency}
+                                            cardType="buy_by_vc"
+                                            cartId={valueFromContext.cart.cartId}
+                                            logToken={valueFromContext.logToken}
+                                            removeFromCart={valueFromContext.removeFromCart}
+                                            changeItemQuantityInCart={
+                                                valueFromContext.changeItemQuantityInCart
+                                            }
+                                            quantity={oneCartItem.quantity}
+                                        />
+                                    </div>
+                                );
+                            })}
+                            {valueFromContext.cartWithItemsBuyingByVC &&
+                            valueFromContext.cartWithItemsBuyingByVC.items.length <= 0 && <p>Empty cart</p>}
+                        </CssCartList>
+
+                        <CssCartB
+                            style={{
+                                backgroundColor: `${valueFromContext.getTheme("colorBg")}`,
+                                borderTop: `1px solid ${Colorer(
+                                    valueFromContext.getTheme("colorText")
+                                )
+                                    .alpha(0.1)
+                                    .string()}`
+                            }}
+                        >
+                            <div className="" />
+                            {
+                                buyButtonDisabled ?
+                                    <Preloader/> :
+                                    <Button
+                                        variant="contained"
+                                        onClick={() => {
+                                            !(
+                                                buyButtonDisabled ||
+                                                valueFromContext.cartWithItemsBuyingByVC.items.length <= 0
+                                            ) && buyByVirtualCurrencyButtonAction(valueFromContext.cartWithItemsBuyingByVC.items[0]);
+                                        }}
+                                    >
+                                        Buy
+                                    </Button>
+                            }
+                        </CssCartB>
+                    </div>
+                </CartB>
+                <CartZ onClick={e => hideCart(e)} />
+            </Cart0>
+        )}
     </div>
   );
 }
