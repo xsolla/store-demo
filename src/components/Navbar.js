@@ -4,10 +4,22 @@ import { NavLink } from 'react-router-dom';
 import "react-interactions/dist/main.css";
 import styled from "styled-components";
 import { eraseCookie } from "./Cookie";
+import { makeStyles } from '@material-ui/core/styles';
 import XLogin from "./XLogin.js";
 import { ProductContext } from "../context";
 
 import '../styles/Navbar.css';
+import Avatar from "@material-ui/core/Avatar";
+
+
+const useStyles = makeStyles({
+  currencies: {
+    marginLeft: 10,
+    marginRight: 4,
+    height: 18,
+    width: 18,
+  }
+});
 
 export default function Navbar({
   showCart = () => {
@@ -15,6 +27,7 @@ export default function Navbar({
   }
 }) {
   const valueFromContext = React.useContext(ProductContext);
+  const classes = useStyles();
 
   const [state, setState] = React.useState({
     shown: false
@@ -30,6 +43,17 @@ export default function Navbar({
     setState({ shown: true });
   };
 
+  const getVCName = (name) => {
+    switch (name) {
+      case 'store_item_44056_crystal_name':
+        return 'Xsolla Crystals';
+      case 'store_item_44056_gold_name':
+        return 'Gold';
+      default:
+        return name;
+    }
+  };
+
   return (
     <NavWrapper
       style={{
@@ -40,7 +64,10 @@ export default function Navbar({
     >
       <div className="navbar-links">
         <NavLink activeClassName="navbar-link_active" exact to="/">
-          <span className="navbar-link">Store</span>
+          <span className="navbar-link">Items</span>
+        </NavLink>
+        <NavLink activeClassName="navbar-link_active" to="/crystals">
+          <span className="navbar-link">Currencies</span>
         </NavLink>
         <NavLink activeClassName="navbar-link_active" to="/inventory">
           <span className="navbar-link">Inventory</span>
@@ -57,6 +84,18 @@ export default function Navbar({
             )}
             {valueFromContext.logToken && valueFromContext.user && (
               <CssLogin>
+                {
+                  valueFromContext.userBalanceVirtualCurrency && valueFromContext.userBalanceVirtualCurrency.map((vc) => {
+                    return (
+                          <>
+                            <Avatar src={vc.image_url} className={classes.currencies}/>
+                            {
+                              vc.amount
+                            }
+                          </>
+                    );
+                  })
+                }
                 <CssLoginEmail>{valueFromContext.user.email}</CssLoginEmail>
               </CssLogin>
             )}
@@ -124,6 +163,7 @@ const NavWrapper = styled.div`
 const CssLogin = styled.div`
   display: flex;
   flex-direction: row;
+  font-family: "Helvetica Neue", "Roboto", Arial, Helvetica, sans-serif;
 `;
 
 const NavUl = styled.ul`

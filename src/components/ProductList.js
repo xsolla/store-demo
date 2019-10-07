@@ -23,6 +23,8 @@ class ProductList extends Component {
       StoreLoader(window.xProjectId, this.props.logToken).then(allData => {
         this.props.setCurrs(allData);
       });
+
+      this.props.updateVirtualCurrencyBalance();
     }
   }
 
@@ -50,7 +52,7 @@ class ProductList extends Component {
                             changeGroupHandler={this.changeGroupHandler}
                           />
                         </CssMenu>
-                
+
                         {valueFromContext.activeModule === "virtualItems" &&
                         valueFromContext.virtualItems.map((oneGroup, key) => {
                           if (
@@ -102,6 +104,10 @@ class ProductList extends Component {
                                           }
                                           changeItemQuantityInCart={
                                             valueFromContext.changeItemQuantityInCart
+                                          }
+                                          activeGroup={this.props.activeGroup}
+                                          buyByVC={
+                                            valueFromContext.buyByVC
                                           }
                                         />
                                       );

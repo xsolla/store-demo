@@ -15,6 +15,15 @@ export default async function StoreLoader(projectId, loginToken) {
       }
     }
   );
+
+  const virtualCurrency = await fetch(
+      "https://store.xsolla.com/api/v2/project/" + projectId + "/items/virtual_currency/package", {
+        method: "GET"
+      }
+  );
+
+  const virtualCurrencyPackages = await virtualCurrency.json();
+
   if (responseGroups) {
     // only proceed once promise is resolved
     let resolvedGroups = await responseGroups.json();
@@ -34,7 +43,8 @@ export default async function StoreLoader(projectId, loginToken) {
   }
 
   result = {
-    virtualItems: all
+    virtualItems: all,
+    virtualCurrencyPackages: virtualCurrencyPackages.items
   };
   return result;
 }
@@ -186,4 +196,32 @@ export function getCart(cartId, loginToken) {
     .catch(function(error) {
       //console.log("L2PS ERROR = ", error.response);
     });
+}
+
+export function quickPurchaseBuyVirtualCurrency(product, loginToken) {
+  let opts = {
+    url:
+        "https://store.xsolla.com/api/v2/project/" +
+        window.xProjectId +
+        "/payment/item/" +
+        product.sku +
+        "/virtual/crystal",
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + loginToken
+    }
+  };
+  return axios(opts);
+}
+
+export function getVirtualCurrencyBalance(loginToken) {
+  let opts = {
+    url:
+        "https://store.xsolla.com/api/v2/project/" + window.xProjectId + "/user/virtual_currency_balance",
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + loginToken
+    }
+  };
+  return axios(opts);
 }

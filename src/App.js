@@ -12,6 +12,7 @@ import Cart from "./components/Cart";
 import ProductList from "./components/ProductList";
 import Preloader from "./components/Preloader.js";
 import { ProductConsumer } from "./context";
+import VCPackagesList from "./components/VCPackagesList";
 
 class App extends Component {
   render() {
@@ -28,6 +29,7 @@ class App extends Component {
                       <CssCart />
                       <Route path="/" exact render={() => (!valueFromContext.fetching && <ProductList {...valueFromContext} />)} />
                       <Route path="/inventory" render={() => (!valueFromContext.fetching && <InventoryList {...valueFromContext} />)} />
+                      <Route path="/crystals" render={() => (!valueFromContext.fetching && <VCPackagesList {...valueFromContext} />)} />
                       {valueFromContext.fetching && <Preloader />}
                     </CssStore0>
                   </div>
