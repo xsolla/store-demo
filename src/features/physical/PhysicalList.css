@@ -1,0 +1,10 @@
+.physical-list {
+    position: relative;
+    z-index: 4;
+    background-color: transparent;
+    color: #D6E0E7;
+    display: flex;
+    flex-wrap: wrap;
+    place-content: center;
+    margin-top: 70px;
+}

@@ -52,6 +52,7 @@ class ProductProvider extends Component {
       currency: null,
       subscriptions: null,
       inventoryItems: null,
+      physicalItems: null,
 
       cartShown: false,
       cart: {
@@ -85,6 +86,13 @@ class ProductProvider extends Component {
   setInventoryItems = (inventoryItems) => {
     this.setState({
       inventoryItems,
+      fetching: false
+    })
+  };
+  
+  setPhysicalItems = (physicalItems) => {
+    this.setState({
+      physicalItems,
       fetching: false
     })
   };
@@ -387,6 +395,7 @@ class ProductProvider extends Component {
           setStateFrom: this.setStateFrom,
           setCurrs: this.setCurrs,
           setInventoryItems: this.setInventoryItems,
+          setPhysicalItems: this.setPhysicalItems,
           addToCart: this.addToCart,
           buyByVC: this.buyByVC,
           clearVCCart: this.clearVCCart,

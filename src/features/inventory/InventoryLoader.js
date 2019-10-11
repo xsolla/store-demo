@@ -7,7 +7,7 @@ export const getInventory = (projectId, loginToken) => {
   cancel && cancel();
   let opts = {
     url:
-    `https://store.xsolla.com/api/v1/project/${projectId}/user/inventory/items`,
+    `https://store.xsolla.com/api/v2/project/${projectId}/user/inventory/items`,
     method: "GET",
     headers: {
       Authorization: "Bearer " + loginToken
