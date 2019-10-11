@@ -52,7 +52,7 @@ export default async function StoreLoader(projectId, loginToken) {
 function loadByGroup(projectId, group) {
   return new Promise((resolve, reject) => {
     fetch(
-      "https://store.xsolla.com/api/v1/project/" +
+      "https://store.xsolla.com/api/v2/project/" +
         projectId +
         "/items/virtual_items/group/" +
         group["external_id"]
@@ -198,14 +198,14 @@ export function getCart(cartId, loginToken) {
     });
 }
 
-export function quickPurchaseBuyVirtualCurrency(product, loginToken) {
+export function quickPurchaseBuyVirtualCurrency(product, vcPriceSku, loginToken) {
   let opts = {
     url:
         "https://store.xsolla.com/api/v2/project/" +
         window.xProjectId +
         "/payment/item/" +
         product.sku +
-        "/virtual/crystal",
+        "/virtual/" + vcPriceSku,
     method: "POST",
     headers: {
       Authorization: "Bearer " + loginToken
