@@ -2,6 +2,7 @@
     display: flex;
     padding-left: 28px;
     height: 100%;
+    overflow-x: auto;
 }
 
 .navbar-links a:hover {

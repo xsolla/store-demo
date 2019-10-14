@@ -1,0 +1,50 @@
+[
+  {
+    "sku": "kicker_shirt_1",
+    "type": "physical_good",
+    "name": "Kicker T-shirt 1",
+    "image_url": "https://cdn3.xsolla.com/img/misc/images/567be98dbc668544249a2ec6c9c39261.png",
+    "groups": [],
+    "description": "Xsolla Battle Kicker T-shirt vol.1",
+    "vc_prices": [],
+    "order": 1,
+    "is_free": false,
+    "price": {
+      "amount": "5.0000",
+      "amount_without_discount": "5.0000",
+      "currency": "USD"
+    }
+  },
+  {
+    "sku": "kicker_shirt_2",
+    "type": "physical_good",
+    "name": "Kicker T-shirt 2",
+    "image_url": "https://cdn3.xsolla.com/img/misc/images/c35e1ceb19da2c183f18a27c8ffae339.png",
+    "groups": [],
+    "description": "Xsolla Battle Kicker T-shirt vol.2",
+    "vc_prices": [],
+    "order": 1,
+    "is_free": false,
+    "price": {
+      "amount": "5.0000",
+      "amount_without_discount": "5.0000",
+      "currency": "USD"
+    }
+  },
+  {
+    "sku": "kicker_shirt_3",
+    "type": "physical_good",
+    "name": "Kicker T-shirt 3",
+    "image_url": "https://cdn3.xsolla.com/img/misc/images/650951cffcdd8d77735adf3313e3ede6.png",
+    "groups": [],
+    "description": "Xsolla Battle Kicker T-shirt vol.3",
+    "vc_prices": [],
+    "order": 1,
+    "is_free": false,
+    "price": {
+      "amount": "5.0000",
+      "amount_without_discount": "5.0000",
+      "currency": "USD"
+    }
+  }
+]

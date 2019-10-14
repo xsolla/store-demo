@@ -58,6 +58,12 @@ export default function Navbar({
         <NavLink activeClassName="navbar-link_active" to="/crystals">
           <span className="navbar-link">Currencies</span>
         </NavLink>
+        {
+          valueFromContext.projectId === 44056 &&
+          <NavLink activeClassName="navbar-link_active" to="/physical">
+            <span className="navbar-link">Merchandise</span>
+          </NavLink>
+        }
         <NavLink activeClassName="navbar-link_active" to="/inventory">
           <span className="navbar-link">Inventory</span>
         </NavLink>
