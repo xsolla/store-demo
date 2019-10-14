@@ -43,17 +43,6 @@ export default function Navbar({
     setState({ shown: true });
   };
 
-  const getVCName = (name) => {
-    switch (name) {
-      case 'store_item_44056_crystal_name':
-        return 'Xsolla Crystals';
-      case 'store_item_44056_gold_name':
-        return 'Gold';
-      default:
-        return name;
-    }
-  };
-
   return (
     <NavWrapper
       style={{

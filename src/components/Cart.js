@@ -51,9 +51,9 @@ function Cart({ style = {} }) {
       .catch(e => {});
   };
 
-    const buyByVirtualCurrencyButtonAction = (product) => {
+    const buyByVirtualCurrencyButtonAction = (product, vcPriceSku) => {
         setBuyButtonDisabled(true);
-        quickPurchaseBuyVirtualCurrency(product, valueFromContext.logToken)
+        quickPurchaseBuyVirtualCurrency(product, vcPriceSku, valueFromContext.logToken)
             .then(response => {
                 valueFromContext.clearVCCart();
                 setBuyButtonDisabled(false);
@@ -275,7 +275,10 @@ function Cart({ style = {} }) {
                                             !(
                                                 buyButtonDisabled ||
                                                 valueFromContext.cartWithItemsBuyingByVC.items.length <= 0
-                                            ) && buyByVirtualCurrencyButtonAction(valueFromContext.cartWithItemsBuyingByVC.items[0]);
+                                            ) && buyByVirtualCurrencyButtonAction(
+                                                valueFromContext.cartWithItemsBuyingByVC.items[0],
+                                                valueFromContext.cartWithItemsBuyingByVC.vcPriceSku
+                                            );
                                         }}
                                     >
                                         Buy

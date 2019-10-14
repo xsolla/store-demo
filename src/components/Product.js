@@ -123,33 +123,12 @@ const RecipeReviewCard = ({
     addToCart(product);
   };
 
-  const handleBuyByVirtualCurrency = () => {
-    buyByVC(product);
+  const handleBuyByVirtualCurrency = (vcSku) => {
+    buyByVC(product, vcSku);
   };
 
   const calcPrice = (price, q) => {
     return Math.round(price * q * 100) / 100;
-  };
-
-  const getPrice = (sku) => {
-    switch (sku) {
-      case "keys_1":
-        return 5;
-      case "booster_mega_1":
-        return 200;
-      case "lootbox_2":
-        return 6;
-      case"keys_2":
-        return 5;
-      case"booster_mega_2":
-        return 200;
-      case"booster_min_2":
-        return 15;
-      case"lootbox_1":
-        return 6;
-      default:
-        return 0;
-    }
   };
 
   React.useEffect(() => {
@@ -162,6 +141,8 @@ const RecipeReviewCard = ({
       }, order * 100);
     }
   });
+
+  const hasVirtualCurrencyPrice = product.vc_prices && product.vc_prices.length > 0;
 
   return (
     <CssCardAppear className={!state.cardShown ? initClass : ""}>
@@ -184,35 +165,30 @@ const RecipeReviewCard = ({
         </CssCardContent>
 
         {cardType !== "cart" && cardType !== "buy_by_vc" && (
-          activeGroup === 16 ?
-            <CssCardVCActions cardType={cardType} getTheme={getTheme}>
-              <AvatarVC src={'http://cdn3.xsolla.com/img/misc/images/e0c58028450a6e880f0d2bb67399f167.png'} className={classes.currencies}/>
-              <CssTypographyPrice getTheme={getTheme}>
-                {getPrice(product.sku)}
-              </CssTypographyPrice>
-              <Button
-                  getTheme={getTheme}
-                  variant="contained"
-                  onClick={handleBuyByVirtualCurrency}
-              >
-                Buy now
-              </Button>
-            </CssCardVCActions>
-            :
-            <CssCardActions cardType={cardType} getTheme={getTheme}>
-              <CssTypographyPrice getTheme={getTheme}>
-                {currency} {Math.round(price * 100) / 100}
-              </CssTypographyPrice>
-              <IconButton
-                  style={{
-                    color: React.useContext(ProductContext).getTheme("colorText")
-                  }}
-                  aria-label="Add to Cart"
-                  onClick={handleCartClick}
-              >
-                <ShoppingCart />
-              </IconButton>
-            </CssCardActions>
+          <CssCardVCActions cardType={cardType} getTheme={getTheme}>
+            {
+              hasVirtualCurrencyPrice &&
+              <AvatarVC src={product.vc_prices[0].image_url} className={classes.currencies}/>
+            }
+            <CssTypographyPrice getTheme={getTheme}>
+              {
+                hasVirtualCurrencyPrice ?
+                    product.vc_prices[0].amount : `${currency} ${Math.round(price * 100) / 100}`
+              }
+            </CssTypographyPrice>
+            <Button
+                getTheme={getTheme}
+                variant="contained"
+                onClick={
+                  hasVirtualCurrencyPrice ? handleBuyByVirtualCurrency.bind(this, product.vc_prices[0].sku) : handleCartClick
+                }
+            >
+              {
+                hasVirtualCurrencyPrice ?
+                    `Buy now` : <ShoppingCart />
+              }
+            </Button>
+          </CssCardVCActions>
         )}
 
         {cardType === "cart" && (

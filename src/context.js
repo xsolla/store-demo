@@ -195,11 +195,12 @@ class ProductProvider extends Component {
     return 0;
   };
 
-  buyByVC = product => {
+  buyByVC = (product, vcSku) => {
     this.setState({
       cartWithItemsBuyingByVCShown: true,
       cartWithItemsBuyingByVC: {
-        items: [product]
+        items: [product],
+        vcPriceSku: vcSku
       }
     });
   };
@@ -208,7 +209,8 @@ class ProductProvider extends Component {
     this.setState({
       cartWithItemsBuyingByVCShown: false,
       cartWithItemsBuyingByVC: {
-        items: []
+        items: [],
+        vcPriceSku: null
       }
     });
 
