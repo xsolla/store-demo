@@ -142,7 +142,7 @@ const RecipeReviewCard = ({
     }
   });
 
-  const hasVirtualCurrencyPrice = product.vc_prices && product.vc_prices.length > 0;
+  const hasVirtualCurrencyPrice = product.virtual_prices && product.virtual_prices.length > 0;
 
   return (
     <CssCardAppear className={!state.cardShown ? initClass : ""}>
@@ -168,19 +168,19 @@ const RecipeReviewCard = ({
           <CssCardVCActions cardType={cardType} getTheme={getTheme}>
             {
               hasVirtualCurrencyPrice &&
-              <AvatarVC src={product.vc_prices[0].image_url} className={classes.currencies}/>
+              <AvatarVC src={product.virtual_prices[0].image_url} className={classes.currencies}/>
             }
             <CssTypographyPrice getTheme={getTheme}>
               {
                 hasVirtualCurrencyPrice ?
-                    product.vc_prices[0].amount : `${currency} ${Math.round(price * 100) / 100}`
+                    product.virtual_prices[0].amount : `${currency} ${Math.round(price * 100) / 100}`
               }
             </CssTypographyPrice>
             <Button
                 getTheme={getTheme}
                 variant="contained"
                 onClick={
-                  hasVirtualCurrencyPrice ? handleBuyByVirtualCurrency.bind(this, product.vc_prices[0].sku) : handleCartClick
+                  hasVirtualCurrencyPrice ? handleBuyByVirtualCurrency.bind(this, product.virtual_prices[0].sku) : handleCartClick
                 }
             >
               {
