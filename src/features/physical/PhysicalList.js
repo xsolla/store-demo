@@ -2,9 +2,11 @@ import React, { PureComponent } from "react";
 
 import {PhysicalItem} from './PhysicalItem';
 import {getPsTokenByItem} from '../StoreLoader';
-import physicalItems from './PhysicalList.json';
+import {getPhysicalGoods} from './PhysicalListLoader';
+// import physicalItems from './PhysicalList.json';
 
 import './PhysicalList.css';
+import {getInventory} from "../inventory/InventoryLoader";
 
 export class PhysicalList extends PureComponent {
   constructor() {
@@ -29,7 +31,13 @@ export class PhysicalList extends PureComponent {
   }
   
   updateCatalogue() {
-    this.props.setPhysicalItems(this.props.projectId === 44056 ? physicalItems : []);
+    getPhysicalGoods(window.xProjectId, this.props.logToken)
+        .then(physicalItems => {
+          this.props.setPhysicalItems(physicalItems);
+        })
+        .catch(() => {
+          this.props.setPhysicalItems([]);
+        });
   }
   
   buyItem(item) {
