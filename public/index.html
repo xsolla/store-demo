@@ -107,11 +107,12 @@
       }
 
       //PayStation Widget Init
-      function xPayStationInit(accessToken) {
+      function xPayStationInit(accessToken, options = null) {
         XPayStationWidget.init({
           access_token: accessToken,
           lightbox: {
-            height: 600
+            height: options && options['height'] || 600,
+            spinner: 'round'
           }
         });
       }

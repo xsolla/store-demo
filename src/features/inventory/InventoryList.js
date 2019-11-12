@@ -2,15 +2,17 @@ import React, { PureComponent } from "react";
 
 import {InventoryItem} from './InventoryItem';
 import {getInventory} from './InventoryLoader';
+import { init } from 'store-js-sdk/src/init';
 
 import './InventoryList.css';
+import {Inventory} from "store-js-sdk/src/inventory/inventory";
 
 export class InventoryList extends PureComponent {
   componentDidMount() {
-    if (this.props.logToken && null === this.props.inventoryItems) {
-      this.updateInventory();
-      this.props.updateVirtualCurrencyBalance();
-    }
+      if (this.props.logToken && null === this.props.inventoryItems) {
+        this.updateInventory();
+        this.props.updateVirtualCurrencyBalance();
+      }
   }
 
   componentWillUnmount() {
@@ -33,12 +35,35 @@ export class InventoryList extends PureComponent {
 
   updateInventory() {
     this.props.setStateFrom("fetching", true);
+
+    let token = this.props.logToken;
+    init({
+      projectId: window.xProjectId,
+      version: 'v2'
+    });
+
     getInventory(window.xProjectId, this.props.logToken)
         .then(inventoryItems => {
           this.props.setInventoryItems(inventoryItems);
         })
         .catch(() => {
           this.props.setInventoryItems([]);
+        });
+  }
+
+  consumeItem(item) {
+    let token = this.props.logToken;
+
+    init({
+      projectId: window.xProjectId,
+      version: 'v2'
+    });
+
+    const inventory = new Inventory(token);
+
+    inventory.consumeItem(item.sku, 1, item.instance_id)
+        .finally(() => {
+          this.props.setStateFrom("fetching", true);
         });
   }
 
@@ -65,6 +90,8 @@ export class InventoryList extends PureComponent {
                             description={oneProduct.description}
                             imageUrl={oneProduct.image_url}
                             quantity={oneProduct.quantity}
+                            remainingUses={oneProduct.remaining_uses}
+                            handleConsumeItem={() => this.consumeItem(oneProduct)}
                           />
                         );
                       }

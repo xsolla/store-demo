@@ -4,6 +4,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Collapse from "@material-ui/core/Collapse";
 
 import './InventoryItem.css';
+import Button from "@material-ui/core/Button";
 
 export class InventoryItem extends Component {
   constructor() {
@@ -34,7 +35,9 @@ export class InventoryItem extends Component {
       imageUrl,
       title,
       description,
-      quantity
+      quantity,
+      handleConsumeItem,
+      remainingUses
     } = this.props;
     
     return (
@@ -56,6 +59,12 @@ export class InventoryItem extends Component {
             <div className="inventory-item-card-actions-quantity">
               {`Quantity: ${quantity}`}
             </div>
+            {remainingUses ? (
+              <Button
+                  variant="contained"
+                  onClick={handleConsumeItem}
+              >Consume</Button>
+            ) : ''}
           </div>
   
           <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>

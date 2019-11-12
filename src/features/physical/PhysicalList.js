@@ -3,10 +3,8 @@ import React, { PureComponent } from "react";
 import {PhysicalItem} from './PhysicalItem';
 import {getPsTokenByItem} from '../StoreLoader';
 import {getPhysicalGoods} from './PhysicalListLoader';
-// import physicalItems from './PhysicalList.json';
 
 import './PhysicalList.css';
-import {getInventory} from "../inventory/InventoryLoader";
 
 export class PhysicalList extends PureComponent {
   constructor() {
@@ -51,7 +49,10 @@ export class PhysicalList extends PureComponent {
     })
     getPsTokenByItem(item, logToken)
       .then(response => {
-        window.xPayStationInit(response.data["token"]);
+        let options = {
+          'height' : 680
+        };
+        window.xPayStationInit(response.data["token"], options);
         window.XPayStationWidget.open();
         window.XPayStationWidget.on(
           window.XPayStationWidget.eventTypes.CLOSE,
