@@ -80,7 +80,7 @@ export function changeItemQuantityCart(
   //console.log("sku added = ", sku, " to cartId = ", cartId);
   let opts = {
     url:
-      "https://store.xsolla.com/api/v1/project/" +
+      "https://store.xsolla.com/api/v2/project/" +
       window.xProjectId +
       "/cart/" +
       cartId +
@@ -129,7 +129,7 @@ export function removeItemFromCart({ sku = "sku" }, cartId, loginToken) {
   //console.log("sku removed = ", sku, " from cartId = ", cartId);
   let opts = {
     url:
-      "https://store.xsolla.com/api/v1/project/" +
+      "https://store.xsolla.com/api/v2/project/" +
       window.xProjectId +
       "/cart/" +
       cartId +
@@ -153,7 +153,7 @@ export function removeItemFromCart({ sku = "sku" }, cartId, loginToken) {
 export function getPsTokenBuyCart(cartId, loginToken) {
   let opts = {
     url:
-      "https://store.xsolla.com/api/v1/project/" +
+      "https://store.xsolla.com/api/v2/project/" +
       window.xProjectId +
       "/payment/cart/" +
       cartId,
@@ -176,7 +176,7 @@ export function getCart(cartId, loginToken) {
   cancel && cancel();
   let opts = {
     url:
-      "https://store.xsolla.com/api/v1/project/" +
+      "https://store.xsolla.com/api/v2/project/" +
       window.xProjectId +
       "/cart/" +
       cartId,
