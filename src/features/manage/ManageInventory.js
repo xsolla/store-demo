@@ -46,6 +46,7 @@ export class ManageInventory extends PureComponent {
     componentDidMount() {
         if (null === this.props.manageInventoryItems) {
             this.getItems();
+            this.props.updateVirtualCurrencyBalance();
         }
     }
 
@@ -112,7 +113,7 @@ export class ManageInventory extends PureComponent {
         const {quantity, users, showToast, statusToast, operationDetails} = this.state;
 
         return (
-            <div>
+            <div className="manage-inventory__row">
                 <div className="manage-inventory__alert">
                     <Alert onClose={(e) => this.setShowToast(false)} show={showToast} variant={statusToast === 'processing' ? "primary" : "success"} dismissible>
                         <Alert.Heading>{statusToast === 'processing' ? 'Operation is processing': 'Operation complete!' }</Alert.Heading>
@@ -142,78 +143,76 @@ export class ManageInventory extends PureComponent {
                 </div>
                 <div className="">
                     <div className="manage-inventory">
-                        <form onSubmit={this.handleSubmit}>
-                            <div className="manage-inventory__user-list">
-                                <div className="manage-inventory__title">User</div>
-                                <div>
-                                    <select value={this.state.user} onChange={(e) => this.changeUser(e)}>
-                                        {
-                                            users.map(
-                                                (user) => {
-                                                    return (
-                                                        <option value={user.id}>{user.name}</option>
-                                                    )
-                                                })
-                                        }
-                                    </select>
+                        <div className="manage-inventory__user-list">
+                            <div className="manage-inventory__title">User</div>
+                            <div>
+                                <select value={this.state.user} onChange={(e) => this.changeUser(e)}>
+                                    {
+                                        users.map(
+                                            (user) => {
+                                                return (
+                                                    <option value={user.id}>{user.name}</option>
+                                                )
+                                            })
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div className="manage-inventory-item-container">
+                            <div className="manage-inventory-list">
+                                <div className="manage-inventory__title">Item</div>
+                                <div >
+                                    {
+                                        manageInventoryItems && manageInventoryItems.length ?
+                                            <select value={this.state.inventoryItem} onChange={(e) => this.changeInventoryItem(e)}>
+                                                {
+                                                    manageInventoryItems.map(
+                                                        (item) => {
+                                                            return (
+                                                                <option value={item.sku}>{item.name}</option>
+                                                            )
+                                                        })
+                                                }
+                                            </select>
+                                        :
+                                        <div>
+                                            Nothing to show
+                                        </div>
+                                    }
                                 </div>
                             </div>
-                            <div className="manage-inventory-item-container">
-                                <div className="manage-inventory-list">
-                                    <div className="manage-inventory__title">Item</div>
-                                    <div >
-                                        {
-                                            manageInventoryItems && manageInventoryItems.length ?
-                                                <select value={this.state.inventoryItem} onChange={(e) => this.changeInventoryItem(e)}>
-                                                    {
-                                                        manageInventoryItems.map(
-                                                            (item) => {
-                                                                return (
-                                                                    <option value={item.sku}>{item.name}</option>
-                                                                )
-                                                            })
-                                                    }
-                                                </select>
-                                            :
-                                            <div>
-                                                Nothing to show
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                                <div className="manage-inventory__quantity">
-                                    <div className="manage-inventory__title">Quantity</div>
-                                    <div className="manage-inventory__quantity-change">
-                                        <IconRem
-                                            style={quantity < 2 ? {
-                                                opacity: 0.4
-                                            } : {}}
+                            <div className="manage-inventory__quantity">
+                                <div className="manage-inventory__title">Quantity</div>
+                                <div className="manage-inventory__quantity-change">
+                                    <IconRem
+                                        style={quantity < 2 ? {
+                                            opacity: 0.4
+                                        } : {}}
 
-                                            onClick={() => {
-                                                this.setItemQuantity(quantity - 1);
-                                            }}
-                                        />
-                                        <CssCartQ>{quantity}</CssCartQ>
-                                        <IconAdd
-                                            onClick={() => {
-                                                this.setItemQuantity(quantity + 1);
-                                            }}
-                                        />
-                                    </div>
+                                        onClick={() => {
+                                            this.setItemQuantity(quantity - 1);
+                                        }}
+                                    />
+                                    <CssCartQ>{quantity}</CssCartQ>
+                                    <IconAdd
+                                        onClick={() => {
+                                            this.setItemQuantity(quantity + 1);
+                                        }}
+                                    />
                                 </div>
                             </div>
-                            <div className="manage-inventory-actions">
-                                <Button
-                                    type="submit"
-                                    variant="contained"
-                                    onClick={(e) => this.rewardItem(e)}
-                                >Reward</Button>
-                                <Button
-                                    variant="contained"
-                                    onClick={(e) => this.revokeItem(e)}
-                                >Revoke</Button>
-                            </div>
-                        </form>
+                        </div>
+                        <div className="manage-inventory-actions">
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                onClick={(e) => this.rewardItem(e)}
+                            >Reward</Button>
+                            <Button
+                                variant="contained"
+                                onClick={(e) => this.revokeItem(e)}
+                            >Revoke</Button>
+                        </div>
                     </div>
                 </div>
             </div>

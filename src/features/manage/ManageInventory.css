@@ -1,3 +1,8 @@
+.manage-inventory__row {
+    display: block;
+    width: 380px;
+    margin: 0 auto;
+}
 .manage-inventory {
     position: relative;
     z-index: 4;
