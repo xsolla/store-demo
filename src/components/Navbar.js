@@ -67,6 +67,9 @@ export default function Navbar({
         <NavLink activeClassName="navbar-link_active" to="/inventory">
           <span className="navbar-link">Inventory</span>
         </NavLink>
+        <NavLink activeClassName="navbar-link_active" to="/manage">
+          <span className="navbar-link">Manage</span>
+        </NavLink>
       </div>
 
       <NavUl>

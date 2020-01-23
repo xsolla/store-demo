@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import {InventoryList} from './features/inventory/InventoryList';
 import {PhysicalList} from './features/physical/PhysicalList';
+import {ManageInventory} from './features/manage/ManageInventory';
 import Navbar from "./components/Navbar";
 import Cart from "./components/Cart";
 import ProductList from "./components/ProductList";
@@ -32,6 +33,7 @@ class App extends Component {
                       <Route path="/inventory" render={() => (!valueFromContext.fetching && <InventoryList {...valueFromContext} />)} />
                       <Route path="/crystals" render={() => (!valueFromContext.fetching && <VCPackagesList {...valueFromContext} />)} />
                       <Route path="/physical" render={() => (!valueFromContext.fetching && <PhysicalList {...valueFromContext} />)} />
+                        <Route path="/manage" render={() => (!valueFromContext.fetching && <ManageInventory {...valueFromContext} />)} />
                       {valueFromContext.fetching && <Preloader />}
                     </CssStore0>
                   </div>
