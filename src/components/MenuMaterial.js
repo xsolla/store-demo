@@ -25,7 +25,7 @@ export function MenuMaterial({
     void 0;
   }
 }) {
-  activeGroup = 'first' === activeGroup ? virtualItems[0].id : activeGroup;
+  activeGroup = 'first' === activeGroup ? virtualItems && virtualItems[0] && virtualItems[0].id : activeGroup;
 
   const classes = useTabStyles();
 
