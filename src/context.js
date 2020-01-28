@@ -52,6 +52,7 @@ class ProductProvider extends Component {
       currency: null,
       subscriptions: null,
       inventoryItems: null,
+      entitlementItems: null,
       manageInventoryItems: null,
       physicalItems: null,
 
@@ -91,13 +92,20 @@ class ProductProvider extends Component {
     })
   };
 
+  setEntitlementItems = (entitlementItems) => {
+    this.setState({
+      entitlementItems,
+      fetching: false
+    })
+  };
+
   setManageInventoryItems = (manageInventoryItems) => {
     this.setState({
       manageInventoryItems,
       fetching: false
     })
   };
-  
+
   setPhysicalItems = (physicalItems) => {
     this.setState({
       physicalItems,
@@ -405,6 +413,7 @@ class ProductProvider extends Component {
           setStateFrom: this.setStateFrom,
           setCurrs: this.setCurrs,
           setInventoryItems: this.setInventoryItems,
+          setEntitlementItems: this.setEntitlementItems,
           setManageInventoryItems: this.setManageInventoryItems,
           setPhysicalItems: this.setPhysicalItems,
           addToCart: this.addToCart,

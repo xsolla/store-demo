@@ -66,8 +66,7 @@
           document.cookie = o + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;"
         )
       }
-      var urlParams;
-      urlParams = new URLSearchParams(window.location.search);
+      var urlParams = new URLSearchParams((new URL(window.location.href.replace('#/', ''))).search);
 
       var xProjectId;
       if (urlParams && urlParams.get('project_id')) {
