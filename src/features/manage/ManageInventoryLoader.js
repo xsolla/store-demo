@@ -16,7 +16,7 @@ export const getVirtualItemList = (projectId) => {
 export const rewardItems = (data) => {
     let opts = {
         url:
-            `https://alexanderlab.club:4093`,
+            `https://livedemo.xsolla.com/store-demo/api/index.php`,
         method: "POST",
         data: data
     }
