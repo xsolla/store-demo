@@ -13,6 +13,19 @@ export const getVirtualItemList = (projectId) => {
         });
 }
 
+export const getVirtualCurrencyList = (projectId) => {
+    let opts = {
+        url:
+            `https://store.xsolla.com/api/v2/project/${projectId}/items/virtual_currency`,
+        method: "GET",
+    };
+
+    return axios(opts)
+        .then(function(response) {
+            return response.data.items;
+        });
+}
+
 export const rewardItems = (data) => {
     let opts = {
         url:
