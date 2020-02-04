@@ -44,6 +44,8 @@ export class ManageInventory extends PureComponent {
             activeInventoryGroup: 'first',
             manageInventoryItems: null,
             manageInventoryCurrencies: null,
+            invoice: null,
+            date: null
         }
     }
 
@@ -140,7 +142,7 @@ export class ManageInventory extends PureComponent {
     };
 
     itemOperation(type) {
-        let {user, activeInventoryGroup, quantity, inventoryItem, manageInventoryGroups} = this.state;
+        let {user, activeInventoryGroup, quantity, inventoryItem, manageInventoryGroups, invoice, date} = this.state;
         if (inventoryItem === null && manageInventoryGroups && manageInventoryGroups.length) {
             const group = activeInventoryGroup !== 'first'
                 ? manageInventoryGroups.find(group => group['id'] === activeInventoryGroup)
@@ -153,7 +155,12 @@ export class ManageInventory extends PureComponent {
             user: user,
             item: inventoryItem,
             count: quantity
+        };
+        if (invoice && date) {
+            body.purchase.external_purchase_id = invoice;
+            body.purchase.external_purchase_date = date;
         }
+
         this.setState({showToast: true, statusToast: 'processing', operationDetails: null});
         rewardItems(body)
             .then(response => {

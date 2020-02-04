@@ -4,13 +4,14 @@ import Product from "./Product";
 import IconClose from "@material-ui/icons/Close";
 import Button from "@material-ui/core/Button";
 import Colorer from "color";
-import { getFormattedCurrency } from "./formatCurrency";
+import {getFormattedCurrency} from "./formatCurrency";
+import { withRouter } from 'react-router-dom';
 
-import { ProductContext } from "../context";
-import { getPsTokenBuyCart, quickPurchaseBuyVirtualCurrency } from "./StoreLoader";
+import {ProductContext} from "../context";
+import {getPsTokenBuyCart, quickPurchaseBuyVirtualCurrency} from "./StoreLoader";
 import Preloader from "./Preloader";
 
-function Cart({ style = {} }) {
+function Cart({ style = {} , history}) {
   let [buyButtonDisabled, setBuyButtonDisabled] = React.useState(false);
 
   const valueFromContext = React.useContext(ProductContext);
@@ -25,6 +26,16 @@ function Cart({ style = {} }) {
       subtotal += element.price.amount * element.quantity;
     });
     return Math.round(subtotal * 100) / 100;
+  };
+
+  const buyAnotherPlatform = function () {
+      if (buyButtonDisabled ||
+          valueFromContext.cart.items.length <= 0) {
+          return;
+      }
+      let path = "/purchase";
+      history.push(path);
+      hideCart();
   };
 
   const buyButtonAction = () => {
@@ -169,6 +180,18 @@ function Cart({ style = {} }) {
                       </div>
                     </CssSubtotal>
                   )}
+                  <Button
+                      variant="contained"
+                      style={{marginRight: '5px'}}
+                      onClick={() => {
+                          !(
+                              buyButtonDisabled ||
+                              valueFromContext.cart.items.length <= 0
+                          ) && buyAnotherPlatform();
+                      }}
+                  >
+                      Buy on PS4
+                  </Button>
                 <Button
                   variant="contained"
                   onClick={() => {
@@ -178,7 +201,7 @@ function Cart({ style = {} }) {
                     ) && buyButtonAction();
                   }}
                 >
-                  Check out
+                  Buy on Xsolla
                 </Button>
               </CssCartB>
             </div>
@@ -294,7 +317,7 @@ function Cart({ style = {} }) {
   );
 }
 
-const CssCartList = styled.div`
+export const CssCartList = styled.div`
   display: flex;
   flex-direction: column;
   width: 600px;
@@ -368,10 +391,10 @@ const CssCartB = styled.div`
   padding: 24px 0 24px 0;
 `;
 
-const CssSubtotal = styled.div`
+export const CssSubtotal = styled.div`
   display: flex;
   padding: 0 24px 0 24px;
   font-weight: bold;
 `;
 
-export default Cart;
+export default withRouter(Cart);

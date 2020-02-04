@@ -16,6 +16,7 @@ import Preloader from "./components/Preloader.js";
 import { ProductConsumer } from "./context";
 import VCPackagesList from "./components/VCPackagesList";
 import {EntitlementList} from "./features/entitlement/EntitlementList";
+import {ServerPurchase} from "./features/serverPurchase/ServerPurchase";
 
 class App extends Component {
   render() {
@@ -36,6 +37,7 @@ class App extends Component {
                       <Route path="/physical" render={() => (!valueFromContext.fetching && <PhysicalList {...valueFromContext} />)} />
                       <Route path="/entitlement" render={() => (!valueFromContext.fetching && <EntitlementList {...valueFromContext} />)} />
                       <Route path="/manage" render={() => (!valueFromContext.fetching && <ManageInventory {...valueFromContext} />)} />
+                      <Route path="/purchase" render={() => (!valueFromContext.fetching && <ServerPurchase {...valueFromContext} />)} />
                       {valueFromContext.fetching && <Preloader />}
                     </CssStore0>
                   </div>
