@@ -1,15 +1,17 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { NavLink } from 'react-router-dom';
-
-import "react-interactions/dist/main.css";
 import styled from "styled-components";
-import { eraseCookie } from "./Cookie";
+import "react-interactions/dist/main.css";
+
+import Avatar from "@material-ui/core/Avatar";
+import Menu from '@material-ui/core/Menu';
 import { makeStyles } from '@material-ui/core/styles';
-import XLogin from "./XLogin.js";
-import { ProductContext } from "../context";
 
 import '../styles/Navbar.css';
-import Avatar from "@material-ui/core/Avatar";
+import { ProductContext } from "../context";
+import { eraseCookie } from "./Cookie";
+import XLogin from "./XLogin.js";
+
 
 
 const useStyles = makeStyles({
@@ -21,13 +23,12 @@ const useStyles = makeStyles({
   }
 });
 
-export default function Navbar({
-  showCart = () => {
-    void 0;
-  }
-}) {
+export default function Navbar({ showCart }) {
   const valueFromContext = React.useContext(ProductContext);
   const classes = useStyles();
+  const [menuAnchor, setMenuAnchor] = React.useState(null);
+  const handleMenuClose = () => setMenuAnchor(null);
+  const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
 
   const [state, setState] = React.useState({
     shown: false
@@ -64,15 +65,6 @@ export default function Navbar({
             <span className="navbar-link">Merchandise</span>
           </NavLink>
         }
-        <NavLink activeClassName="navbar-link_active" to="/inventory">
-          <span className="navbar-link">Inventory</span>
-        </NavLink>
-        <NavLink activeClassName="navbar-link_active" to="/entitlement">
-          <span className="navbar-link">Entitlement</span>
-        </NavLink>
-        <NavLink activeClassName="navbar-link_active" to="/manage">
-          <span className="navbar-link">Manage</span>
-        </NavLink>
       </div>
 
       <NavUl>
@@ -86,18 +78,14 @@ export default function Navbar({
             {valueFromContext.logToken && valueFromContext.user && (
               <CssLogin>
                 {
-                  valueFromContext.userBalanceVirtualCurrency && valueFromContext.userBalanceVirtualCurrency.map((vc) => {
-                    return (
-                          <>
-                            <Avatar src={vc.image_url} className={classes.currencies}/>
-                            {
-                              vc.amount
-                            }
-                          </>
-                    );
-                  })
+                  valueFromContext.userBalanceVirtualCurrency && valueFromContext.userBalanceVirtualCurrency.map(vc => (
+                    <Fragment key={vc.sku}>
+                      <Avatar src={vc.image_url} className={classes.currencies}/>
+                      {vc.amount}
+                    </Fragment>
+                  ))
                 }
-                <CssLoginEmail>{valueFromContext.user.email}</CssLoginEmail>
+                <CssLoginEmail onClick={handleMenuOpen}>{valueFromContext.user.email}</CssLoginEmail>
               </CssLogin>
             )}
           </CssLoginPanel>
@@ -119,9 +107,64 @@ export default function Navbar({
           <i className="fas fa-cart-plus"></i> cart
         </span>
       </div>
+      <CssMenu
+        getTheme={valueFromContext.getTheme}
+        anchorEl={menuAnchor}
+        getContentAnchorEl={null}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        open={Boolean(menuAnchor)}
+        onClose={handleMenuClose}
+      >
+        <CssNavLink onClick={handleMenuClose} activeClassName="active" to="/inventory">
+          Inventory
+        </CssNavLink>
+        <CssNavLink onClick={handleMenuClose} activeClassName="active" to="/entitlement">
+          Entitlement
+        </CssNavLink>
+        <CssNavLink onClick={handleMenuClose} activeClassName="active" to="/manage">
+          Manage
+        </CssNavLink>
+      </CssMenu>
     </NavWrapper>
   );
 }
+
+const CssMenu = styled(({ getTheme, ...rest }) => <Menu  classes={{ list: 'list' }} {...rest} />)`
+  .list {
+    background-color: ${props => props.getTheme("colorBg")};
+  }
+`;
+
+const CssNavLink = styled(NavLink)`
+  display: flex;
+  padding: 15px 20px;
+  min-width: 200px;
+  align-items: center;
+  text-transform: uppercase;
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.2rem;
+  height: 100%;
+  color: #d6e0e7;
+  border: none;
+
+  &:hover {
+    color: #ff005b;
+    text-decoration: none;
+  }
+
+  &.active {
+    color: #ff005b;
+  }
+`;
 
 const CssLoginPanel = styled.div`
   flex-grow: 1;
@@ -147,6 +190,7 @@ const CssLoginButton = styled.div`
 `;
 
 const CssLoginEmail = styled.div`
+  cursor: pointer;
   font-family: "Roboto";
   color: #ff005b;
   margin: 0 1rem;

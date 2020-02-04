@@ -54,7 +54,6 @@ class App extends Component {
 }
 
 const CssStore0 = styled.div`
-  overflow-y: auto;
   z-index: 1;
 `;
 

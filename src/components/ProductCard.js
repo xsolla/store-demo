@@ -84,6 +84,7 @@ const ProductCard = ({
 
 const CssCardAppear = styled.div`
   position: relative;
+  z-index: ${props => props.hovered ? 1 : 0};
   width: ${props => `${props.getTheme("cardWidth")}px`};
   height: ${props => `${props.getTheme("cardWidth")}px`};
   padding: ${props => props.getTheme("padding")};
@@ -97,7 +98,6 @@ const CssCardAppear = styled.div`
 
 const CssCard = styled.div`
   position: absolute;
-  z-index: ${props => props.hovered ? 1 : 0};
   color: ${props => props.getTheme("colorText")};
   display: flex;
   flex-direction: column;
@@ -105,13 +105,13 @@ const CssCard = styled.div`
   min-height: ${props => `${props.getTheme("cardWidth")}px`};
   flex-shrink: 0;
   flex-grow: 1;
-  flex-base: 50%;
   background: transparent;
   transition: box-shadow, background ${props => props.getTheme("transitionStyle")};
   border-radius: ${props => props.getTheme("borderRadius")};
   padding: ${props => props.getTheme("padding")};
 
   &:hover {
+    z-index: 1;
     background: ${props => props.getTheme("colorBg")};
     box-shadow: ${props => props.getTheme("boxShadow")};
   }
