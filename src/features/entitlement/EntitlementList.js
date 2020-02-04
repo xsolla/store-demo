@@ -148,6 +148,7 @@ export class EntitlementList extends PureComponent {
                                     }
                                 )
                             :
+                            !this.state.isFetching &&
                             <div>
                                 Oops, you have no games yet!
                             </div>

@@ -53,6 +53,7 @@
     overflow: hidden;
     white-space: nowrap;
     font-weight: 700;
+    text-align: center;
 }
 
 .entitlement-item-card-content-description {
