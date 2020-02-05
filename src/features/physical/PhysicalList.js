@@ -1,6 +1,5 @@
 import React, {PureComponent} from "react";
 
-import {PhysicalItem} from './PhysicalItem';
 import {getPsTokenByItem} from '../StoreLoader';
 import {getPhysicalGoods} from './PhysicalListLoader';
 

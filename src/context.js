@@ -44,10 +44,10 @@ class ProductProvider extends Component {
       logToken: Cookie(),
       userBalanceVirtualCurrency: [],
 
-      activeGroup: "first",
+      activeGroup: 'first',
       loginShown: true,
-      activeModule: "virtualItems",
-      virtualItems: null,
+      activeModule: 'virtualItems',
+      virtualItems: [],
       virtualCurrencyPackages: null,
       currency: null,
       subscriptions: null,
@@ -203,24 +203,21 @@ class ProductProvider extends Component {
     this.updateVirtualCurrencyBalance();
   };
 
-  payStationHandler = (event, data) => {
+  payStationHandler = () => {
     this.clearCart();
   };
 
-  setPsToken = function(psToken) {
-    this.setState({ psToken: psToken });
-  }.bind(this);
+  setPsToken = (psToken) => {
+    this.setState({ psToken });
+  };
 
   handleDetail = () => {
     console.log("hello from handleDetail");
   };
 
-  setStateFrom = function(stateName, stateValue) {
-    this.setState({
-      ...this.state,
-      [stateName]: stateValue
-    });
-  }.bind(this);
+  setStateFrom = (stateName, stateValue) => {
+    this.setState({ [stateName]: stateValue });
+  };
 
   compareItems = (a, b) => {
     if (a.sku > b.sku) {
@@ -383,22 +380,17 @@ class ProductProvider extends Component {
     })
   }.bind(this);
 
-  setGroups = function(virtualItems) {
-    this.setState({
-      virtualItems: virtualItems,
-      fetching: false
-    });
-  }.bind(this);
+  setGroups = virtualItems => this.setState({ virtualItems, fetching: false });
 
-  setCurrs = function(resolvedData) {
+  setCurrs = resolvedData => {
     this.setState({
       fetching: false,
-      virtualItems: resolvedData["virtualItems"],
-      currency: resolvedData["currency"],
-      subscriptions: resolvedData["subscriptions"],
-      virtualCurrencyPackages: resolvedData["virtualCurrencyPackages"],
+      virtualItems: resolvedData['virtualItems'],
+      currency: resolvedData['currency'],
+      subscriptions: resolvedData['subscriptions'],
+      virtualCurrencyPackages: resolvedData['virtualCurrencyPackages'],
     });
-  }.bind(this);
+  };
 
   getTheme = (what = "all") => {
     if (what === "all") {
@@ -413,8 +405,6 @@ class ProductProvider extends Component {
     });
   }.bind(this);
 
-  componentWillUpdate(nextProps, nextState) {}
-
   updateVirtualCurrencyBalance = () => {
     getVirtualCurrencyBalance(this.state.logToken).then((reps) => {
       this.setState({
@@ -423,11 +413,7 @@ class ProductProvider extends Component {
     });
   };
 
-  componentDidMount() {}
-
   render() {
-    // (this.state.storeProducts) && this.loadFromPS()
-
     return (
       <ProductContext.Provider
         value={{
@@ -446,7 +432,7 @@ class ProductProvider extends Component {
           addToCart: this.addToCart,
           buyByVC: this.buyByVC,
           clearVCCart: this.clearVCCart,
-          getTheme: this.getTheme.bind(this),
+          getTheme: this.getTheme,
           changeTheme: this.changeTheme,
           changeCardSize: this.changeCardSize,
           createCart: this.createCart,

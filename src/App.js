@@ -1,22 +1,20 @@
 import React, { Component } from "react";
 import {HashRouter, Route} from 'react-router-dom';
+import Alert from "react-bootstrap/Alert";
 import styled from "styled-components";
-
-import "./App.css";
-
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import {InventoryList} from './features/inventory/InventoryList';
-import {PhysicalList} from './features/physical/PhysicalList';
-import {ManageInventory} from './features/manage/ManageInventory';
+import { InventoryList } from './features/inventory/InventoryList';
+import { PhysicalList } from './features/physical/PhysicalList';
+import { ManageInventory } from './features/manage/ManageInventory';
+import { VirtualList } from './features/virtual/VirtualList';
 import Navbar from "./components/Navbar";
 import Cart from "./components/Cart";
-import ProductList from "./components/ProductList";
 import Preloader from "./components/Preloader.js";
 import { ProductConsumer } from "./context";
 import VCPackagesList from "./components/VCPackagesList";
 import {EntitlementList} from "./features/entitlement/EntitlementList";
-import Alert from "react-bootstrap/Alert";
+import "./App.css";
 
 class App extends Component {
   render() {
@@ -39,7 +37,7 @@ class App extends Component {
                   <div>
                     <CssStore0>
                       <CssCart />
-                      <Route path="/" exact render={() => (!valueFromContext.fetching && <ProductList {...valueFromContext} />)} />
+                      <Route path="/" exact component={VirtualList} />
                       <Route path="/inventory" render={() => (!valueFromContext.fetching && <InventoryList {...valueFromContext} />)} />
                       <Route path="/crystals" render={() => (!valueFromContext.fetching && <VCPackagesList {...valueFromContext} />)} />
                       <Route path="/physical" render={() => (!valueFromContext.fetching && <PhysicalList {...valueFromContext} />)} />

@@ -19,11 +19,9 @@ const useTabStyles = makeStyles({
 });
 
 export function MenuMaterial({
-  virtualItems = [],
+  virtualItems,
   activeGroup,
-  changeGroupHandler = () => {
-    void 0;
-  }
+  changeGroupHandler
 }) {
   activeGroup = 'first' === activeGroup ? virtualItems && virtualItems[0] && virtualItems[0].id : activeGroup;
 

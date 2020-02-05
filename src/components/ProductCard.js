@@ -3,35 +3,22 @@ import styled, { css } from "styled-components";
 import Colorer from "color";
 import Dotdotdot from 'react-dotdotdot'
 
-import { makeStyles } from "@material-ui/core/styles";
 import Collapse from "@material-ui/core/Collapse";
 import CardContent from "@material-ui/core/CardContent";
-import ShoppingCart from "@material-ui/icons/ShoppingCart";
-import AvatarVC from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 
-const useStyles = makeStyles({
-  currencies: {
-    height: 24,
-    width: 24,
-    marginRight: 4
-  }
-});
-
 const ProductCard = ({
-  product,
   order,
-  addToCart,
-  buyByVC,
+  image,
+  name,
+  value,
+  description,
+  actionButtonContent,
   getTheme,
+  onAction,
 }) => {
-  const classes = useStyles();
-  const hasVirtualCurrencyPrice = product.virtual_prices && product.virtual_prices.length > 0;
   const [isHovered, setHovered] = React.useState(false);
   const [cardShown, setCardShown] = React.useState(false);
-
-  const handleCartClick = () => addToCart(product);
-  const handleBuyByVirtualCurrency = () => buyByVC(product, product.sku);
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
 
@@ -42,47 +29,43 @@ const ProductCard = ({
   });
 
   return (
-    <CssCardAppear hovered={isHovered} getTheme={getTheme} shown={cardShown}>
-      <CssCard
+    <CardAppear hovered={isHovered} getTheme={getTheme} shown={cardShown}>
+      <Card
         getTheme={getTheme}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <CssCardMedia image={product.image_url}/>
-        <CssCardContent>
-          <CssCardH1>{product.name}</CssCardH1>
+        <CardImage image={image}/>
+        <CardDescription>
+          <CardTitle>{name}</CardTitle>
           <Collapse in={isHovered} timeout="auto" collapsedHeight="50px">
-            {isHovered ? (
-              product.description
-            ) : (
+            {isHovered
+              ? description
+              : (
               <Dotdotdot animate clamp={2}>
-                {product.description}
+                {description}
               </Dotdotdot>
             )}
           </Collapse>
-        </CssCardContent>
-        <CssCardVCActions getTheme={getTheme}>
-          {hasVirtualCurrencyPrice && <AvatarVC src={product.virtual_prices[0].image_url} className={classes.currencies}/>}
-          <CssTypographyPrice getTheme={getTheme}>
-            {hasVirtualCurrencyPrice
-              ? product.virtual_prices[0].amount
-              : `${product.price.currency} ${Math.round(product.price.amount * 100) / 100}`
-            }
-          </CssTypographyPrice>
+        </CardDescription>
+        <CardFooter getTheme={getTheme}>
+          <CardQuantity getTheme={getTheme}>
+            {value}
+          </CardQuantity>
           <Button
             getTheme={getTheme}
             variant="contained"
-            onClick={hasVirtualCurrencyPrice ? handleBuyByVirtualCurrency : handleCartClick}
+            onClick={onAction}
           >
-            {hasVirtualCurrencyPrice ? 'Buy now' : <ShoppingCart />}
+            {actionButtonContent}
           </Button>
-        </CssCardVCActions>
-      </CssCard>
-    </CssCardAppear>
+        </CardFooter>
+      </Card>
+    </CardAppear>
   );
 };
 
-const CssCardAppear = styled.div`
+const CardAppear = styled.div`
   position: relative;
   z-index: ${props => props.hovered ? 1 : 0};
   width: ${props => `${props.getTheme("cardWidth")}px`};
@@ -96,7 +79,7 @@ const CssCardAppear = styled.div`
   }
 `;
 
-const CssCard = styled.div`
+const Card = styled.div`
   position: absolute;
   color: ${props => props.getTheme("colorText")};
   display: flex;
@@ -117,7 +100,7 @@ const CssCard = styled.div`
   }
 `;
 
-const CssCardContent = styled(CardContent)`
+const CardDescription = styled(CardContent)`
   min-height: 66px;
   overflow: hidden;
   flex-grow: 0;
@@ -125,13 +108,13 @@ const CssCardContent = styled(CardContent)`
   margin-bottom: 8px;
 `;
 
-const CssCardH1 = styled.div`
+const CardTitle = styled.div`
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 `;
 
-const CssCardVCActions = styled.div`
+const CardFooter = styled.div`
   ${props =>
     !props.cardType &&
     css`
@@ -157,7 +140,7 @@ const CssCardVCActions = styled.div`
     `}
 `;
 
-const CssCardMedia = styled.div`
+const CardImage = styled.div`
   display: block;
   margin-top: 8px;
   min-height: 120px;
@@ -168,10 +151,10 @@ const CssCardMedia = styled.div`
   background-image: url(${props => props.image});
 `;
 
-const CssTypographyPrice = styled.div`
+const CardQuantity = styled.div`
   flex-grow: 1;
   color: ${props => props.getTheme("colorAccent")};
   font-weight: 600;
 `;
 
-export default ProductCard;
+export { ProductCard };
