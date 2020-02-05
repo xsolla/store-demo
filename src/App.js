@@ -16,6 +16,7 @@ import Preloader from "./components/Preloader.js";
 import { ProductConsumer } from "./context";
 import VCPackagesList from "./components/VCPackagesList";
 import {EntitlementList} from "./features/entitlement/EntitlementList";
+import Alert from "react-bootstrap/Alert";
 import {ServerPurchase} from "./features/serverPurchase/ServerPurchase";
 
 class App extends Component {
@@ -26,6 +27,14 @@ class App extends Component {
           {valueFromContext => {
             return (
               <React.Fragment>
+                  {
+                      valueFromContext.showCartError
+                      &&
+                      <Alert onClose={valueFromContext.hideCartError} className={"application-alert"} variant="danger" dismissible>
+                          <Alert.Heading>{valueFromContext.cartError.title}</Alert.Heading>
+                          <p>{valueFromContext.cartError.message}</p>
+                      </Alert>
+                  }
                 <div className="">
                   <Navbar showCart={valueFromContext.showCart} />
                   <div>

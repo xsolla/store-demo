@@ -99,9 +99,6 @@ export function changeItemQuantityCart(
     .then(function(response) {
       //console.log("Item added = ", response.data);
       let resp = response.data;
-    })
-    .catch(function(error) {
-      //console.log("L2PS ERROR = ", error.response);
     });
 }
 

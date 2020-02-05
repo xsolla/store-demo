@@ -70,6 +70,9 @@ class ProductProvider extends Component {
         items: []
       },
 
+      showCartError: false,
+      cartError: false,
+
       isFetching: false,
 
       psToken: "",
@@ -81,6 +84,24 @@ class ProductProvider extends Component {
   showCart = () => {
     this.setState({
       cartShown: !this.state.cartShown
+    });
+  };
+
+  showCartError = (title, message) => {
+    this.setState({
+      showCartError: true,
+      cartError: {
+        title,
+        message
+      }
+    });
+    this.getCart();
+  };
+
+  hideCartError = () => {
+    this.setState({
+      showCartError: false,
+      cartError: null
     });
   };
 
@@ -262,6 +283,8 @@ class ProductProvider extends Component {
           this.state.logToken
         ).then(response => {
           this.getCart();
+        }).catch(error => {
+          this.showCartError('Change Item Quantity Error',error.response.data.errorMessage);
         });
         this.showCart();
       }
@@ -274,6 +297,8 @@ class ProductProvider extends Component {
         this.state.logToken
       ).then(response => {
         this.getCart();
+      }).catch(error => {
+        this.showCartError('Change Item Quantity Error',error.response.data.errorMessage);
       });
       this.showCart();
     }
@@ -337,6 +362,8 @@ class ProductProvider extends Component {
         this.state.logToken
       ).then(() => {
         this.getCart();
+      }).catch(error => {
+        this.showCartError('Change Item Quantity Error',error.response.data.errorMessage);
       });
     }
   };
@@ -419,7 +446,8 @@ class ProductProvider extends Component {
           buyCart: this.buyCart,
           payStationHandler: this.payStationHandler,
           updateVirtualCurrencyBalance: this.updateVirtualCurrencyBalance,
-          hideCart: this.hideCart
+          hideCart: this.hideCart,
+          hideCartError: this.hideCartError
         }}
       >
         {this.props.children}
