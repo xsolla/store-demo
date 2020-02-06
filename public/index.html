@@ -108,6 +108,8 @@
       //PayStation Widget Init
       function xPayStationInit(accessToken, options = null) {
         XPayStationWidget.init({
+          host: options && options['host'] || 'secure.xsolla.com',
+          sandbox: options && options['sandbox'] || false,
           access_token: accessToken,
           lightbox: {
             height: options && options['height'] || 600,

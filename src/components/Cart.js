@@ -46,7 +46,7 @@ function Cart({ style = {} , history}) {
     );
     psTokenPromise
       .then(response => {
-        window.xPayStationInit(response.data["token"]);
+        window.xPayStationInit(response.data["token"], {sandbox: true, host: 'sandbox-secure.xsolla.com'});
         window.XPayStationWidget.open();
         window.XPayStationWidget.on(
           window.XPayStationWidget.eventTypes.CLOSE,
