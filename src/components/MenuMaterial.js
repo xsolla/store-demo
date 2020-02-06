@@ -48,7 +48,6 @@ export function MenuMaterial({
         style={{
           color: React.useContext(ProductContext).getTheme("colorAccent")
         }}
-        centered
         classes={{ root: classes.root, scroller: classes.scroller }}
         variant="scrollable"
         scrollButtons="on"

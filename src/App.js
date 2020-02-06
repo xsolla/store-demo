@@ -8,12 +8,14 @@ import { InventoryList } from './features/inventory/InventoryList';
 import { PhysicalList } from './features/physical/PhysicalList';
 import { ManageInventory } from './features/manage/ManageInventory';
 import { VirtualList } from './features/virtual/VirtualList';
+import {ServerPurchase} from "./features/serverPurchase/ServerPurchase";
 import Navbar from "./components/Navbar";
 import Cart from "./components/Cart";
 import Preloader from "./components/Preloader.js";
 import { ProductConsumer } from "./context";
 import VCPackagesList from "./components/VCPackagesList";
 import {EntitlementList} from "./features/entitlement/EntitlementList";
+import Alert from "react-bootstrap/Alert";
 import "./App.css";
 
 class App extends Component {
@@ -43,6 +45,7 @@ class App extends Component {
                       <Route path="/physical" render={() => (!valueFromContext.fetching && <PhysicalList {...valueFromContext} />)} />
                       <Route path="/entitlement" render={() => (!valueFromContext.fetching && <EntitlementList {...valueFromContext} />)} />
                       <Route path="/manage" render={() => (!valueFromContext.fetching && <ManageInventory {...valueFromContext} />)} />
+                      <Route path="/purchase" render={() => (!valueFromContext.fetching && <ServerPurchase {...valueFromContext} />)} />
                       {valueFromContext.fetching && <Preloader />}
                     </CssStore0>
                   </div>

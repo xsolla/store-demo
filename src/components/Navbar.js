@@ -131,6 +131,9 @@ export default function Navbar({ showCart }) {
         <CssNavLink onClick={handleMenuClose} activeClassName="active" to="/manage">
           Manage
         </CssNavLink>
+        <CssNavLink onClick={handleMenuClose} activeClassName="active" to="/purchase">
+          Server purchase
+        </CssNavLink>
       </CssMenu>
     </NavWrapper>
   );

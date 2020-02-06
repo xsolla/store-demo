@@ -1,0 +1,18 @@
+.server-purchase {
+    position: relative;
+    z-index: 4;
+    background-color: transparent;
+    color: #D6E0E7;
+    display: flex;
+    flex-wrap: wrap;
+    place-content: center;
+    margin-top: 70px;
+    flex-direction: column;
+}
+
+.server-purchase__alert {
+    z-index: 1;
+    position: absolute;
+    top: 65px;
+    right: 10px;
+}

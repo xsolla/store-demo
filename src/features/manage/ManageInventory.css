@@ -38,7 +38,6 @@
     background-color: #e0e0e0;
     padding: 6px 16px;
     font-size: 0.875rem;
-    min-width: 64px;
     box-sizing: border-box;
     transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
@@ -48,6 +47,8 @@
     border-radius: 4px;
     letter-spacing: 0.02857em;
     text-transform: uppercase;
+    max-width: 195px;
+    min-width: 195px;
 }
 
 .manage-inventory button {
@@ -57,10 +58,16 @@
 .manage-inventory-item-container {
     display: flex;
     margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .manage-inventory__quantity {
-    margin-left: 30px;
+    margin-left: 20px;
+    margin-top: 6px;
+}
+
+.manage-inventory__quantity-input-label {
+    color: white !important;
 }
 
 .manage-inventory__quantity-change {
