@@ -8,14 +8,13 @@ import { InventoryList } from './features/inventory/InventoryList';
 import { PhysicalList } from './features/physical/PhysicalList';
 import { ManageInventory } from './features/manage/ManageInventory';
 import { VirtualList } from './features/virtual/VirtualList';
-import {ServerPurchase} from "./features/serverPurchase/ServerPurchase";
+import { ServerPurchase } from "./features/serverPurchase/ServerPurchase";
+import { EntitlementList } from "./features/entitlement/EntitlementList";
+import { Cart } from "./features/cart/Cart";
 import Navbar from "./components/Navbar";
-import Cart from "./components/Cart";
 import Preloader from "./components/Preloader.js";
 import { ProductConsumer } from "./context";
 import VCPackagesList from "./components/VCPackagesList";
-import {EntitlementList} from "./features/entitlement/EntitlementList";
-import Alert from "react-bootstrap/Alert";
 import "./App.css";
 
 class App extends Component {
@@ -35,10 +34,10 @@ class App extends Component {
                       </Alert>
                   }
                 <div className="">
-                  <Navbar showCart={valueFromContext.showCart} />
+                  {/* <Navbar showCart={valueFromContext.showCart} /> */}
                   <div>
                     <CssStore0>
-                      <CssCart />
+                      <Cart />
                       <Route path="/" exact component={VirtualList} />
                       <Route path="/inventory" render={() => (!valueFromContext.fetching && <InventoryList {...valueFromContext} />)} />
                       <Route path="/crystals" render={() => (!valueFromContext.fetching && <VCPackagesList {...valueFromContext} />)} />
@@ -65,16 +64,6 @@ class App extends Component {
 
 const CssStore0 = styled.div`
   z-index: 1;
-`;
-
-const CssCart = styled(Cart)`
-  left: 0;
-  top: 0;
-  height: 100vh;
-  display: grid;
-  align-items: center;
-  position: relative;
-  z-index: 100;
 `;
 
 export default App;
