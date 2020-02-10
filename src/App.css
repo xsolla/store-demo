@@ -1,58 +1,6 @@
-:root {
-  --mainBlue: rgb(12, 51, 182);
-  --lightBlue: rgb(92, 84, 202);
-  --mainWhite: #ffffff;
-  --mainDark: rgb(109, 113, 131);
-  --mainYellow: rgb(0, 225, 255);
-  --mainAccent: pink;
-}
-
-body {
-  /* font-family: 'Montserrat', sans-serif !important; */
-  color: var(--mainDark);
-  background: var(--mainDark) !important;
-}
-
-.text-title {
-  /* font-family: 'Space Mono', monospace !important; */
-}
-
-.text-blue {
-  color: var(--mainDark)
-}
-.text-bright {
-  color: var(--mainDark) !important;
-}
-
-.br-primary {
-  background: var(--mainDark);
-}
-
-.global-background {
-  background-image: url(https://res.cloudinary.com/maiik/image/upload/v1549624607/Xsolla/HomePage_Hero_Illustration_1440_oabqmk.jpg);
-  z-index: 0;
-  background-size: cover;
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-}
-
-.global-background-tint {
-  background-color: #011627;
-  opacity: 0.8;
-  z-index: 0;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-}
-
 .application-alert {
   z-index: 200;
-  position: fixed !important;
+  position: fixed;
   top: 50%;
   left: 50%;
   margin-top: -100px;

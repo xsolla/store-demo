@@ -5,15 +5,13 @@ import Colorer from 'color';
 import MUIIconClose from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
 import MUIModal from '@material-ui/core/Modal';
-import Fade from '@material-ui/core/Fade';
+import Grow from '@material-ui/core/Grow';
 import Backdrop from '@material-ui/core/Backdrop';
 
-import Product from '../../components/Product';
 import { ProductContext } from '../../context';
 import { getFormattedCurrency } from '../../components/formatCurrency';
-import { getPsTokenBuyCart, quickPurchaseBuyVirtualCurrency } from '../../components/StoreLoader';
+import { getPsTokenBuyCart } from '../../components/StoreLoader';
 import { device } from '../../styles/devices';
-import Preloader from '../../components/Preloader';
 import { CartItem } from './CartItem';
 
 const CartComponent = ({ history }) => {
@@ -24,12 +22,7 @@ const CartComponent = ({ history }) => {
     logToken,
     payStationHandler,
     cartShown,
-    cartWithItemsBuyingByVC,
-    clearVCCart,
     getTheme,
-    removeFromCart,
-    updateVirtualCurrencyBalance,
-    cartWithItemsBuyingByVCShown,
     changeItemQuantityInCart,
     isFetching,
   } = React.useContext(ProductContext);
@@ -67,40 +60,31 @@ const CartComponent = ({ history }) => {
       .catch(() => setBuyButtonDisabled(false));
   };
 
-  const buyByVirtualCurrencyButtonAction = (product, vcPriceSku) => {
-    setBuyButtonDisabled(true);
-    quickPurchaseBuyVirtualCurrency(product, vcPriceSku, logToken)
-      .then(() => {
-        clearVCCart();
-        setBuyButtonDisabled(false);
-        updateVirtualCurrencyBalance();
-      })
-      .catch(() => setBuyButtonDisabled(false))
-  };
-
   return (
     <Modal
-      open={cartShown || cartWithItemsBuyingByVCShown}
+      open={cartShown}
       onClose={hideCart}
       closeAfterTransition
       BackdropComponent={Backdrop}
-      BackdropProps={{ timeout: 200 }}
+      BackdropProps={{ timeout: 250 }}
     >
-      <Fade in={cartShown}>
+      <Grow in={cartShown} timeout={250}>
         <CartContent getTheme={getTheme}>
           <CartHeader getTheme={getTheme}>
             <h4>Cart</h4>
             <IconClose onClick={hideCart} />
           </CartHeader>
           <CartList>
-            {cart.items.map(item => (
-              <CartItem
-                item={item}
-                getTheme={getTheme}
-                changeItemQuantity={changeItemQuantityInCart}
-              />
-            ))}
-            {cart.items.length === 0 && <p>Empty cart</p>}
+            {cart.items.length > 0
+              ? cart.items.map(item => (
+                <CartItem
+                  item={item}
+                  getTheme={getTheme}
+                  changeItemQuantity={changeItemQuantityInCart}
+                />
+              ))
+              : <p>Empty cart</p>
+            }
           </CartList>
           <CartFooter getTheme={getTheme}>
             {cart.items.length > 0 && (
@@ -114,117 +98,26 @@ const CartComponent = ({ history }) => {
                 </Price>
               </Subtotal>
             )}
-              <CartActions>
-                <Button
-                  variant="contained"
-                  disabled={buyButtonDisabled || cart.items.length === 0}
-                  style={{marginRight: '7px'}}
-                  onClick={buyAnotherPlatform}
-                >
-                  Buy on PS4
-                </Button>
-                <Button
-                  variant="contained"
-                  disabled={buyButtonDisabled || cart.items.length === 0}
-                  onClick={buyButtonAction}
-                >
-                  Buy on Xsolla
-                </Button>
-              </CartActions>
-            </CartFooter>
-          </CartContent>
-            {/* {cartWithItemsBuyingByVCShown && (
-                <Cart0>
-                    <CartContent
-                        style={{
-                          padding: "0 32px 0 32px",
-                          borderRadius: getTheme("borderRadius"),
-                          backgroundColor: getTheme("colorBg"),
-                          color: getTheme("colorText")
-                        }}
-                    >
-                        <div
-                            style={{
-                              backgroundColor: getTheme("colorBg"),
-                              color: getTheme("colorText")
-                            }}
-                        >
-                            <CartHeader
-                                style={{
-                                    backgroundColor: `${getTheme("colorBg")}`,
-                                    borderBottom: `1px solid ${Colorer(
-                                        getTheme("colorText")
-                                    )
-                                        .alpha(0.1)
-                                        .string()}`
-                                }}
-                            >
-                                <h4>Confirm</h4>
-                                <IconClose
-                                    style={{
-                                        cursor: "pointer"
-                                    }}
-                                    onClick={hideCart}
-                                />
-                            </CartHeader>
-
-                            <CartList>
-                              {cartWithItemsBuyingByVC &&
-                                cartWithItemsBuyingByVC.items.map((oneCartItem, i) => (
-                                  <Product
-                                    product={oneCartItem}
-                                    key={oneCartItem.sku}
-                                    order={i}
-                                    initClass="initialFlow1"
-                                    sku={oneCartItem.sku}
-                                    title={oneCartItem.name}
-                                    description={oneCartItem.description}
-                                    price={oneCartItem.price.amount}
-                                    image_url={oneCartItem.image_url}
-                                    currency={oneCartItem.price.currency}
-                                    cardType="buy_by_vc"
-                                    cartId={cart.cartId}
-                                    logToken={logToken}
-                                    removeFromCart={removeFromCart}
-                                    changeItemQuantityInCart={changeItemQuantityInCart}
-                                    quantity={oneCartItem.quantity}
-                                  />
-                                ))}
-                                {cartWithItemsBuyingByVC && cartWithItemsBuyingByVC.items.length <= 0 && <p>Empty cart</p>}
-                            </CartList>
-
-                            <CartFooter
-                                style={{
-                                  backgroundColor: `${getTheme("colorBg")}`,
-                                  borderTop: `1px solid ${Colorer(getTheme("colorText"))
-                                    .alpha(0.1)
-                                    .string()}`
-                                }}
-                            >
-                                {
-                                    buyButtonDisabled ?
-                                      <Preloader/> :
-                                      <Button
-                                          variant="contained"
-                                          onClick={() => {
-                                              !(
-                                                  buyButtonDisabled ||
-                                                  cartWithItemsBuyingByVC.items.length <= 0
-                                              ) && buyByVirtualCurrencyButtonAction(
-                                                  cartWithItemsBuyingByVC.items[0],
-                                                  cartWithItemsBuyingByVC.vcPriceSku
-                                              );
-                                          }}
-                                      >
-                                          Buy
-                                      </Button>
-                                }
-                            </CartFooter>
-                        </div>
-                    </CartContent>
-                </Cart0>
-            )} */}
-      </Fade>
+            <CartActions>
+              <Button
+                variant="contained"
+                disabled={buyButtonDisabled || cart.items.length === 0}
+                style={{ marginRight: '7px' }}
+                onClick={buyAnotherPlatform}
+              >
+                Buy on PS4
+              </Button>
+              <Button
+                variant="contained"
+                disabled={buyButtonDisabled || cart.items.length === 0}
+                onClick={buyButtonAction}
+              >
+                Buy on Xsolla
+              </Button>
+            </CartActions>
+          </CartFooter>
+        </CartContent>
+      </Grow>
     </Modal>
   );
 }

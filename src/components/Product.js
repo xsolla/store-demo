@@ -5,17 +5,14 @@ import styled, { css } from "styled-components";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import CardContent from "@material-ui/core/CardContent";
 import Collapse from "@material-ui/core/Collapse";
-import IconButton from "@material-ui/core/IconButton";
 import IconAdd from "@material-ui/icons/AddBox";
 import IconRem from "@material-ui/icons/IndeterminateCheckBox";
 import red from "@material-ui/core/colors/red";
 import ShoppingCart from "@material-ui/icons/ShoppingCart";
 import IconDelete from "@material-ui/icons/Delete";
 import AvatarVC from "@material-ui/core/Avatar";
-import { ProductContext } from "../context";
 import Colorer from "color";
 import Button from "@material-ui/core/Button";
-import Avatar from "./Navbar";
 
 const styles = theme => ({
   paper: {

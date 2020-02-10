@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import Cookie from "./components/Cookie";
 import {
   changeItemQuantityCart,
@@ -8,34 +8,25 @@ import {
 } from "./components/StoreLoader";
 
 const ProductContext = React.createContext();
-//Provider
-//Consumer
 
 const theme = {
-  colorText: "#D6E0E7",
-  colorAccent: "#FF005B",
-  colorAccentText: "#F6FAFF",
-  colorBg: "#011627",
-  colorSecondary: "#495C6B", //TODO: delete
-
+  colorText: '#D6E0E7',
+  colorAccent: '#FF005B',
+  colorAccentText: '#F6FAFF',
+  colorBg: '#011627',
   borderRadius: 8,
-  backgroundUrl:
-    "https://res.cloudinary.com/maiik/image/upload/v1549624607/Xsolla/HomePage_Hero_Illustration_1440_oabqmk.jpg",
-
-  cardWidth: "300",
-
-  boxShadow: "0 5px 12px 0px rgba(0,0,0,0.2)",
-  padding: "8px",
-  transitionTime: "0.3s",
-  transitionEasing: "ease-in-out",
+  backgroundUrl: 'https://res.cloudinary.com/maiik/image/upload/v1549624607/Xsolla/HomePage_Hero_Illustration_1440_oabqmk.jpg',
+  cardWidth: '300',
+  boxShadow: '0 5px 12px 0px rgba(0,0,0,0.2)',
+  padding: '8px',
+  transitionTime: '0.3s',
+  transitionEasing: 'ease-in-out',
   transition: `all 0.3s ease-in-out`,
-  // transition: `all ${theme['transitionTime']} ${theme['transitionTime']}`,
-  transitionStyle: "0.3s ease-in-out",
-  fontFamily:
-    '"Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'
+  transitionStyle: '0.3s ease-in-out',
+  fontFamily: '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif'
 };
 
-class ProductProvider extends Component {
+class ProductProvider extends React.PureComponent {
   constructor(props) {
     super(props);
 
@@ -43,7 +34,6 @@ class ProductProvider extends Component {
       projectId: props.projectId,
       logToken: Cookie(),
       userBalanceVirtualCurrency: [],
-
       activeGroup: 'first',
       loginShown: true,
       activeModule: 'virtualItems',
@@ -54,8 +44,8 @@ class ProductProvider extends Component {
       inventoryItems: null,
       entitlementItems: null,
       physicalItems: null,
-
       cartShown: false,
+      isSideMenuShown: false,
       cart: {
         cartId: null,
         items: [],
@@ -64,28 +54,19 @@ class ProductProvider extends Component {
           amount_without_discount: 0
         }
       },
-
       cartWithItemsBuyingByVCShown: false,
       cartWithItemsBuyingByVC: {
         items: []
       },
-
       showCartError: false,
       cartError: false,
-
       isFetching: false,
-
-      psToken: "",
-
-      theme: theme
+      psToken: '',
+      theme,
     };
   }
 
-  showCart = () => {
-    this.setState({
-      cartShown: !this.state.cartShown
-    });
-  };
+  showCart = () => this.setState({ cartShown: !this.state.cartShown });
 
   showCartError = (title, message) => {
     this.setState({
@@ -98,6 +79,8 @@ class ProductProvider extends Component {
     this.getCart();
   };
 
+  setSideMenuVisibility = isSideMenuShown => this.setState({ isSideMenuShown });
+
   hideCartError = () => {
     this.setState({
       showCartError: false,
@@ -105,21 +88,21 @@ class ProductProvider extends Component {
     });
   };
 
-  setInventoryItems = (inventoryItems) => {
+  setInventoryItems = inventoryItems => {
     this.setState({
       inventoryItems,
       fetching: false
     })
   };
 
-  setEntitlementItems = (entitlementItems) => {
+  setEntitlementItems = entitlementItems => {
     this.setState({
       entitlementItems,
       fetching: false
     })
   };
 
-  setPhysicalItems = (physicalItems) => {
+  setPhysicalItems = physicalItems => {
     this.setState({
       physicalItems,
       fetching: false
@@ -127,25 +110,25 @@ class ProductProvider extends Component {
   };
 
   getCart = () => {
-    let cartPromise = getCart(this.state.cart.cartId, this.state.logToken);
+    const cartPromise = getCart(this.state.cart.cartId, this.state.logToken);
     cartPromise.then(response => {
       if (!cartPromise.isCancel && response) {
-        this.setState(prevState => ({
+        this.setState({
           cart: {
             cartId: response.data["cart_id"],
             items: response.data["items"].sort(this.compareItems),
             price: response.data["price"]
           },
           isFetching: false
-        }));
+        });
       }
     });
   };
 
-  createCart = function() {
-    let cartIdPromise = createCart(this.state.logToken);
+  createCart = () => {
+    const cartIdPromise = createCart(this.state.logToken);
     cartIdPromise.then(response => {
-      this.setState(prevState => ({
+      this.setState({
         cart: {
           cartId: response.data["id"],
           items: [],
@@ -154,37 +137,32 @@ class ProductProvider extends Component {
             amount_without_discount: 0
           }
         }
-      }));
+      });
     });
-  }.bind(this);
+  };
 
   changeTheme = newTheme => {
-    let newColor = null;
     if (typeof newTheme === "string") {
-      newColor = newTheme;
       this.setState({
-        ...this.state,
         theme: {
           ...this.state.theme,
-          colorBg: newColor
+          colorBg: newTheme
         }
       });
     } else {
       this.setState(
         {
-          ...this.state,
           theme: {
             ...this.state.theme,
             ...newTheme
           }
         },
-        () => {}
       );
     }
   };
 
   changeCardSize = newSize => {
-    let newTheme = this.state.theme;
+    const newTheme = this.state.theme;
     newTheme["cardWidth"] = newSize;
     this.changeTheme(newTheme);
   };
@@ -199,7 +177,7 @@ class ProductProvider extends Component {
     this.clearCart();
   };
 
-  setPsToken = (psToken) => {
+  setPsToken = psToken => {
     this.setState({ psToken });
   };
 
@@ -245,9 +223,7 @@ class ProductProvider extends Component {
 
   addToCart = product => {
     if (this.state.cart) {
-      let indexFind = this.state.cart.items.findIndex(elem => {
-        return elem.sku === product.sku;
-      });
+      const indexFind = this.state.cart.items.findIndex(elem => elem.sku === product.sku);
       if (indexFind !== -1) {
         this.getCart();
         this.setState({
@@ -292,9 +268,8 @@ class ProductProvider extends Component {
         1,
         this.state.cart.cartId,
         this.state.logToken
-      ).then(response => {
-        this.getCart();
-      }).catch(error => {
+      ).then(getCart
+      ).catch(error => {
         this.showCartError('Change Item Quantity Error',error.response.data.errorMessage);
       });
       this.showCart();
@@ -365,12 +340,12 @@ class ProductProvider extends Component {
     }
   };
 
-  hideCart = function () {
+  hideCart = () => {
     this.setState({
       cartShown: false,
       cartWithItemsBuyingByVCShown: false
     })
-  }.bind(this);
+  };
 
   setGroups = virtualItems => this.setState({ virtualItems, fetching: false });
 
@@ -384,18 +359,11 @@ class ProductProvider extends Component {
     });
   };
 
-  getTheme = (what = "all") => {
-    if (what === "all") {
-      return this.state.theme;
-    }
-    return `${this.state.theme[what]}${what === "borderRadius" ? "px" : ""}`;
-  };
+  getTheme = (what = 'all') => what === 'all' 
+    ? this.state.theme
+    : `${this.state.theme[what]}${what === 'borderRadius' ? 'px' : ''}`;
 
-  setProducts = function(storeProducts) {
-    this.setState({
-      storeProducts: storeProducts
-    });
-  }.bind(this);
+  setProducts = storeProducts => this.setState({ storeProducts });
 
   updateVirtualCurrencyBalance = () => {
     getVirtualCurrencyBalance(this.state.logToken).then((reps) => {
@@ -409,7 +377,6 @@ class ProductProvider extends Component {
     return (
       <ProductContext.Provider
         value={{
-          // products: this.state.products, //full
           ...this.state, //all props and vals
           handleDetail: this.handleDetail,
           setPsToken: this.setPsToken,
@@ -433,7 +400,8 @@ class ProductProvider extends Component {
           payStationHandler: this.payStationHandler,
           updateVirtualCurrencyBalance: this.updateVirtualCurrencyBalance,
           hideCart: this.hideCart,
-          hideCartError: this.hideCartError
+          hideCartError: this.hideCartError,
+          setSideMenuVisibility: this.setSideMenuVisibility,
         }}
       >
         {this.props.children}

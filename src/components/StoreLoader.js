@@ -171,7 +171,7 @@ export function getPsTokenBuyCart(cartId, loginToken) {
 
 export function getCart(cartId, loginToken) {
   cancel && cancel();
-  let opts = {
+  const opts = {
     url:
       "https://store.xsolla.com/api/v2/project/" +
       window.xProjectId +
@@ -181,18 +181,13 @@ export function getCart(cartId, loginToken) {
     headers: {
       Authorization: "Bearer " + loginToken
     },
-    cancelToken: new CancelToken(function executor(c) {
+    cancelToken: new CancelToken(c => {
       cancel = c;
     })
   };
   return axios(opts)
-    .then(function(response) {
-      //console.log("PsToken generated = ", response.data);
-      return response;
-    })
-    .catch(function(error) {
-      //console.log("L2PS ERROR = ", error.response);
-    });
+    .then(response => response)
+    .catch(error => console.error(error));
 }
 
 export function quickPurchaseBuyVirtualCurrency(product, vcPriceSku, loginToken) {

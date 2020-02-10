@@ -1,11 +1,11 @@
 import React, { PureComponent } from "react";
+import {Inventory} from "store-js-sdk/src/inventory/inventory";
 
 import {InventoryItem} from './InventoryItem';
 import {getInventory} from './InventoryLoader';
 import { init } from 'store-js-sdk/src/init';
 
 import './InventoryList.css';
-import {Inventory} from "store-js-sdk/src/inventory/inventory";
 
 export class InventoryList extends PureComponent {
   componentDidMount() {
@@ -21,7 +21,7 @@ export class InventoryList extends PureComponent {
     }
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps) {
     if (
         (prevProps.cart.cartId !== this.props.cart.cartId
         && prevProps.cart.items.length > 0)
@@ -35,8 +35,6 @@ export class InventoryList extends PureComponent {
 
   updateInventory() {
     this.props.setStateFrom("fetching", true);
-
-    let token = this.props.logToken;
     init({
       projectId: window.xProjectId,
       version: 'v2'

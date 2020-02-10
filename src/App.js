@@ -1,69 +1,76 @@
-import React, { Component } from "react";
-import {HashRouter, Route} from 'react-router-dom';
-import Alert from "react-bootstrap/Alert";
-import styled from "styled-components";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React from 'react';
+import {HashRouter, Route, Switch} from 'react-router-dom';
+
+import Hidden from '@material-ui/core/Hidden';
+import styled from 'styled-components';
 
 import { InventoryList } from './features/inventory/InventoryList';
 import { PhysicalList } from './features/physical/PhysicalList';
 import { ManageInventory } from './features/manage/ManageInventory';
 import { VirtualList } from './features/virtual/VirtualList';
-import { ServerPurchase } from "./features/serverPurchase/ServerPurchase";
-import { EntitlementList } from "./features/entitlement/EntitlementList";
-import { Cart } from "./features/cart/Cart";
-import Navbar from "./components/Navbar";
-import Preloader from "./components/Preloader.js";
-import { ProductConsumer } from "./context";
-import VCPackagesList from "./components/VCPackagesList";
-import "./App.css";
+import { ServerPurchase } from './features/serverPurchase/ServerPurchase';
+import { EntitlementList } from './features/entitlement/EntitlementList';
+import { Cart } from './features/cart/Cart';
+import { routes } from './utils/routes';
+import Navbar from './components/Navbar';
+import { MobileNavbar } from './components/MobileNavbar';
+import Preloader from './components/Preloader.js';
+import { ProductContext } from './context';
+import VCPackagesList from './components/VCPackagesList';
 
-class App extends Component {
-  render() {
-    return (
-      <HashRouter basename='/'>
-        <ProductConsumer>
-          {valueFromContext => {
-            return (
-              <React.Fragment>
-                  {
-                      valueFromContext.showCartError
-                      &&
-                      <Alert onClose={valueFromContext.hideCartError} className={"application-alert"} variant="danger" dismissible>
-                          <Alert.Heading>{valueFromContext.cartError.title}</Alert.Heading>
-                          <p>{valueFromContext.cartError.message}</p>
-                      </Alert>
-                  }
-                <div className="">
-                  {/* <Navbar showCart={valueFromContext.showCart} /> */}
-                  <div>
-                    <CssStore0>
-                      <Cart />
-                      <Route path="/" exact component={VirtualList} />
-                      <Route path="/inventory" render={() => (!valueFromContext.fetching && <InventoryList {...valueFromContext} />)} />
-                      <Route path="/crystals" render={() => (!valueFromContext.fetching && <VCPackagesList {...valueFromContext} />)} />
-                      <Route path="/physical" render={() => (!valueFromContext.fetching && <PhysicalList {...valueFromContext} />)} />
-                      <Route path="/entitlement" render={() => (!valueFromContext.fetching && <EntitlementList {...valueFromContext} />)} />
-                      <Route path="/manage" render={() => (!valueFromContext.fetching && <ManageInventory {...valueFromContext} />)} />
-                      <Route path="/purchase" render={() => (!valueFromContext.fetching && <ServerPurchase {...valueFromContext} />)} />
-                      {valueFromContext.fetching && <Preloader />}
-                    </CssStore0>
-                  </div>
-                </div>
+const App = () => {
+  const valueFromContext = React.useContext(ProductContext);
 
-                <div className="global-background">
-                  <div className="global-background-tint" />
-                </div>
-              </React.Fragment>
-            );
-          }}
-        </ProductConsumer>
-      </HashRouter>
-    );
-  }
-}
+  return (
+    <HashRouter basename='/'>
+      <>
+        <Navbar />
+        <Hidden lgUp>
+          <MobileNavbar />
+        </Hidden>
+        <Cart />
+        {valueFromContext.fetching
+          ? <Preloader />
+          : (
+              <Switch>
+                <Route path={routes.items} exact component={VirtualList} />
+                <Route path={routes.inventory}render={() => <InventoryList {...valueFromContext} />} />
+                <Route path={routes.currencies} render={() => <VCPackagesList {...valueFromContext} />} />
+                <Route path={routes.physical} render={() => <PhysicalList {...valueFromContext} />} />
+                <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
+                <Route path={routes.manage} render={() => <ManageInventory {...valueFromContext} />} />
+                <Route path={routes.purchase} render={() => <ServerPurchase {...valueFromContext} />} />
+              </Switch>
+            )
+          }
 
-const CssStore0 = styled.div`
-  z-index: 1;
+        <Background getTheme={valueFromContext.getTheme}>
+          <BackgroundOverlay getTheme={valueFromContext.getTheme} />
+        </Background>
+      </>
+    </HashRouter>
+  );
+};
+
+const Background = styled.div`
+  background-image: url(${props => props.getTheme('backgroundUrl')});
+  z-index: -1;
+  background-size: cover;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+`;
+
+const BackgroundOverlay = styled.div`
+  position: absolute;
+  background-color: ${props => props.getTheme('colorBg')};
+  opacity: 0.8;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
 `;
 
 export default App;

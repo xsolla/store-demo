@@ -1,38 +1,41 @@
-import React, { Fragment } from "react";
-import { NavLink } from 'react-router-dom';
-import styled from "styled-components";
-import "react-interactions/dist/main.css";
+import React from 'react';
+import { NavLink, withRouter } from 'react-router-dom';
+import styled from 'styled-components';
 
-import Avatar from "@material-ui/core/Avatar";
-import Menu from '@material-ui/core/Menu';
-import { makeStyles } from '@material-ui/core/styles';
+import MUIMenu from '@material-ui/core/Menu';
+import Hidden from '@material-ui/core/Hidden';
+import MUITabs from '@material-ui/core/Tabs';
+import MUITab from '@material-ui/core/Tab';
+import MUIIconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import Button from '@material-ui/core/Button';
+import CartIcon from '@material-ui/icons/ShoppingCart';
+import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
 
-import '../styles/Navbar.css';
-import { ProductContext } from "../context";
-import { eraseCookie } from "./Cookie";
-import XLogin from "./XLogin.js";
+import { routes, getMenuItems } from '../utils/routes';
+import { device } from '../styles/devices';
+import { Currency } from '../components/Currency';
+import { ProductContext } from '../context';
+import { eraseCookie } from './Cookie';
+import XLogin from './XLogin.js';
 
+const Navbar = ({ location }) => {
+  const {
+    getTheme,
+    logToken,
+    user,
+    userBalanceVirtualCurrency,
+    projectId,
+    showCart,
+    setSideMenuVisibility,
+    isSideMenuShown,
+  } = React.useContext(ProductContext);
 
-
-const useStyles = makeStyles({
-  currencies: {
-    marginLeft: 10,
-    marginRight: 4,
-    height: 18,
-    width: 18,
-  }
-});
-
-export default function Navbar({ showCart }) {
-  const valueFromContext = React.useContext(ProductContext);
-  const classes = useStyles();
   const [menuAnchor, setMenuAnchor] = React.useState(null);
   const handleMenuClose = () => setMenuAnchor(null);
-  const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
+  const handleMenuOpen = event => setMenuAnchor(event.currentTarget);
 
-  const [state, setState] = React.useState({
-    shown: false
-  });
+  const toggleSideMenu = () => setSideMenuVisibility(!isSideMenuShown);
 
   const logOutHandler = () => {
     eraseCookie("xsolla_login_token", null);
@@ -40,118 +43,136 @@ export default function Navbar({ showCart }) {
     window.location.reload();
   };
 
-  const logInButtonHandler = () => {
-    setState({ shown: true });
-  };
+  const isLogged = logToken && user;
+  const generalMenuItems = getMenuItems([
+    routes.items,
+    routes.currencies,
+    ...projectId === 44056 ? [routes.physical] : [],
+  ])
+
+  const userMenuItems = getMenuItems([
+    routes.inventory,
+    routes.entitlement,
+    routes.manage,
+    routes.purchase,
+  ]);
 
   return (
-    <NavWrapper
-      style={{
-        zIndex: 100,
-        color: valueFromContext.getTheme("colorAccentText"),
-        backgroundColor: '#011627'
-      }}
-    >
-      <div className="navbar-links">
-        <NavLink activeClassName="navbar-link_active" exact to="/">
-          <span className="navbar-link">Items</span>
-        </NavLink>
-        <NavLink activeClassName="navbar-link_active" to="/crystals">
-          <span className="navbar-link">Currencies</span>
-        </NavLink>
-        {
-          valueFromContext.projectId === 44056 &&
-          <NavLink activeClassName="navbar-link_active" to="/physical">
-            <span className="navbar-link">Merchandise</span>
-          </NavLink>
-        }
-      </div>
+    <Header getTheme={getTheme}>
+      <Hidden mdDown>
+        <Tabs value={location.pathname} component="nav">
+          {generalMenuItems.map(x => (
+            <Tab
+              getTheme={getTheme}
+              component={NavLink}
+              label={x.label}
+              value={x.route}
+              to={x.route}
+            />
+          ))}
+        </Tabs>
+      </Hidden>
 
-      <NavUl>
-        <li style={{ display: "flex", justifyContent: "center" }}>
-          <CssLoginPanel>
-            {!valueFromContext.logToken && (
-              <CssLoginButton onClick={logInButtonHandler}>
-                Log In
-              </CssLoginButton>
-            )}
-            {valueFromContext.logToken && valueFromContext.user && (
-              <CssLogin>
-                {
-                  valueFromContext.userBalanceVirtualCurrency && valueFromContext.userBalanceVirtualCurrency.map(vc => (
-                    <Fragment key={vc.sku}>
-                      <Avatar src={vc.image_url} className={classes.currencies}/>
-                      {vc.amount}
-                    </Fragment>
-                  ))
-                }
-                <CssLoginEmail onClick={handleMenuOpen}>{valueFromContext.user.email}</CssLoginEmail>
-              </CssLogin>
-            )}
-          </CssLoginPanel>
+      <Hidden lgUp>
+        <MenuButton getTheme={getTheme} onClick={toggleSideMenu}>
+          <MenuIcon />
+        </MenuButton>
+      </Hidden>
 
-          <XLogin />
-        </li>
-      </NavUl>
+      {isLogged && (
+        <LoginPanel>
+          {userBalanceVirtualCurrency.map(vc => (
+            <VCCurrency key={vc.sku}>
+              <Currency image={vc.image_url} value={vc.amount} />
+            </VCCurrency>
+          ))}
 
-      {
-        valueFromContext.logToken && valueFromContext.user && 44056 !== valueFromContext.projectId &&
-        <div className="navbar-logout" onClick={logOutHandler}>
-          <span className="mr-10">
-            <i className="fas fa-sign-out-alt"></i>
-          </span>
-        </div>
-      }
-      <div className="navbar-cart" onClick={e => showCart(e)}>
-        <span className="mr-10">
-          <i className="fas fa-cart-plus"></i> cart
-        </span>
-      </div>
-      <CssMenu
-        getTheme={valueFromContext.getTheme}
+          <Hidden mdDown>
+            <UserMail onClick={handleMenuOpen}>{user.email}</UserMail>
+          </Hidden>
+        </LoginPanel>
+      )}
+
+      <XLogin />
+
+      {!logToken && <LoginButton>Log In</LoginButton>}
+      {isLogged && projectId !== 44056 && (
+       <Button
+          variant="outlined"
+          color="secondary"
+          size="small"
+          onClick={logOutHandler}
+        >
+          <LogoutIcon size="inherit" />
+        </Button>
+      )}
+
+      <CartButton
+        variant="contained"
+        color="secondary"
+        size="small"
+        onClick={showCart}
+      >
+        <CartIcon size="inherit" />
+        <Hidden xsDown>
+          cart
+        </Hidden>
+      </CartButton>
+
+      <Menu
+        getTheme={getTheme}
         anchorEl={menuAnchor}
         getContentAnchorEl={null}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         open={Boolean(menuAnchor)}
         onClose={handleMenuClose}
       >
-        <CssNavLink onClick={handleMenuClose} activeClassName="active" to="/inventory">
-          Inventory
-        </CssNavLink>
-        <CssNavLink onClick={handleMenuClose} activeClassName="active" to="/entitlement">
-          Entitlement
-        </CssNavLink>
-        <CssNavLink onClick={handleMenuClose} activeClassName="active" to="/manage">
-          Manage
-        </CssNavLink>
-        <CssNavLink onClick={handleMenuClose} activeClassName="active" to="/purchase">
-          Server purchase
-        </CssNavLink>
-      </CssMenu>
-    </NavWrapper>
+        {userMenuItems.map(x => (
+          <Link
+            getTheme={getTheme}
+            onClick={handleMenuClose}
+            activeClassName="active"
+            to={x.route}
+          >
+            {x.label}
+          </Link>
+        ))}
+      </Menu>
+    </Header>
   );
 }
 
-const CssMenu = styled(({ getTheme, ...rest }) => <Menu  classes={{ list: 'list' }} {...rest} />)`
-  .list {
-    background-color: ${props => props.getTheme("colorBg")};
+const Menu = styled(MUIMenu)`
+  .MuiMenu-list {
+    background-color: ${props => props.getTheme('colorBg')};
   }
 `;
 
-const CssNavLink = styled(NavLink)`
+const Tabs = styled(MUITabs)`
+  &.MuiTabs-root {
+    height: 100%
+  }
+`;
+
+const Tab = styled(MUITab)`
+  &.MuiTab-root {
+    text-transform: uppercase;
+    font-family: ${props => props.getTheme('fontFamily')};
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.4rem;
+  }
+`;
+
+const Link = styled(NavLink)`
   display: flex;
   padding: 15px 20px;
   min-width: 200px;
   align-items: center;
   text-transform: uppercase;
-  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+  text-decoration: none;
+  font-family: ${props => props.getTheme('fontFamily')};
   font-size: 1.2rem;
   font-weight: 700;
   line-height: 1.2rem;
@@ -169,14 +190,27 @@ const CssNavLink = styled(NavLink)`
   }
 `;
 
-const CssLoginPanel = styled.div`
-  flex-grow: 1;
-  text-transform: uppercase;
-  font-family: "Roboto";
-  color: "var(--mainWhite)";
+const MenuButton = styled(MUIIconButton)`
+  &.MuiIconButton-root {
+    color: ${props => props.getTheme('colorAccentText')};
+  }
 `;
 
-const CssLoginButton = styled.div`
+const VCCurrency = styled.div`
+  margin-right: 10px;
+`;
+
+const LoginPanel = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+
+  @media ${device.mobileL} {
+    justify-content: center;
+  }
+`;
+
+const LoginButton = styled.div`
   display: flex;
   flex-direction: row;
   font-size: 0.8rem;
@@ -184,7 +218,7 @@ const CssLoginButton = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: stretch;
-  font-family: "Roboto";
+  font-family: 'Roboto';
   color: black;
   background: var(--mainWhite);
   border-radius: 4px;
@@ -192,37 +226,26 @@ const CssLoginButton = styled.div`
   cursor: pointer;
 `;
 
-const CssLoginEmail = styled.div`
+const CartButton = styled(Button)`
+
+`;
+
+const UserMail = styled.div`
   cursor: pointer;
-  font-family: "Roboto";
+  font-family: 'Roboto';
+  text-transform: uppercase;
   color: #ff005b;
   margin: 0 1rem;
 `;
 
-const NavWrapper = styled.div`
-  font-family: "Helvetica Neue", "Roboto", Arial, Helvetica, sans-serif;
-  color: var(--mainWhite);
-  position: relative;
+const Header = styled.header`
   display: flex;
   align-items: center;
-  z-index: 10;
+  height: 50px;
+  padding: 0 15px;
+  font-family: 'Helvetica Neue', 'Roboto', Arial, Helvetica, sans-serif;
+  color: ${props => props.getTheme('colorAccentText')};
+  background-color: ${props => props.getTheme('colorBg')};
 `;
 
-const CssLogin = styled.div`
-  display: flex;
-  flex-direction: row;
-  font-family: "Helvetica Neue", "Roboto", Arial, Helvetica, sans-serif;
-`;
-
-const NavUl = styled.ul`
-  display: flex;
-  flex-grow: 1;
-  flex-direction: row;
-  align-items: stretch;
-  justify-content: flex-end;
-  color: var(--mainWhite);
-  list-style-type: none;
-  position: relative;
-  z-index: 10;
-  margin-bottom: 0;
-`;
+export default withRouter(Navbar);

@@ -1,9 +1,8 @@
 import React from 'react';
-import styled from "styled-components";
-import Avatar from "@material-ui/core/Avatar";
-import ShoppingCart from "@material-ui/icons/ShoppingCart";
+import ShoppingCart from '@material-ui/icons/ShoppingCart';
 
-import { ProductCard } from "../../components/ProductCard";
+import { ProductCard } from '../../components/ProductCard';
+import { Currency } from '../../components/Currency';
 
 export const VirtualItem = ({
   product,
@@ -17,14 +16,17 @@ export const VirtualItem = ({
   const handleItemAdd = () => addToCart(product);
   const handleBuyByVC = () => buyByVC(product, product.virtual_prices[0].sku);
 
-  const renderPrice = () => `${product.price.currency} ${Math.round(product.price.amount * 100) / 100}`;
+  const renderPrice = () => (
+    <Currency
+      currency={product.price.currency}
+      value={Math.round(product.price.amount * 100) / 100} />
+  );
+
   const renderVirtualPrice = () => (
-    <VirtualPrice>
-      <VirtualIcon src={product.virtual_prices[0].image_url} />
-      <VirtualAmount>
-        {product.virtual_prices[0].amount}
-      </VirtualAmount>
-    </VirtualPrice>
+    <Currency
+      image={product.virtual_prices[0].image_url}
+      value={product.virtual_prices[0].amount}
+    />
   );
 
 
@@ -41,19 +43,3 @@ export const VirtualItem = ({
     />
   )
 }
-
-const VirtualPrice = styled.div`
-  display: flex;
-`;
-
-const VirtualIcon = styled(Avatar)`
-  && {
-    height: 24px;
-    width: 24px;
-    margin-right: 4px;
-  }
-`;
-
-const VirtualAmount = styled.div`
-
-`;
