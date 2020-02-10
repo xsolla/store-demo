@@ -65,6 +65,7 @@ const MobileNavbarComponent = ({ location }) => {
         <Divider getTheme={getTheme} />
           <Tabs
             value={location.pathname}
+            onChange={closeMenu}
             component="nav"
             variant="scrollable"
             orientation="vertical"

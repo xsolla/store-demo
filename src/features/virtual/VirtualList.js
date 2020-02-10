@@ -1,102 +1,103 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
+import MUITabs from '@material-ui/core/Tabs';
+import MUITab from '@material-ui/core/Tab';
 
-import { ProductContext } from "../../context";
-import MenuMaterial from "../../components/MenuMaterial";
-import StoreLoader from "../../components/StoreLoader";
+import { ProductContext } from '../../context';
+import StoreLoader from '../../components/StoreLoader';
 import { VirtualItem } from './VirtualItem';
 
 const VirtualList = () => {
   const {
     logToken,
     virtualItems,
-    activeModule,
     activeGroup,
     getTheme,
     addToCart,
     buyByVC,
     setStateFrom,
     setCurrs,
-    fetching,
+    isFetching,
     updateVirtualCurrencyBalance,
   } = React.useContext(ProductContext);
 
-  const handleGroupChange = newActive => setStateFrom("activeGroup", newActive);
+  const handleGroupChange = (_, activeGroup) => setStateFrom('activeGroup', activeGroup);
+  const activeGroupID = virtualItems.length > 0 && activeGroup === 'first' ? virtualItems[0].id : activeGroup;
 
   React.useEffect(() => {
-    if (!fetching && logToken && virtualItems.length === 0) {
-      setStateFrom("fetching", true);
+    if (!isFetching && logToken && virtualItems.length === 0) {
+      setStateFrom('isFetching', true);
       StoreLoader(window.xProjectId, logToken).then(setCurrs);
       updateVirtualCurrencyBalance();
     }
   });
 
   return (
-    <CssStore color={getTheme("colorText")}>
-      {activeModule === "virtualItems" && virtualItems.length > 0 && (
-        <div>
-          <CssMenu>
-            <MenuMaterial
-              virtualItems={virtualItems}
-              activeGroup={activeGroup}
-              changeGroupHandler={handleGroupChange}
-            />
-          </CssMenu>
-          {virtualItems.map((group, key) => {
-            if (
-              (activeGroup === "first" && key === 0) ||
-              activeGroup === "all" ||
-              activeGroup === group.id ||
-              activeGroup === group.name
-            ) {
-              return (
-                <div key={group.name}>
-                  <СssTitle color={getTheme("colorText")}>
-                    {group.name}
-                  </СssTitle>
-                  <СssGroup>
-                    {group.products && group.products.map((product, key) => (
-                      <VirtualItem
-                        key={product.sku}
-                        product={product}
-                        order={key}
-                        addToCart={addToCart}
-                        getTheme={getTheme}
-                        buyByVC={buyByVC}
-                      />
-                    ))}
-                  </СssGroup>
-                </div>
-              );
-            }
-          })}
-        </div>
+    <Body color={getTheme('colorText')}>
+      {virtualItems.length > 0 && (
+        <>
+          <Tabs
+            getTheme={getTheme}
+            value={activeGroupID}
+            onChange={handleGroupChange}
+            variant="scrollable"
+          >
+            {virtualItems.map(group => (
+              <Tab
+                getTheme={getTheme}
+                value={group.id}
+                key={group.id}
+                color="secondary"
+                textColor="secondary"
+                label={group.name}
+              />
+            ))}
+          </Tabs>
+          {virtualItems.map(group => activeGroupID === group.id ? (
+            <>
+              <Title color={getTheme('colorText')}>
+                {group.name}
+              </Title>
+              <Group getTheme={getTheme}>
+                {group.products && group.products.map(product => (
+                  <VirtualItem
+                    key={product.sku}
+                    product={product}
+                    addToCart={addToCart}
+                    getTheme={getTheme}
+                    buyByVC={buyByVC}
+                  />
+                ))}
+              </Group>
+            </>
+          ) : null
+          )}
+        </>
       )}
-    </CssStore>
+    </Body>
   );
 }
 
-const CssStore = styled.div`
+const Body = styled.div`
   color: ${props => props.color};
   position: relative;
   background-color: transparent;
   z-index: 4;
 `;
 
-const CssMenu = styled.div`
-  flex-grow: 1;
-  margin: 24px 0;
+const Group = styled.div`
+  display: grid;
+  padding: 30px 0;
+  grid-gap: 30px;
+  grid-template-columns: ${props => `repeat(auto-fit, minmax(
+    ${props.getTheme('cardWidth')}px, 
+    ${props.getTheme('cardWidth')}px)
+  )`};
+  justify-content: center;
 `;
 
-const СssGroup = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  place-content: center;
-`;
-
-const СssTitle = styled.div`
+const Title = styled.div`
   color: ${props => props.color};
-  padding-top: 2em;
   min-height: 2em;
   display: flex;
   align-items: center;
@@ -106,6 +107,22 @@ const СssTitle = styled.div`
   font-size: 1.2em;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+`;
+
+const Tabs = styled(MUITabs)`
+  padding: 30px 0;
+  color: ${props => props.getTheme('colorAccent')};
+  
+  & .MuiTabs-flexContainer {
+    justify-content: center;
+  };
+`;
+
+const Tab = styled(MUITab)`
+  &.MuiTab-root {
+    color: ${props => props.getTheme('colorAccentText')};
+    font-family: ${props => props.getTheme('fontFamily')};
+  };
 `;
 
 export { VirtualList };

@@ -29,7 +29,7 @@ const App = () => {
           <MobileNavbar />
         </Hidden>
         <Cart />
-        {valueFromContext.fetching
+        {valueFromContext.isFetching
           ? <Preloader />
           : (
               <Switch>

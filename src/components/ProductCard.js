@@ -9,7 +9,6 @@ import MUICardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 
 const ProductCard = ({
-  order,
   image,
   name,
   value,
@@ -23,8 +22,8 @@ const ProductCard = ({
   const handleMouseLeave = () => setHovered(false);
 
   return (
-    <CardAppear hovered={isHovered} getTheme={getTheme}>
-      <Grow in timeout={500} delay={order * 100}>
+    <Grow in>
+      <CardAppear hovered={isHovered} getTheme={getTheme}>
         <Card
           getTheme={getTheme}
           hovered={isHovered}
@@ -57,8 +56,8 @@ const ProductCard = ({
             </Button>
           </CardFooter>
         </Card>
-      </Grow>
-    </CardAppear>
+      </CardAppear>
+    </Grow>
   );
 };
 
@@ -67,8 +66,6 @@ const CardAppear = styled.div`
   z-index: ${props => props.hovered ? 1 : 0};
   width: ${props => `${props.getTheme('cardWidth')}px`};
   height: ${props => `${props.getTheme('cardWidth')}px`};
-  padding: ${props => props.getTheme('padding')};
-  margin: 16px;
 `;
 
 const Card = styled.div`
@@ -82,7 +79,6 @@ const Card = styled.div`
   box-shadow: ${props => props.hovered ? props.getTheme('boxShadow') : 'none'};
   transition: box-shadow, background-color ${props => props.getTheme('transitionStyle')};
   border-radius: ${props => props.getTheme('borderRadius')};
-  padding: ${props => props.getTheme('padding')};
 `;
 
 const CardContent = styled(MUICardContent)`
@@ -104,7 +100,7 @@ const CardFooter = styled.div`
   display: flex;
   align-items: center;
   border-top: 1px solid ${props => Colorer(props.getTheme('colorText')).alpha(0.1).string()};
-  padding: 8px 0 0 0;
+  padding: 8px 0;
   margin: 0px 16px 0 16px;
 `;
 

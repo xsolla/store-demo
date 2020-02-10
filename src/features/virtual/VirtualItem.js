@@ -6,7 +6,6 @@ import { Currency } from '../../components/Currency';
 
 export const VirtualItem = ({
   product,
-  order,
   getTheme,
   addToCart,
   buyByVC,
@@ -32,7 +31,6 @@ export const VirtualItem = ({
 
   return (
     <ProductCard
-      order={order}
       image={product.image_url}
       name={product.name}
       value={hasVirtualCurrencyPrice ? renderVirtualPrice() : renderPrice()}

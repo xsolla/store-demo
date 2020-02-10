@@ -38,12 +38,12 @@ class ProductProvider extends React.PureComponent {
       loginShown: true,
       activeModule: 'virtualItems',
       virtualItems: [],
+      physicalItems: [],
       virtualCurrencyPackages: null,
       currency: null,
       subscriptions: null,
       inventoryItems: null,
       entitlementItems: null,
-      physicalItems: null,
       cartShown: false,
       isSideMenuShown: false,
       cart: {
@@ -91,21 +91,21 @@ class ProductProvider extends React.PureComponent {
   setInventoryItems = inventoryItems => {
     this.setState({
       inventoryItems,
-      fetching: false
+      isFetching: false
     })
   };
 
   setEntitlementItems = entitlementItems => {
     this.setState({
       entitlementItems,
-      fetching: false
+      isFetching: false
     })
   };
 
   setPhysicalItems = physicalItems => {
     this.setState({
       physicalItems,
-      fetching: false
+      isFetching: false
     })
   };
 
@@ -347,11 +347,11 @@ class ProductProvider extends React.PureComponent {
     })
   };
 
-  setGroups = virtualItems => this.setState({ virtualItems, fetching: false });
+  setGroups = virtualItems => this.setState({ virtualItems, isFetching: false });
 
   setCurrs = resolvedData => {
     this.setState({
-      fetching: false,
+      isFetching: false,
       virtualItems: resolvedData['virtualItems'],
       currency: resolvedData['currency'],
       subscriptions: resolvedData['subscriptions'],
