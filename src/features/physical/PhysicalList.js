@@ -25,7 +25,7 @@ export class PhysicalList extends PureComponent {
 
     componentWillUnmount() {
         if (null !== this.props.physicalItems) {
-            this.props.setPhysicalItems(null);
+            this.props.setPhysicalItems([]);
         }
     }
 

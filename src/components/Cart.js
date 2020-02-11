@@ -4,12 +4,12 @@ import Product from "./Product";
 import IconClose from "@material-ui/icons/Close";
 import Button from "@material-ui/core/Button";
 import Colorer from "color";
-import {getFormattedCurrency} from "./formatCurrency";
+import { getFormattedCurrency } from "./formatCurrency";
 import { withRouter } from 'react-router-dom';
 
-import {ProductContext} from "../context";
-import {getPsTokenBuyCart, quickPurchaseBuyVirtualCurrency} from "./StoreLoader";
-import Preloader from "./Preloader";
+import { ProductContext } from "../context";
+import { getPsTokenBuyCart, quickPurchaseBuyVirtualCurrency } from "./StoreLoader";
+import { Preloader } from "./Preloader";
 
 function Cart({ style = {} , history}) {
   let [buyButtonDisabled, setBuyButtonDisabled] = React.useState(false);

@@ -32,14 +32,21 @@ class ProductProvider extends React.PureComponent {
     projectId: this.props.projectId,
     logToken: Cookie(),
     userBalanceVirtualCurrency: [],
-    loginShown: true,
+
     virtualItems: [],
+    virtualItemsError: '',
+    areVirtualItemsFetching: false,
+
+    virtualCurrencies: [],
+    virtualCurrenciesError: '',
+    areVirtualCurrenciesFetching: false,
+
     physicalItems: [],
+    entitlementItems: [],
     virtualCurrencyPackages: null,
     currency: null,
     subscriptions: null,
     inventoryItems: null,
-    entitlementItems: null,
     cartShown: false,
     isSideMenuShown: false,
     cart: {
@@ -106,6 +113,12 @@ class ProductProvider extends React.PureComponent {
     })
   };
 
+  setVirtualItems = virtualItems => this.setState({ virtualItems });
+  setVirtualItemsError = virtualItemsError => this.setState({ virtualItemsError });
+
+  setVirtualCurrencies = virtualCurrencies => this.setState({ virtualCurrencies });
+  setVirtualCurrenciesError = virtualCurrenciesError => this.setState({ virtualCurrenciesError });
+
   getCart = () => {
     const cartPromise = getCart(this.state.cart.cartId, this.state.logToken);
     cartPromise.then(response => {
@@ -153,9 +166,7 @@ class ProductProvider extends React.PureComponent {
     console.log("hello from handleDetail");
   };
 
-  setStateFrom = (stateName, stateValue) => {
-    this.setState({ [stateName]: stateValue });
-  };
+  setStateFrom = (stateName, stateValue) => this.setState({ [stateName]: stateValue });
 
   compareItems = (a, b) => {
     if (a.sku > b.sku) {
@@ -255,7 +266,6 @@ class ProductProvider extends React.PureComponent {
 
   setCurrs = ({virtualItems, currency, subscriptions, virtualCurrencyPackages}) => {
     this.setState({
-      isFetching: false,
       virtualItems,
       currency,
       subscriptions,
@@ -302,8 +312,12 @@ class ProductProvider extends React.PureComponent {
           payStationHandler: this.payStationHandler,
           updateVirtualCurrencyBalance: this.updateVirtualCurrencyBalance,
           hideCart: this.hideCart,
+          setVirtualItems: this.setVirtualItems,
           hideCartError: this.hideCartError,
+          setVirtualItemsError: this.setVirtualItemsError,
           setSideMenuVisibility: this.setSideMenuVisibility,
+          virtualCurrenciesError: this.virtualCurrenciesError,
+          setVirtualCurrencies: this.setVirtualCurrencies,
         }}
       >
         <ThemeProvider theme={theme}>

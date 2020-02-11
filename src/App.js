@@ -11,12 +11,11 @@ import { VirtualList } from './features/virtual/VirtualList';
 import { ServerPurchase } from './features/serverPurchase/ServerPurchase';
 import { EntitlementList } from './features/entitlement/EntitlementList';
 import { Cart } from './features/cart/Cart';
+import { VCList } from './features/virtualCurrenciesList/VCList';
 import { routes } from './utils/routes';
 import Navbar from './components/Navbar';
 import { MobileNavbar } from './components/MobileNavbar';
-import Preloader from './components/Preloader.js';
 import { ProductContext } from './context';
-import VCPackagesList from './components/VCPackagesList';
 
 const App = () => {
   const valueFromContext = React.useContext(ProductContext);
@@ -29,20 +28,15 @@ const App = () => {
           <MobileNavbar />
         </Hidden>
         <Cart />
-        {valueFromContext.isFetching
-          ? <Preloader />
-          : (
-              <Switch>
-                <Route path={routes.items} exact component={VirtualList} />
-                <Route path={routes.inventory} render={() => <InventoryList {...valueFromContext} />} />
-                <Route path={routes.currencies} render={() => <VCPackagesList {...valueFromContext} />} />
-                <Route path={routes.physical} render={() => <PhysicalList {...valueFromContext} />} />
-                <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
-                <Route path={routes.manage} render={() => <ManageInventory {...valueFromContext} />} />
-                <Route path={routes.purchase} render={() => <ServerPurchase {...valueFromContext} />} />
-              </Switch>
-            )
-          }
+        <Switch>
+          <Route path={routes.items} exact component={VirtualList} />
+          <Route path={routes.currencies} component={VCList} />
+          <Route path={routes.inventory} render={() => <InventoryList {...valueFromContext} />} />
+          <Route path={routes.physical} render={() => <PhysicalList {...valueFromContext} />} />
+          <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
+          <Route path={routes.manage} render={() => <ManageInventory {...valueFromContext} />} />
+          <Route path={routes.purchase} render={() => <ServerPurchase {...valueFromContext} />} />
+        </Switch>
 
         <Background getTheme={valueFromContext.getTheme}>
           <BackgroundOverlay getTheme={valueFromContext.getTheme} />

@@ -9,7 +9,6 @@ class VCPackagesList extends Component {
     super(props);
     this.ProductRef = React.createRef();
     this.state = {};
-    this.changeGroupHandler = this.changeGroupHandler.bind(this);
     this.changeGroupHandler(10); // Костыль
   }
 
@@ -18,11 +17,9 @@ class VCPackagesList extends Component {
   };
 
   componentDidMount() {
-    if (this.props.logToken && !this.props.virtualItems) {
-      this.props.setStateFrom("fetching", true);
-      StoreLoader(window.xProjectId, this.props.logToken).then(allData => {
-        this.props.setCurrs(allData);
-      });
+    if (this.props.logToken && this.props.virtualItems.length === 0) {
+      this.props.setStateFrom("isFetching", true);
+      StoreLoader(window.xProjectId, this.props.logToken).then(this.props.setCurrs);
 
       this.props.updateVirtualCurrencyBalance();
     }

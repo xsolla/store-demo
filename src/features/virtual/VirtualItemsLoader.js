@@ -1,20 +1,5 @@
 import axios from 'axios';
 
-export function getPsTokenByItem(item, loginToken) {
-  let opts = {
-    url:
-    "https://store.xsolla.com/api/v2/project/" +
-    window.xProjectId +
-    "/payment/item/" +
-    item.sku,
-    method: "POST",
-    headers: {
-      Authorization: "Bearer " + loginToken
-    }
-  };
-  return axios(opts);
-}
-
 export const loadVirtualItems = async (projectID, token) => {
   const URL = `https://store.xsolla.com/api/v1/project/${projectID}/items/groups`
   const response = await axios.get(
@@ -25,9 +10,17 @@ export const loadVirtualItems = async (projectID, token) => {
       }
     }
   );
-  console.log(response.data.groups);
-  const [...items] = await Promise.all(response.data.groups.map(g => loadVirtualItemsByGroup(projectID, g.external_id)));
-  return items.reduce((acc, x) => acc.concat(x), [])
+
+  const [...groups] = await Promise.all(response.data.groups.map(async g => {
+    const virtualItemsByGroup = await loadVirtualItemsByGroup(projectID, g.external_id);
+    return {
+      groupID: g.external_id,
+      groupName: g.name,
+      items: virtualItemsByGroup
+    };
+  }));
+
+  return groups;
 };
 
 const loadVirtualItemsByGroup = async (projectID, groupID) => {

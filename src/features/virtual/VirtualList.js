@@ -2,8 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { ProductContext } from '../../context';
-import StoreLoader from '../../components/StoreLoader';
+import { Preloader } from '../../components/Preloader.js';
 import { GroupSwitcher } from '../../components/GroupSwitcher';
+import { loadVirtualItems } from './VirtualItemsLoader';
 import { VirtualItem } from './VirtualItem';
 
 const VirtualList = () => {
@@ -12,52 +13,73 @@ const VirtualList = () => {
     virtualItems,
     addToCart,
     buyByVC,
+    projectId,
+    areVirtualItemsFetching,
+    setVirtualItems,
+    setVirtualItemsError,
     setStateFrom,
-    setCurrs,
-    isFetching,
     updateVirtualCurrencyBalance,
   } = React.useContext(ProductContext);
 
-  const [activeGroup, setActiveGroup] = React.useState(virtualItems[0] ? virtualItems[0].id : null);
+  const groups = React.useMemo(() => virtualItems.map(x => ({ id: x.groupID, label: x.groupName })), [virtualItems]);
+  const [activeGroup, setActiveGroup] = React.useState(virtualItems[0] ? virtualItems[0].groupID : null);
 
   React.useEffect(() => {
-    if (!isFetching && logToken && virtualItems.length === 0) {
-      setStateFrom('isFetching', true);
-      StoreLoader(window.xProjectId, logToken).then(setCurrs);
-      updateVirtualCurrencyBalance();
+    setActiveGroup(virtualItems[0] ? virtualItems[0].groupID : null);
+  }, [virtualItems]);
+
+  React.useEffect(() => {
+    if (!areVirtualItemsFetching && logToken && virtualItems.length === 0) {
+      setStateFrom('areVirtualItemsFetching', true);
+      loadVirtualItems(projectId, logToken).then(virtualItems => {
+        setVirtualItems(virtualItems);
+        updateVirtualCurrencyBalance();
+        setStateFrom('areVirtualItemsFetching', false);
+      }).catch(error => {
+        setVirtualItemsError(error.message);
+        setStateFrom('areVirtualItemsFetching', false)
+      });
     }
   }, [virtualItems]);
 
+
+
+  const renderContent = virtualItems => {
+    return virtualItems.length > 0 && (
+      <>
+        <GroupSwitcher
+          groups={groups}
+          activeGroup={activeGroup}
+          onGroupChange={setActiveGroup}
+        />
+        {virtualItems.map(g => activeGroup === g.groupID && (
+          <React.Fragment key={g.groupID}>
+            <Title>
+              {g.groupName}
+            </Title>
+            <Group>
+              {g.items.map((item, index) => (
+                <VirtualItem
+                  order={index}
+                  key={item.sku}
+                  product={item}
+                  addToCart={addToCart}
+                  buyByVC={buyByVC}
+                />
+              ))}
+            </Group>
+          </React.Fragment>
+        ))}
+      </>
+    );
+  }
+
   return (
     <Body>
-      {virtualItems.length > 0 && (
-        <>
-          <GroupSwitcher
-            groups={virtualItems}
-            activeGroup={activeGroup}
-            onGroupChange={setActiveGroup}
-          />
-          {virtualItems.map(group => activeGroup === group.id ? (
-            <React.Fragment key={group.id}>
-              <Title>
-                {group.name}
-              </Title>
-              <Group>
-                {group.products && group.products.map((product, index) => (
-                  <VirtualItem
-                    order={index}
-                    key={product.sku}
-                    product={product}
-                    addToCart={addToCart}
-                    buyByVC={buyByVC}
-                  />
-                ))}
-              </Group>
-            </React.Fragment>
-          ) : null
-          )}
-        </>
-      )}
+      {areVirtualItemsFetching
+        ? <Preloader />
+        : renderContent(virtualItems)
+      }
     </Body>
   );
 }
@@ -67,6 +89,7 @@ const Body = styled.div`
   position: relative;
   background-color: transparent;
   z-index: 4;
+  height: 100%;
 `;
 
 const Group = styled.div`

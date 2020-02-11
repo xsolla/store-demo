@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import IconButton from '@material-ui/core/IconButton';
 import MUIDeleteIcon from "@material-ui/icons/Delete";
 import MUIIncrementIcon from "@material-ui/icons/AddBox";
 import MUIDecrementIcon from "@material-ui/icons/IndeterminateCheckBox";
@@ -30,11 +31,20 @@ const CartItemComponent = ({ item, getTheme, changeItemQuantity }) => {
       <PriceInfo>
         <QuantityActions>
           {item.quantity > 1
-            ? <DecrementIcon onClick={handleQuantityDec} />
-            : <DeleteIcon onClick={handleQuantityDec} />
+            ? (
+              <IconButton color="inherit" onClick={handleQuantityDec}>
+                <DecrementIcon />
+              </IconButton>
+            ) : (
+              <IconButton color="inherit" onClick={handleQuantityDec}>
+                <DeleteIcon />
+              </IconButton>
+            )
           }
           <ItemQuantity>{item.quantity}</ItemQuantity>
-          <IncrementIcon onClick={handleQuantityInc} />
+          <IconButton color="inherit" onClick={handleQuantityInc}>
+            <IncrementIcon />
+          </IconButton>
         </QuantityActions>
       </PriceInfo>
     </CartItem>
