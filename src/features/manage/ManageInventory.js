@@ -1,12 +1,12 @@
 import React, {PureComponent} from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import Alert from 'react-bootstrap/Alert';
+import Alert from '@material-ui/core/Snackbar';
 
 import {getVirtualCurrencyList, getVirtualItemList, rewardItems} from './ManageInventoryLoader'
 
 import './ManageInventory.css';
-import MenuMaterial from "../../components/MenuMaterial";
+import { GroupSwitcher } from "../../components/GroupSwitcher";
 
 export class ManageInventory extends PureComponent {
     constructor(props) {
@@ -61,10 +61,9 @@ export class ManageInventory extends PureComponent {
 
     changeGroupHandler = group => {
         const {manageInventoryGroups} = this.state;
-        this.setState({activeInventoryGroup: group});
         const activeGroup = manageInventoryGroups.find(g => g['id'] === group);
         const itemSku = activeGroup && activeGroup.items.length > 0 ? activeGroup.items[0].sku : 'helmet_1';
-        this.setState({inventoryItem: itemSku});
+        this.setState({inventoryItem: itemSku, activeInventoryGroup: group});
         this.setItemQuantity(1);
     };
 
@@ -191,7 +190,7 @@ export class ManageInventory extends PureComponent {
         return (
             <div className="manage-inventory__row">
                 <div className="manage-inventory__alert">
-                    <Alert onClose={(e) => this.setShowToast(false)} show={showToast}
+                    <Alert onClose={(e) => this.setShowToast(false)} open={showToast}
                            variant={statusToast === 'processing' ? "primary" : "success"} dismissible>
                         <Alert.Heading>{statusToast === 'processing' ? 'Operation is processing' : 'Operation complete!'}</Alert.Heading>
                         <p>
@@ -219,7 +218,7 @@ export class ManageInventory extends PureComponent {
                         </p>
                     </Alert>
                 </div>
-                <div className="">
+                <div>
                     <div className="manage-inventory">
                         <div className="manage-inventory__user-list">
                             <div className="manage-inventory__title">User</div>
@@ -236,10 +235,10 @@ export class ManageInventory extends PureComponent {
                                 </select>
                             </div>
                         </div>
-                        <MenuMaterial
-                            virtualItems={manageInventoryGroups}
-                            activeGroup={activeInventoryGroup}
-                            changeGroupHandler={this.changeGroupHandler}
+                        <GroupSwitcher
+                          groups={manageInventoryGroups}
+                          activeGroup={activeInventoryGroup}
+                          onGroupChange={this.changeGroupHandler}
                         />
 
                         <div className="manage-inventory-item-container">

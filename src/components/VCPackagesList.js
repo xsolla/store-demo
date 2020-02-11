@@ -42,8 +42,7 @@ class VCPackagesList extends Component {
                       color: valueFromContext.theme["colorText"]
                     }}
                   >
-                    {valueFromContext.activeModule === "virtualItems" &&
-                    valueFromContext.virtualCurrencyPackages && (
+                    {valueFromContext.virtualCurrencyPackages && (
                       <CssProductList>
                         <СssGroup>
                           {
