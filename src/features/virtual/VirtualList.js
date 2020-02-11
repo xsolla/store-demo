@@ -42,43 +42,39 @@ const VirtualList = () => {
     }
   }, [virtualItems]);
 
-
-
-  const renderContent = virtualItems => {
-    return virtualItems.length > 0 && (
-      <>
-        <GroupSwitcher
-          groups={groups}
-          activeGroup={activeGroup}
-          onGroupChange={setActiveGroup}
-        />
-        {virtualItems.map(g => activeGroup === g.groupID && (
-          <React.Fragment key={g.groupID}>
-            <Title>
-              {g.groupName}
-            </Title>
-            <Group>
-              {g.items.map((item, index) => (
-                <VirtualItem
-                  order={index}
-                  key={item.sku}
-                  product={item}
-                  addToCart={addToCart}
-                  buyByVC={buyByVC}
-                />
-              ))}
-            </Group>
-          </React.Fragment>
-        ))}
-      </>
-    );
-  }
+  const content = React.useMemo(() => virtualItems.length > 0 && (
+    <>
+      <GroupSwitcher
+        groups={groups}
+        activeGroup={activeGroup}
+        onGroupChange={setActiveGroup}
+      />
+      {virtualItems.map(g => activeGroup === g.groupID && (
+        <React.Fragment key={g.groupID}>
+          <Title>
+            {g.groupName}
+          </Title>
+          <Group>
+            {g.items.map((item, index) => (
+              <VirtualItem
+                order={index}
+                key={item.sku}
+                product={item}
+                addToCart={addToCart}
+                buyByVC={buyByVC}
+              />
+            ))}
+          </Group>
+        </React.Fragment>
+      ))}
+    </>
+  ), [activeGroup, virtualItems]);
 
   return (
     <Body>
       {areVirtualItemsFetching
         ? <Preloader />
-        : renderContent(virtualItems)
+        : content
       }
     </Body>
   );

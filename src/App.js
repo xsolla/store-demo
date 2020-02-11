@@ -31,15 +31,15 @@ const App = () => {
         <Switch>
           <Route path={routes.items} exact component={VirtualList} />
           <Route path={routes.currencies} component={VCList} />
+          <Route path={routes.physical} component={PhysicalList} />
           <Route path={routes.inventory} render={() => <InventoryList {...valueFromContext} />} />
-          <Route path={routes.physical} render={() => <PhysicalList {...valueFromContext} />} />
           <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
           <Route path={routes.manage} render={() => <ManageInventory {...valueFromContext} />} />
           <Route path={routes.purchase} render={() => <ServerPurchase {...valueFromContext} />} />
         </Switch>
 
-        <Background getTheme={valueFromContext.getTheme}>
-          <BackgroundOverlay getTheme={valueFromContext.getTheme} />
+        <Background>
+          <BackgroundOverlay />
         </Background>
       </>
     </HashRouter>
@@ -47,7 +47,7 @@ const App = () => {
 };
 
 const Background = styled.div`
-  background-image: url(${props => props.getTheme('backgroundUrl')});
+  background-image: url(${props => props.theme.backgroundUrl});
   z-index: -1;
   background-size: cover;
   position: fixed;
@@ -59,7 +59,7 @@ const Background = styled.div`
 
 const BackgroundOverlay = styled.div`
   position: absolute;
-  background-color: ${props => props.getTheme('colorBg')};
+  background-color: ${props => props.theme.colorBg};
   opacity: 0.8;
   left: 0;
   right: 0;

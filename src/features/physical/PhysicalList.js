@@ -1,135 +1,78 @@
-import React, {PureComponent} from "react";
+import React from 'react';
+import styled from 'styled-components';
 
-import {getPsTokenByItem} from '../StoreLoader';
-import {getPhysicalGoods} from './PhysicalListLoader';
+import { ProductContext } from '../../context';
+import { Preloader } from '../../components/Preloader';
+import { loadPhysicalGoods } from './PhysicalListLoader';
+import { PhysicalItem } from './PhysicalItem';
 
-import './PhysicalList.css';
-import Product from "../../components/Product";
-import {ProductConsumer} from "../../context";
+const PhysicalList = () => {
+  const {
+    logToken,
+    projectId,
+    addToCart,
+    setStateFrom,
+    physicalItems,
+    arePhysicalItemsFetching,
+    setPhysicalItems,
+    setPhysicalItemsError,
+  } = React.useContext(ProductContext);
 
-export class PhysicalList extends PureComponent {
-    constructor() {
-        super();
+React.useEffect(() => {
+  if (!arePhysicalItemsFetching && logToken && physicalItems.length === 0) {
+    setStateFrom('arePhysicalItemsFetching', true);
+    loadPhysicalGoods(projectId, logToken)
+      .then(data => {
+        setPhysicalItems(data);
+        setStateFrom('arePhysicalItemsFetching', false);
+      })
+      .catch(error => {
+        setPhysicalItemsError(error.message);
+        setStateFrom('arePhysicalItemsFetching', false);
+      });
+  }
+}, [physicalItems]);
 
-        this.state = {
-            isPurchasing: false
-        }
-    }
+const content = React.useMemo(() => physicalItems.length > 0 && (
+  <Content>
+    {physicalItems.map((item, index) => (
+      <PhysicalItem
+        order={index}
+        key={item.sku}
+        product={item}
+        addToCart={addToCart}
+      />
+    ))}
+  </Content>
+), [physicalItems]);
 
-    componentDidMount() {
-        if (this.props.logToken && this.props.physicalItems.length === 0) {
-            this.updateCatalogue();
-            this.props.updateVirtualCurrencyBalance();
-        }
-    }
-
-    componentWillUnmount() {
-        if (null !== this.props.physicalItems) {
-            this.props.setPhysicalItems([]);
-        }
-    }
-
-    updateCatalogue() {
-        getPhysicalGoods(window.xProjectId, this.props.logToken)
-            .then(physicalItems => {
-                this.props.setPhysicalItems(physicalItems);
-            })
-            .catch(() => {
-                this.props.setPhysicalItems([]);
-            });
-    }
-
-    buyItem(item) {
-        if (this.state.isPurchasing) {
-            return;
-        }
-
-        const {logToken} = this.props;
-        this.setState({
-            isPurchasing: true
-        })
-        getPsTokenByItem(item, logToken)
-            .then(response => {
-                let options = {
-                    'height': 680
-                };
-                window.xPayStationInit(response.data["token"], options);
-                window.XPayStationWidget.open();
-                window.XPayStationWidget.on(
-                    window.XPayStationWidget.eventTypes.CLOSE,
-                    () => {
-                        this.setState({
-                            isPurchasing: false
-                        });
-                    }
-                );
-            })
-            .catch(e => {
-                this.setState({
-                    isPurchasing: false
-                })
-            });
-    };
-
-    render() {
-        const {physicalItems} = this.props;
-
-        return (
-            <div>
-                <ProductConsumer>
-                    {
-                        valueFromContext =>
-                            <div className="">
-                                <div className="physical-list">
-                                    {
-                                        physicalItems && physicalItems.length &&
-                                        physicalItems
-                                            .map(
-                                                (oneProduct, key) => {
-                                                    return (
-                                                        <Product
-                                                            ref={this.ProductRef}
-                                                            key={oneProduct.sku}
-                                                            order={key}
-                                                            initClass="initialFlow1"
-                                                            sku={oneProduct.sku}
-                                                            title={oneProduct.name}
-                                                            description={
-                                                                oneProduct.description
-                                                            }
-                                                            price={oneProduct.price.amount}
-                                                            image_url={oneProduct.image_url}
-                                                            currency={
-                                                                oneProduct.price.currency
-                                                            }
-                                                            product={oneProduct}
-                                                            addToCart={
-                                                                valueFromContext.addToCart
-                                                            }
-                                                            getTheme={valueFromContext.getTheme.bind(
-                                                                this
-                                                            )}
-                                                            cartId={valueFromContext.cartId}
-                                                            logToken={
-                                                                valueFromContext.logToken
-                                                            }
-                                                            changeItemQuantityInCart={
-                                                                valueFromContext.changeItemQuantityInCart
-                                                            }
-                                                            activeGroup={this.props.activeGroup}
-                                                            buyByVC={
-                                                                valueFromContext.buyByVC
-                                                            }
-                                                        />
-                                                    );
-                                                }
-                                            )
-                                    }
-                                </div>
-                            </div>
-                    }
-                </ProductConsumer>
-            </div>
-        );
-    }
+  return (
+    <Body>
+      {arePhysicalItemsFetching
+        ? <Preloader/>
+        : content
+      }
+    </Body>
+  );
 }
+
+const Body = styled.div`
+  color: ${props => props.theme.colorText};
+  position: relative;
+  background-color: transparent;
+  z-index: 1;
+  height: 100%;
+`;
+
+const Content = styled.div`
+  display: grid;
+  padding: 30px 0;
+  grid-gap: 30px;
+  grid-template-columns: ${props => `repeat(auto-fit, minmax(
+    ${props.theme.cardWidth}px, 
+    ${props.theme.cardWidth}px
+  ))`};
+  justify-content: center;
+`;
+
+export { PhysicalList };

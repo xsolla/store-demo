@@ -42,6 +42,9 @@ class ProductProvider extends React.PureComponent {
     areVirtualCurrenciesFetching: false,
 
     physicalItems: [],
+    physicalItemsError: '',
+    physicalItemsFetching: false,
+
     entitlementItems: [],
     virtualCurrencyPackages: null,
     currency: null,
@@ -106,12 +109,8 @@ class ProductProvider extends React.PureComponent {
     })
   };
 
-  setPhysicalItems = physicalItems => {
-    this.setState({
-      physicalItems,
-      isFetching: false
-    })
-  };
+  setPhysicalItems = physicalItems => this.setState({ physicalItems });
+  setPhysicalItemsError = physicalItemsError => this.setState({ physicalItemsError });
 
   setVirtualItems = virtualItems => this.setState({ virtualItems });
   setVirtualItemsError = virtualItemsError => this.setState({ virtualItemsError });
@@ -161,10 +160,6 @@ class ProductProvider extends React.PureComponent {
   payStationHandler = () => this.clearCart();
 
   setPsToken = psToken => this.setState({ psToken });
-
-  handleDetail = () => {
-    console.log("hello from handleDetail");
-  };
 
   setStateFrom = (stateName, stateValue) => this.setState({ [stateName]: stateValue });
 
@@ -262,17 +257,6 @@ class ProductProvider extends React.PureComponent {
     }
   };
 
-  setGroups = virtualItems => this.setState({ virtualItems, isFetching: false });
-
-  setCurrs = ({virtualItems, currency, subscriptions, virtualCurrencyPackages}) => {
-    this.setState({
-      virtualItems,
-      currency,
-      subscriptions,
-      virtualCurrencyPackages
-    });
-  };
-
   getTheme = (what = 'all') => what === 'all' 
     ? this.state.theme
     : `${this.state.theme[what]}${what === 'borderRadius' ? 'px' : ''}`;
@@ -292,15 +276,13 @@ class ProductProvider extends React.PureComponent {
       <ProductContext.Provider
         value={{
           ...this.state, //all props and vals
-          handleDetail: this.handleDetail,
           setPsToken: this.setPsToken,
-          setGroups: this.setGroups,
           setProducts: this.setProducts,
           setStateFrom: this.setStateFrom,
-          setCurrs: this.setCurrs,
           setInventoryItems: this.setInventoryItems,
           setEntitlementItems: this.setEntitlementItems,
           setPhysicalItems: this.setPhysicalItems,
+          setPhysicalItemsError: this.setPhysicalItemsError,
           addToCart: this.addToCart,
           buyByVC: this.buyByVC,
           clearVCCart: this.clearVCCart,

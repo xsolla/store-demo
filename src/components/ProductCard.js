@@ -7,7 +7,7 @@ import Collapse from '@material-ui/core/Collapse';
 import MUICardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 
-const ProductCard = ({
+const ProductCard = React.memo(({
   image,
   order,
   name,
@@ -61,7 +61,7 @@ const ProductCard = ({
       </Card>
     </CardAppear>
   );
-};
+});
 
 const CardAppear = styled.div`
   position: relative;
