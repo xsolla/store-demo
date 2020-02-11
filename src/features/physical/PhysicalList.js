@@ -17,7 +17,7 @@ export class PhysicalList extends PureComponent {
     }
 
     componentDidMount() {
-        if (this.props.logToken && null === this.props.physicalItems) {
+        if (this.props.logToken && this.props.physicalItems.length === 0) {
             this.updateCatalogue();
             this.props.updateVirtualCurrencyBalance();
         }

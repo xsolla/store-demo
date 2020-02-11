@@ -63,6 +63,7 @@ const Navbar = ({ location }) => {
         <Tabs value={location.pathname} component="nav">
           {generalMenuItems.map(x => (
             <Tab
+              key={x.route}
               getTheme={getTheme}
               component={NavLink}
               label={x.label}
@@ -130,6 +131,7 @@ const Navbar = ({ location }) => {
       >
         {userMenuItems.map(x => (
           <Link
+            key={x.route}
             getTheme={getTheme}
             onClick={handleMenuClose}
             activeClassName="active"

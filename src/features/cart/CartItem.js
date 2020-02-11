@@ -17,11 +17,11 @@ const CartItemComponent = ({ item, getTheme, changeItemQuantity }) => {
       <CartItemBody>
         <ItemName>{item.name}</ItemName>
         <ItemPrice>
-          <CartItemTotal getTheme={getTheme}>
+          <CartItemTotal>
             {item.price.currency} {calcPrice(item.price.amount, item.quantity)}
           </CartItemTotal>
           {item.quantity > 1 && (
-            <CartItemPriceForOne getTheme={getTheme}>
+            <CartItemPriceForOne>
               {item.price.currency} {calcPrice(item.price.amount, 1)} for one item
             </CartItemPriceForOne>
           )}
@@ -105,7 +105,7 @@ const ItemPrice = styled.div`
 `;
 
 const CartItemTotal = styled.div`
-  color: ${props => props.getTheme('colorAccent')};
+  color: ${props => props.theme.colorAccent};
   font-weight: 600;
 `;
 

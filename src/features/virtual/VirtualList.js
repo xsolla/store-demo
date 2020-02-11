@@ -1,18 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
-import MUITabs from '@material-ui/core/Tabs';
-import MUITab from '@material-ui/core/Tab';
 
 import { ProductContext } from '../../context';
 import StoreLoader from '../../components/StoreLoader';
+import { GroupSwitcher } from '../../components/GroupSwitcher';
 import { VirtualItem } from './VirtualItem';
 
 const VirtualList = () => {
   const {
     logToken,
     virtualItems,
-    activeGroup,
-    getTheme,
     addToCart,
     buyByVC,
     setStateFrom,
@@ -21,8 +18,7 @@ const VirtualList = () => {
     updateVirtualCurrencyBalance,
   } = React.useContext(ProductContext);
 
-  const handleGroupChange = (_, activeGroup) => setStateFrom('activeGroup', activeGroup);
-  const activeGroupID = virtualItems.length > 0 && activeGroup === 'first' ? virtualItems[0].id : activeGroup;
+  const [activeGroup, setActiveGroup] = React.useState(virtualItems[0] ? virtualItems[0].id : null);
 
   React.useEffect(() => {
     if (!isFetching && logToken && virtualItems.length === 0) {
@@ -30,46 +26,34 @@ const VirtualList = () => {
       StoreLoader(window.xProjectId, logToken).then(setCurrs);
       updateVirtualCurrencyBalance();
     }
-  });
+  }, [virtualItems]);
 
   return (
-    <Body color={getTheme('colorText')}>
+    <Body>
       {virtualItems.length > 0 && (
         <>
-          <Tabs
-            getTheme={getTheme}
-            value={activeGroupID}
-            onChange={handleGroupChange}
-            variant="scrollable"
-          >
-            {virtualItems.map(group => (
-              <Tab
-                getTheme={getTheme}
-                value={group.id}
-                key={group.id}
-                color="secondary"
-                textColor="secondary"
-                label={group.name}
-              />
-            ))}
-          </Tabs>
-          {virtualItems.map(group => activeGroupID === group.id ? (
-            <>
-              <Title color={getTheme('colorText')}>
+          <GroupSwitcher
+            groups={virtualItems}
+            activeGroup={activeGroup}
+            onGroupChange={setActiveGroup}
+          />
+          {virtualItems.map(group => activeGroup === group.id ? (
+            <React.Fragment key={group.id}>
+              <Title>
                 {group.name}
               </Title>
-              <Group getTheme={getTheme}>
-                {group.products && group.products.map(product => (
+              <Group>
+                {group.products && group.products.map((product, index) => (
                   <VirtualItem
+                    order={index}
                     key={product.sku}
                     product={product}
                     addToCart={addToCart}
-                    getTheme={getTheme}
                     buyByVC={buyByVC}
                   />
                 ))}
               </Group>
-            </>
+            </React.Fragment>
           ) : null
           )}
         </>
@@ -79,7 +63,7 @@ const VirtualList = () => {
 }
 
 const Body = styled.div`
-  color: ${props => props.color};
+  color: ${props => props.theme.colorText};
   position: relative;
   background-color: transparent;
   z-index: 4;
@@ -90,14 +74,14 @@ const Group = styled.div`
   padding: 30px 0;
   grid-gap: 30px;
   grid-template-columns: ${props => `repeat(auto-fit, minmax(
-    ${props.getTheme('cardWidth')}px, 
-    ${props.getTheme('cardWidth')}px)
-  )`};
+    ${props.theme.cardWidth}px, 
+    ${props.theme.cardWidth}px
+  ))`};
   justify-content: center;
 `;
 
 const Title = styled.div`
-  color: ${props => props.color};
+  color: ${props => props.theme.colorText};
   min-height: 2em;
   display: flex;
   align-items: center;
@@ -107,22 +91,6 @@ const Title = styled.div`
   font-size: 1.2em;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-`;
-
-const Tabs = styled(MUITabs)`
-  padding: 30px 0;
-  color: ${props => props.getTheme('colorAccent')};
-  
-  & .MuiTabs-flexContainer {
-    justify-content: center;
-  };
-`;
-
-const Tab = styled(MUITab)`
-  &.MuiTab-root {
-    color: ${props => props.getTheme('colorAccentText')};
-    font-family: ${props => props.getTheme('fontFamily')};
-  };
 `;
 
 export { VirtualList };

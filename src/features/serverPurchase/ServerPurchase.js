@@ -6,7 +6,7 @@ import {CssCartList, CssSubtotal} from "../../components/Cart";
 import {getFormattedCurrency} from "../../components/formatCurrency";
 import Button from "@material-ui/core/Button";
 import {purchaseItems} from "./ServerPurchaseLoader";
-import Alert from "react-bootstrap/Alert";
+import Alert from "@material-ui/core/Snackbar";
 
 export class ServerPurchase extends PureComponent {
     constructor(props) {
@@ -77,7 +77,7 @@ export class ServerPurchase extends PureComponent {
         return (
             <div>
                 <div className="server-purchase__alert">
-                    <Alert onClose={(e) => this.setShowToast(false)} show={showToast}
+                    <Alert onClose={(e) => this.setShowToast(false)} open={showToast}
                            variant={statusToast === 'processing' ? "primary" : "success"} dismissible>
                         <Alert.Heading>{statusToast === 'processing' ? 'Operation is processing' : 'Operation complete!'}</Alert.Heading>
                         {

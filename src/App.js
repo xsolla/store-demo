@@ -34,7 +34,7 @@ const App = () => {
           : (
               <Switch>
                 <Route path={routes.items} exact component={VirtualList} />
-                <Route path={routes.inventory}render={() => <InventoryList {...valueFromContext} />} />
+                <Route path={routes.inventory} render={() => <InventoryList {...valueFromContext} />} />
                 <Route path={routes.currencies} render={() => <VCPackagesList {...valueFromContext} />} />
                 <Route path={routes.physical} render={() => <PhysicalList {...valueFromContext} />} />
                 <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />

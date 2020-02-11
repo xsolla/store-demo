@@ -22,9 +22,7 @@ const CartComponent = ({ history }) => {
     logToken,
     payStationHandler,
     cartShown,
-    getTheme,
     changeItemQuantityInCart,
-    isFetching,
   } = React.useContext(ProductContext);
 
   const calculateSubtotal = cart => {
@@ -42,11 +40,11 @@ const CartComponent = ({ history }) => {
   };
 
   const buyButtonAction = () => {
-    setBuyButtonDisabled(true);
-    const psTokenPromise = getPsTokenBuyCart(cart.cartId, logToken);
-    psTokenPromise
+    hideCart();
+    getPsTokenBuyCart(cart.cartId, logToken)
       .then(response => {
-        window.xPayStationInit(response.data["token"]);
+        setBuyButtonDisabled(true);
+        window.xPayStationInit(response.data.token);
         window.XPayStationWidget.open();
         window.XPayStationWidget.on(
           window.XPayStationWidget.eventTypes.CLOSE,
@@ -69,8 +67,8 @@ const CartComponent = ({ history }) => {
       BackdropProps={{ timeout: 250 }}
     >
       <Grow in={cartShown} timeout={250}>
-        <CartContent getTheme={getTheme}>
-          <CartHeader getTheme={getTheme}>
+        <CartContent>
+          <CartHeader>
             <h4>Cart</h4>
             <IconClose onClick={hideCart} />
           </CartHeader>
@@ -79,21 +77,22 @@ const CartComponent = ({ history }) => {
               ? cart.items.map(item => (
                 <CartItem
                   item={item}
-                  getTheme={getTheme}
                   changeItemQuantity={changeItemQuantityInCart}
                 />
               ))
               : <p>Empty cart</p>
             }
           </CartList>
-          <CartFooter getTheme={getTheme}>
+          <CartFooter>
             {cart.items.length > 0 && (
               <Subtotal>
                 Subtotal:
                 <Price>
-                  {isFetching
-                    ? getFormattedCurrency(calculateSubtotal(cart.items), cart.items[0].price.currency).formattedCurrency
-                    : getFormattedCurrency(cart.price.amount, cart.price.currency).formattedCurrency
+                  {
+                    getFormattedCurrency(
+                      calculateSubtotal(cart.items),
+                      cart.price.currency || cart.items[0].price.currency
+                    ).formattedCurrency
                   }
                 </Price>
               </Subtotal>
@@ -101,7 +100,7 @@ const CartComponent = ({ history }) => {
             <CartActions>
               <Button
                 variant="contained"
-                disabled={buyButtonDisabled || cart.items.length === 0}
+                disabled={cart.items.length === 0}
                 style={{ marginRight: '7px' }}
                 onClick={buyAnotherPlatform}
               >
@@ -109,7 +108,7 @@ const CartComponent = ({ history }) => {
               </Button>
               <Button
                 variant="contained"
-                disabled={buyButtonDisabled || cart.items.length === 0}
+                disabled={cart.items.length === 0}
                 onClick={buyButtonAction}
               >
                 Buy on Xsolla
@@ -136,9 +135,9 @@ const CartContent = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: ${props => props.getTheme('borderRadius')};
-  background-color: ${props => props.getTheme('colorBg')};
-  color: ${props => props.getTheme('colorText')};
+  border-radius: ${props => `${props.theme.borderRadius}px`};
+  background-color: ${props => props.theme.colorBg};
+  color: ${props => props.theme.colorText};
   padding: 0 32px;
   width: 680px;
   max-height: 80vh;
@@ -156,8 +155,8 @@ const CartHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: ${props => props.getTheme('colorBg')};
-  border-bottom: 1px solid ${props => Colorer(props.getTheme('colorText')).alpha(0.1).string()};
+  background-color: ${props => props.theme.colorBg};
+  border-bottom: 1px solid ${props => Colorer(props.theme.colorText).alpha(0.1).string()};
   z-index: 10;
   padding: 24px 0 8px 0;
 `;
@@ -176,8 +175,8 @@ const CartFooter = styled.div`
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  background-color: ${props => props.getTheme('colorBg')};
-  border-top: 1px solid ${Colorer(props => props.getTheme('colorText')).alpha(0.1).string()};
+  background-color: ${props => props.theme.colorBg};
+  border-top: 1px solid ${Colorer(props => props.theme.colorText).alpha(0.1).string()};
   padding: 24px 0 24px 0;
 `;
 

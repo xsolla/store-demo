@@ -4,81 +4,86 @@ import Colorer from 'color';
 import Dotdotdot from 'react-dotdotdot'
 
 import Collapse from '@material-ui/core/Collapse';
-import Grow from '@material-ui/core/Grow';
 import MUICardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 
 const ProductCard = ({
   image,
+  order,
   name,
   value,
   description,
   actionButtonContent,
-  getTheme,
   onAction,
 }) => {
+  const [isShown, setShown] = React.useState(false);
+  const showCard = () => setShown(true);
+
   const [isHovered, setHovered] = React.useState(false);
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
 
+  React.useEffect(() => {
+    setTimeout(showCard, order * 100);
+  }, [isShown]);
+
   return (
-    <Grow in>
-      <CardAppear hovered={isHovered} getTheme={getTheme}>
-        <Card
-          getTheme={getTheme}
-          hovered={isHovered}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <CardImage image={image}/>
-          <CardContent>
-            <CardTitle>{name}</CardTitle>
-            <Collapse in={isHovered} timeout="auto" collapsedHeight="50px">
-              {isHovered
-                ? description
-                : (
-                <Dotdotdot animate clamp={2}>
-                  {description}
-                </Dotdotdot>
-              )}
-            </Collapse>
-          </CardContent>
-          <CardFooter getTheme={getTheme}>
-            <CardQuantity getTheme={getTheme}>
-              {value}
-            </CardQuantity>
-            <Button
-              getTheme={getTheme}
-              variant="contained"
-              onClick={onAction}
-            >
-              {actionButtonContent}
-            </Button>
-          </CardFooter>
-        </Card>
-      </CardAppear>
-    </Grow>
+    <CardAppear shown={isShown} hovered={isHovered}>
+      <Card
+        hovered={isHovered}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <CardImage image={image}/>
+        <CardContent>
+          <CardTitle>{name}</CardTitle>
+          <Collapse in={isHovered} timeout="auto" collapsedHeight="50px">
+            {isHovered
+              ? description
+              : (
+              <Dotdotdot animate clamp={2}>
+                {description}
+              </Dotdotdot>
+            )}
+          </Collapse>
+        </CardContent>
+        <CardFooter>
+          <CardQuantity>
+            {value}
+          </CardQuantity>
+          <Button
+            variant="contained"
+            onClick={onAction}
+          >
+            {actionButtonContent}
+          </Button>
+        </CardFooter>
+      </Card>
+    </CardAppear>
   );
 };
 
 const CardAppear = styled.div`
   position: relative;
   z-index: ${props => props.hovered ? 1 : 0};
-  width: ${props => `${props.getTheme('cardWidth')}px`};
-  height: ${props => `${props.getTheme('cardWidth')}px`};
+  width: ${props => `${props.theme.cardWidth}px`};
+  height: ${props => `${props.theme.cardWidth}px`};
+  transition: transform 350ms ease-out, opacity 150ms ease-out;
+  opacity: ${props => props.shown ? 1 : 0};
+  transform: ${props => props.shown ? 'none' : 'translateY(20px)'};;
 `;
 
 const Card = styled.div`
   position: absolute;
-  color: ${props => props.getTheme('colorText')};
+  color: ${props => props.theme.colorText};
   display: flex;
   flex-direction: column;
-  width: ${props => `${props.getTheme('cardWidth')}px`};
-  min-height: ${props => `${props.getTheme('cardWidth')}px`};
-  background-color: ${props => props.hovered ? props.getTheme('colorBg') : 'transparent'};
-  box-shadow: ${props => props.hovered ? props.getTheme('boxShadow') : 'none'};
-  transition: box-shadow, background-color ${props => props.getTheme('transitionStyle')};
-  border-radius: ${props => props.getTheme('borderRadius')};
+  width: ${props => `${props.theme.cardWidth}px`};
+  min-height: ${props => `${props.theme.cardWidth}px`};
+  background-color: ${props => props.hovered ? props.theme.colorBg : 'transparent'};
+  box-shadow: ${props => props.hovered ? props.theme.boxShadow : 'none'};
+  transition: box-shadow, background-color ${props => props.theme.transitionStyle};
+  border-radius: ${props => `${props.theme.borderRadius}px`};
 `;
 
 const CardContent = styled(MUICardContent)`
@@ -99,7 +104,7 @@ const CardTitle = styled.div`
 const CardFooter = styled.div`
   display: flex;
   align-items: center;
-  border-top: 1px solid ${props => Colorer(props.getTheme('colorText')).alpha(0.1).string()};
+  border-top: 1px solid ${props => Colorer(props.theme.colorText).alpha(0.1).string()};
   padding: 8px 0;
   margin: 0px 16px 0 16px;
 `;
@@ -117,7 +122,7 @@ const CardImage = styled.div`
 
 const CardQuantity = styled.div`
   flex-grow: 1;
-  color: ${props => props.getTheme('colorAccent')};
+  color: ${props => props.theme.colorAccent};
   font-weight: 600;
 `;
 
