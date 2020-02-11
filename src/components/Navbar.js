@@ -21,7 +21,6 @@ import XLogin from './XLogin.js';
 
 const Navbar = ({ location }) => {
   const {
-    getTheme,
     logToken,
     user,
     userBalanceVirtualCurrency,
@@ -58,13 +57,12 @@ const Navbar = ({ location }) => {
   ]);
 
   return (
-    <Header getTheme={getTheme}>
+    <Header>
       <Hidden mdDown>
         <Tabs value={location.pathname} component="nav">
           {generalMenuItems.map(x => (
             <Tab
               key={x.route}
-              getTheme={getTheme}
               component={NavLink}
               label={x.label}
               value={x.route}
@@ -75,7 +73,7 @@ const Navbar = ({ location }) => {
       </Hidden>
 
       <Hidden lgUp>
-        <MenuButton getTheme={getTheme} onClick={toggleSideMenu}>
+        <MenuButton onClick={toggleSideMenu}>
           <MenuIcon />
         </MenuButton>
       </Hidden>
@@ -108,7 +106,7 @@ const Navbar = ({ location }) => {
         </Button>
       )}
 
-      <CartButton
+      <Button
         variant="contained"
         color="secondary"
         size="small"
@@ -118,10 +116,9 @@ const Navbar = ({ location }) => {
         <Hidden xsDown>
           cart
         </Hidden>
-      </CartButton>
+      </Button>
 
       <Menu
-        getTheme={getTheme}
         anchorEl={menuAnchor}
         getContentAnchorEl={null}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -132,7 +129,6 @@ const Navbar = ({ location }) => {
         {userMenuItems.map(x => (
           <Link
             key={x.route}
-            getTheme={getTheme}
             onClick={handleMenuClose}
             activeClassName="active"
             to={x.route}
@@ -147,7 +143,7 @@ const Navbar = ({ location }) => {
 
 const Menu = styled(MUIMenu)`
   .MuiMenu-list {
-    background-color: ${props => props.getTheme('colorBg')};
+    background-color: ${props => props.theme.colorBg};
   }
 `;
 
@@ -160,7 +156,7 @@ const Tabs = styled(MUITabs)`
 const Tab = styled(MUITab)`
   &.MuiTab-root {
     text-transform: uppercase;
-    font-family: ${props => props.getTheme('fontFamily')};
+    font-family: ${props => props.theme.fontFamily};
     font-size: 1.4rem;
     font-weight: 700;
     line-height: 1.4rem;
@@ -174,7 +170,7 @@ const Link = styled(NavLink)`
   align-items: center;
   text-transform: uppercase;
   text-decoration: none;
-  font-family: ${props => props.getTheme('fontFamily')};
+  font-family: ${props => props.theme.fontFamily};
   font-size: 1.2rem;
   font-weight: 700;
   line-height: 1.2rem;
@@ -194,7 +190,7 @@ const Link = styled(NavLink)`
 
 const MenuButton = styled(MUIIconButton)`
   &.MuiIconButton-root {
-    color: ${props => props.getTheme('colorAccentText')};
+    color: ${props => props.theme.colorAccentText};
   }
 `;
 
@@ -222,14 +218,9 @@ const LoginButton = styled.div`
   justify-content: stretch;
   font-family: 'Roboto';
   color: black;
-  background: var(--mainWhite);
   border-radius: 4px;
   padding: 0 0.6rem;
   cursor: pointer;
-`;
-
-const CartButton = styled(Button)`
-
 `;
 
 const UserMail = styled.div`
@@ -246,8 +237,8 @@ const Header = styled.header`
   height: 50px;
   padding: 0 15px;
   font-family: 'Helvetica Neue', 'Roboto', Arial, Helvetica, sans-serif;
-  color: ${props => props.getTheme('colorAccentText')};
-  background-color: ${props => props.getTheme('colorBg')};
+  color: ${props => props.theme.colorAccentText};
+  background-color: ${props => props.theme.colorBg};
 `;
 
 export default withRouter(Navbar);

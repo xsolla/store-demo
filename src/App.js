@@ -1,8 +1,7 @@
 import React from 'react';
-import {HashRouter, Route, Switch} from 'react-router-dom';
-
-import Hidden from '@material-ui/core/Hidden';
+import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
+import Hidden from '@material-ui/core/Hidden';
 
 import { InventoryList } from './features/inventory/InventoryList';
 import { PhysicalList } from './features/physical/PhysicalList';
@@ -21,28 +20,26 @@ const App = () => {
   const valueFromContext = React.useContext(ProductContext);
 
   return (
-    <HashRouter basename='/'>
-      <>
-        <Navbar />
-        <Hidden lgUp>
-          <MobileNavbar />
-        </Hidden>
-        <Cart />
-        <Switch>
-          <Route path={routes.items} exact component={VirtualList} />
-          <Route path={routes.currencies} component={VCList} />
-          <Route path={routes.physical} component={PhysicalList} />
-          <Route path={routes.inventory} render={() => <InventoryList {...valueFromContext} />} />
-          <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
-          <Route path={routes.manage} render={() => <ManageInventory {...valueFromContext} />} />
-          <Route path={routes.purchase} render={() => <ServerPurchase {...valueFromContext} />} />
-        </Switch>
+    <>
+      <Navbar />
+      <Hidden lgUp>
+        <MobileNavbar />
+      </Hidden>
+      <Cart />
+      <Switch>
+        <Route path={routes.items} exact component={VirtualList} />
+        <Route path={routes.currencies} component={VCList} />
+        <Route path={routes.physical} component={PhysicalList} />
+        <Route path={routes.inventory} component={InventoryList} />
+        <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
+        <Route path={routes.manage} render={() => <ManageInventory {...valueFromContext} />} />
+        <Route path={routes.purchase} render={() => <ServerPurchase {...valueFromContext} />} />
+      </Switch>
 
-        <Background>
-          <BackgroundOverlay />
-        </Background>
-      </>
-    </HashRouter>
+      <Background>
+        <BackgroundOverlay />
+      </Background>
+    </>
   );
 };
 

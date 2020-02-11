@@ -19,7 +19,7 @@ const PhysicalList = () => {
   } = React.useContext(ProductContext);
 
 React.useEffect(() => {
-  if (!arePhysicalItemsFetching && logToken && physicalItems.length === 0) {
+  if (logToken && physicalItems.length === 0) {
     setStateFrom('arePhysicalItemsFetching', true);
     loadPhysicalGoods(projectId, logToken)
       .then(data => {

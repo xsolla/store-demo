@@ -15,13 +15,13 @@ import { eraseCookie } from './Cookie';
 
 const MobileNavbarComponent = ({ location }) => {
   const {
-    getTheme,
     isSideMenuShown,
     user,
     logToken,
     projectId,
     setSideMenuVisibility,
   } = React.useContext(ProductContext);
+
   const closeMenu = () => setSideMenuVisibility(false);
   const openMenu = () => setSideMenuVisibility(true);
 
@@ -35,55 +35,58 @@ const MobileNavbarComponent = ({ location }) => {
 
   const isLogged = logToken && user;
 
-  const generalMenuItems = getMenuItems([
+  const generalMenuItems = React.useMemo(() => getMenuItems([
     routes.items,
     routes.currencies,
     ...projectId === 44056 ? [routes.physical] : [],
-  ])
+  ]), [projectId]);
 
-  const userMenuItems = getMenuItems([
+  const userMenuItems = React.useMemo(() => getMenuItems([
     routes.inventory,
     routes.entitlement,
     routes.manage,
     routes.purchase,
-  ]);
+  ]), []);
 
   return (
-    <Drawer open={isSideMenuShown} anchor="left" onClose={closeMenu} onOpen={openMenu}>
-      <Content getTheme={getTheme}>
+    <Drawer
+      open={isSideMenuShown}
+      anchor="left"
+      onOpen={openMenu}
+      onClose={closeMenu}
+    >
+      <Content>
         <Header>
         {isLogged && projectId !== 44056 && (
-          <IconButton getTheme={getTheme} onClick={logOutHandler}>
+          <IconButton onClick={logOutHandler}>
             <LogoutIcon size="inherit" />
           </IconButton>
           )}
-          <UserMail getTheme={getTheme}>{user.email}</UserMail>
-          <IconButton getTheme={getTheme} onClick={closeMenu}>
+          <UserMail>{user.email}</UserMail>
+          <IconButton onClick={closeMenu}>
             <ChevronLeftIcon />
           </IconButton>
         </Header>
-        <Divider getTheme={getTheme} />
+        <Divider />
           <Tabs
             value={location.pathname}
             onChange={closeMenu}
             component="nav"
             variant="scrollable"
             orientation="vertical"
-            getTheme={getTheme}
+          
           >
           {generalMenuItems.map(x => (
             <Tab
-              getTheme={getTheme}
               component={NavLink}
               label={x.label}
               value={x.route}
               to={x.route}
             />
           ))}
-          <MenuDivider getTheme={getTheme} />
+          <MenuDivider />
           {userMenuItems.map(x => (
             <Tab
-              getTheme={getTheme}
               component={NavLink}
               label={x.label}
               value={x.route}
@@ -101,12 +104,12 @@ const Content = styled.div`
   flex-direction: column;
   width: 320px;
   height: 100%;
-  background-color: ${props => props.getTheme('colorBg')};
+  background-color: ${props => props.theme.colorBg};
 `;
 
 const Divider = styled(MUIDivider)`
   &.MuiDivider-root {
-    background-color: ${props => props.getTheme('colorAccentText')};
+    background-color: ${props => props.theme.colorAccentText};
     opacity: 0.1;
     margin-bottom: 5px;
   }
@@ -120,19 +123,19 @@ const MenuDivider = styled(Divider)`
 
 const IconButton = styled(MUIIconButton)`
   &.MuiIconButton-root {
-    color: ${props => props.getTheme('colorAccentText')};
+    color: ${props => props.theme.colorAccentText};
   }
 `;
 
 const Tabs = styled(MUITabs)`
-  color: ${props => props.getTheme('colorAccent')};
+  color: ${props => props.theme.colorAccent};
 `;
 
 const Tab = styled(MUITab)`
   &.MuiTab-root {
-    color: ${props => props.getTheme('colorAccentText')};
+    color: ${props => props.theme.colorAccentText};
     padding: 15px;
-    font-family: ${props => props.getTheme('fontFamily')};
+    font-family: ${props => props.theme.fontFamily};
     font-size: 1.3rem;
     line-height: 1.3rem;
     font-weight: 700;
@@ -155,7 +158,7 @@ const UserMail = styled.div`
   padding: 0 15px;
   text-transform: uppercase;
   font-family: Roboto;
-  color: ${props => props.getTheme('colorAccent')};
+  color: ${props => props.theme.colorAccent};
 `;
 
 export const MobileNavbar = withRouter(MobileNavbarComponent);

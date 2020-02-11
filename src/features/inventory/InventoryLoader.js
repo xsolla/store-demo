@@ -1,24 +1,28 @@
-import axios from "axios";
+import axios from 'axios';
+import { Inventory } from 'store-js-sdk/src/inventory/inventory';
+import { init } from 'store-js-sdk/src/init';
 
 const CancelToken = axios.CancelToken;
-let cancel;
+let cancel = () => void 0;
 
-export const getInventory = (projectId, loginToken) => {
-  cancel && cancel();
-  let opts = {
-    url:
-    `https://store.xsolla.com/api/v2/project/${projectId}/user/inventory/items`,
-    method: "GET",
+export const loadInventory = async (projectId, loginToken) => {
+  const URL = `https://store.xsolla.com/api/v2/project/${projectId}/user/inventory/items`;
+  const params = {
     headers: {
       Authorization: "Bearer " + loginToken
     },
-    cancelToken: new CancelToken(function executor(c) {
+    cancelToken: new CancelToken(c => {
+      cancel();
       cancel = c;
     })
   };
+  const response = await axios.get(URL, params);
 
-  return axios(opts)
-    .then(function(response) {
-      return response.data.items;
-    });
+  return response.data.items.filter(x => x.type === 'virtual_good');
+}
+
+export const consumeItem = async (projectId, loginToken, item) => {
+  init({ projectId, version: 'v2' });
+  const inventory = new Inventory(loginToken);
+  return await inventory.consumeItem(item.sku, 1, item.instance_id);
 }

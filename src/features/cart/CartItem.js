@@ -7,7 +7,7 @@ import MUIDecrementIcon from "@material-ui/icons/IndeterminateCheckBox";
 
 import { device } from '../../styles/devices';
 
-const CartItemComponent = ({ item, getTheme, changeItemQuantity }) => {
+const CartItemComponent = ({ item, changeItemQuantity }) => {
   const calcPrice = (price, quantity) => Math.round(price * quantity * 100) / 100;
   const handleQuantityDec = () => changeItemQuantity(item, item.quantity - 1);
   const handleQuantityInc = () => changeItemQuantity(item, item.quantity + 1);

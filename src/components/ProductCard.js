@@ -25,7 +25,7 @@ const ProductCard = React.memo(({
 
   React.useEffect(() => {
     setTimeout(showCard, order * 100);
-  }, [isShown]);
+  }, []);
 
   return (
     <CardAppear shown={isShown} hovered={isHovered}>
@@ -51,12 +51,12 @@ const ProductCard = React.memo(({
           <CardQuantity>
             {value}
           </CardQuantity>
-          <Button
+          {onAction && <Button
             variant="contained"
             onClick={onAction}
           >
             {actionButtonContent}
-          </Button>
+          </Button>}
         </CardFooter>
       </Card>
     </CardAppear>

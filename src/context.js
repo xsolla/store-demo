@@ -43,13 +43,17 @@ class ProductProvider extends React.PureComponent {
 
     physicalItems: [],
     physicalItemsError: '',
-    physicalItemsFetching: false,
+    arePhysicalItemsFetching: false,
+
+    inventoryItems: [],
+    inventoryItemsError: '',
+    areInventoryItemsFetching: false,
+    isItemConsuming: false,
 
     entitlementItems: [],
     virtualCurrencyPackages: null,
     currency: null,
     subscriptions: null,
-    inventoryItems: null,
     cartShown: false,
     isSideMenuShown: false,
     cart: {
@@ -95,19 +99,15 @@ class ProductProvider extends React.PureComponent {
     });
   };
 
-  setInventoryItems = inventoryItems => {
-    this.setState({
-      inventoryItems,
-      isFetching: false
-    })
-  };
-
   setEntitlementItems = entitlementItems => {
     this.setState({
       entitlementItems,
       isFetching: false
     })
   };
+
+  setInventoryItems = inventoryItems => this.setState({ inventoryItems });
+  setInventoryItemsError = inventoryItemsError => this.setState({ inventoryItemsError });
 
   setPhysicalItems = physicalItems => this.setState({ physicalItems });
   setPhysicalItemsError = physicalItemsError => this.setState({ physicalItemsError });
@@ -279,10 +279,21 @@ class ProductProvider extends React.PureComponent {
           setPsToken: this.setPsToken,
           setProducts: this.setProducts,
           setStateFrom: this.setStateFrom,
+          payStationHandler: this.payStationHandler,
+
           setInventoryItems: this.setInventoryItems,
-          setEntitlementItems: this.setEntitlementItems,
+          setInventoryItemsError: this.setInventoryItemsError,
+
           setPhysicalItems: this.setPhysicalItems,
           setPhysicalItemsError: this.setPhysicalItemsError,
+
+          setVirtualCurrencies: this.setVirtualCurrencies,
+          setVirtualCurrenciesError: this.setVirtualCurrenciesError,
+
+          setVirtualItems: this.setVirtualItems,
+          setVirtualItemsError: this.setVirtualItemsError,
+
+          setEntitlementItems: this.setEntitlementItems,
           addToCart: this.addToCart,
           buyByVC: this.buyByVC,
           clearVCCart: this.clearVCCart,
@@ -291,15 +302,10 @@ class ProductProvider extends React.PureComponent {
           showCart: this.showCart,
           changeItemQuantityInCart: this.changeItemQuantityInCart,
           buyCart: this.buyCart,
-          payStationHandler: this.payStationHandler,
           updateVirtualCurrencyBalance: this.updateVirtualCurrencyBalance,
           hideCart: this.hideCart,
-          setVirtualItems: this.setVirtualItems,
           hideCartError: this.hideCartError,
-          setVirtualItemsError: this.setVirtualItemsError,
           setSideMenuVisibility: this.setSideMenuVisibility,
-          virtualCurrenciesError: this.virtualCurrenciesError,
-          setVirtualCurrencies: this.setVirtualCurrencies,
         }}
       >
         <ThemeProvider theme={theme}>

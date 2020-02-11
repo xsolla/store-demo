@@ -1,107 +1,102 @@
-import React, { PureComponent } from "react";
-import {Inventory} from "store-js-sdk/src/inventory/inventory";
+import React from 'react';
+import styled from 'styled-components';
 
-import {InventoryItem} from './InventoryItem';
-import {getInventory} from './InventoryLoader';
-import { init } from 'store-js-sdk/src/init';
+import { Preloader } from '../../components/Preloader';
+import { ProductContext } from '../../context';
+import { InventoryItem } from './InventoryItem';
+import { loadInventory, consumeItem } from './InventoryLoader';
 
-import './InventoryList.css';
+const InventoryList = () => {
+  const {
+    logToken,
+    projectId,
+    setStateFrom,
+    inventoryItems,
+    isItemConsuming,
+    areInventoryItemsFetching,
+    setInventoryItems,
+    setInventoryItemsError,
+  } = React.useContext(ProductContext);
 
-export class InventoryList extends PureComponent {
-  componentDidMount() {
-      if (this.props.logToken && null === this.props.inventoryItems) {
-        this.updateInventory();
-        this.props.updateVirtualCurrencyBalance();
-      }
-  }
+  const handleConsumeItem = React.useCallback((item) => {
+    setStateFrom('isItemConsuming', true);
+    consumeItem(projectId, logToken, item)
+      .then(() => {
+        setInventoryItems([]);
+        setStateFrom('isItemConsuming', false);
+      })
+      .catch(error => {
+        setInventoryItemsError(error.message);
+        setStateFrom('isItemConsuming', false);
+      });
+  });
 
-  componentWillUnmount() {
-    if (null !== this.props.inventoryItems) {
-      this.props.setInventoryItems(null);
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (
-        (prevProps.cart.cartId !== this.props.cart.cartId
-        && prevProps.cart.items.length > 0)
-        || (
-            this.props.cartWithItemsBuyingByVC.items.length !== prevProps.cartWithItemsBuyingByVC.items.length
-        )
-    ) {
-      this.updateInventory();
-    }
-  }
-
-  updateInventory() {
-    this.props.setStateFrom("fetching", true);
-    init({
-      projectId: window.xProjectId,
-      version: 'v2'
-    });
-
-    getInventory(window.xProjectId, this.props.logToken)
-        .then(inventoryItems => {
-          this.props.setInventoryItems(inventoryItems);
+  React.useEffect(() => {
+    if (logToken && inventoryItems.length === 0) {
+      setStateFrom('areInventoryItemsFetching', true);
+      loadInventory(projectId, logToken)
+        .then(data => {
+          setInventoryItems(data);
+          setStateFrom('areInventoryItemsFetching', false);
         })
-        .catch(() => {
-          this.props.setInventoryItems([]);
+        .catch(error => {
+          setInventoryItemsError(error.message);
+          setStateFrom('areInventoryItemsFetching', false);
         });
-  }
+    }
 
-  consumeItem(item) {
-    let token = this.props.logToken;
+    return () => inventoryItems.length > 0 && setInventoryItems([]);
+  }, [inventoryItems]);
 
-    init({
-      projectId: window.xProjectId,
-      version: 'v2'
-    });
+  const content = React.useMemo(() => inventoryItems.length > 0 ? (
+    <Content>
+      {inventoryItems.map((item, index) => (
+        <InventoryItem
+          order={index}
+          key={item.sku}
+          item={item}
+          onConsume={handleConsumeItem}
+        />
+      ))}
+    </Content>
+  ) : (
+    <EmptyText>Oops, you have nothing bought yet!</EmptyText>
+  ), [inventoryItems]);
 
-    const inventory = new Inventory(token);
-
-    inventory.consumeItem(item.sku, 1, item.instance_id)
-        .finally(() => {
-          this.props.setStateFrom("fetching", true);
-        });
-  }
-
-  render() {
-    const {inventoryItems} = this.props;
-
-    return (
-      <div>
-        <div className="">
-          <div className="inventory-list">
-            {
-              inventoryItems && inventoryItems.length
-                ?
-                inventoryItems
-                    .filter(product => product.type === 'virtual_good')
-                    .map(
-                      (oneProduct, key) => {
-                        return (
-                          <InventoryItem
-                            key={oneProduct.sku}
-                            order={key}
-                            initClass="initialFlow1"
-                            title={oneProduct.name}
-                            description={oneProduct.description}
-                            imageUrl={oneProduct.image_url}
-                            quantity={oneProduct.quantity}
-                            remainingUses={oneProduct.remaining_uses}
-                            handleConsumeItem={() => this.consumeItem(oneProduct)}
-                          />
-                        );
-                      }
-                    )
-                :
-                <div>
-                  Oops, you have nothing bought yet!
-                </div>
-            }
-          </div>
-        </div>
-      </div>
-    );
-  }
+  return (
+    <Body>
+      {areInventoryItemsFetching || isItemConsuming
+        ? <Preloader/>
+        : content
+      }
+    </Body>
+  );
 }
+
+const Body = styled.div`
+  color: ${props => props.theme.colorText};
+  position: relative;
+  background-color: transparent;
+  z-index: 1;
+  height: 100%;
+`;
+
+const Content = styled.div`
+  display: grid;
+  padding: 30px 0;
+  grid-gap: 30px;
+  grid-template-columns: ${props => `repeat(auto-fit, minmax(
+    ${props.theme.cardWidth}px, 
+    ${props.theme.cardWidth}px
+  ))`};
+  justify-content: center;
+`;
+
+const EmptyText = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+`;
+
+export { InventoryList };

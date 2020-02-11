@@ -19,7 +19,7 @@ const VCList = () => {
   } = React.useContext(ProductContext);
 
   React.useEffect(() => {
-    if (!areVirtualCurrenciesFetching && logToken && virtualCurrencies.length === 0) {
+    if (logToken && virtualCurrencies.length === 0) {
       setStateFrom('areVirtualCurrenciesFetching', true);
       loadVirtualCurrencies(projectId, logToken)
         .then(data => {
