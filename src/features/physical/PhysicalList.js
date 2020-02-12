@@ -69,8 +69,8 @@ const Content = styled.div`
   padding: 30px 0;
   grid-gap: 30px;
   grid-template-columns: ${props => `repeat(auto-fit, minmax(
-    ${props.theme.cardWidth}px, 
-    ${props.theme.cardWidth}px
+    ${props.theme.cardWidth}, 
+    ${props.theme.cardWidth}
   ))`};
   justify-content: center;
 `;

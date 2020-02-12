@@ -17,7 +17,7 @@ const theme = {
   colorBg: '#011627',
   borderRadius: 8,
   backgroundUrl: 'https://res.cloudinary.com/maiik/image/upload/v1549624607/Xsolla/HomePage_Hero_Illustration_1440_oabqmk.jpg',
-  cardWidth: '300',
+  cardWidth: '300px',
   boxShadow: '0 5px 12px 0px rgba(0,0,0,0.2)',
   padding: '8px',
   transitionTime: '0.3s',
@@ -50,6 +50,11 @@ class ProductProvider extends React.PureComponent {
     areInventoryItemsFetching: false,
     isItemConsuming: false,
 
+    cartWithItemsBuyingByVCShown: false,
+    cartWithItemsBuyingByVC: {
+      items: []
+    },
+
     entitlementItems: [],
     virtualCurrencyPackages: null,
     currency: null,
@@ -65,15 +70,10 @@ class ProductProvider extends React.PureComponent {
         currency: '',
       }
     },
-    cartWithItemsBuyingByVCShown: false,
-    cartWithItemsBuyingByVC: {
-      items: []
-    },
     showCartError: false,
     cartError: false,
     isFetching: false,
     psToken: '',
-    theme,
   };
 
   showCart = () => this.setState({ cartShown: true });
@@ -275,7 +275,7 @@ class ProductProvider extends React.PureComponent {
     return (
       <ProductContext.Provider
         value={{
-          ...this.state, //all props and vals
+          ...this.state,
           setPsToken: this.setPsToken,
           setProducts: this.setProducts,
           setStateFrom: this.setStateFrom,

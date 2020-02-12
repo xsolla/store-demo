@@ -276,9 +276,9 @@ const CssCard = styled.div`
     css`
     display: flex;
     flex-direction: column;
-    max-width: ${props => `${props.getTheme("cardWidth")}px`};
-    min-width: ${props => `${props.getTheme("cardWidth")}px`};
-    height: ${props => `${props.getTheme("cardWidth")}px`};
+    max-width: ${props => `${props.getTheme("cardWidth")}`};
+    min-width: ${props => `${props.getTheme("cardWidth")}`};
+    height: ${props => `${props.getTheme("cardWidth")}`};
     /* height: 360px; */
     margin: ${2 * 8}px;
     flex-shrink: 0;

@@ -66,8 +66,8 @@ const ProductCard = React.memo(({
 const CardAppear = styled.div`
   position: relative;
   z-index: ${props => props.hovered ? 1 : 0};
-  width: ${props => `${props.theme.cardWidth}px`};
-  height: ${props => `${props.theme.cardWidth}px`};
+  width: ${props => props.theme.cardWidth};
+  height: ${props => props.theme.cardWidth};
   transition: transform 350ms ease-out, opacity 150ms ease-out;
   opacity: ${props => props.shown ? 1 : 0};
   transform: ${props => props.shown ? 'none' : 'translateY(20px)'};;
@@ -78,8 +78,8 @@ const Card = styled.div`
   color: ${props => props.theme.colorText};
   display: flex;
   flex-direction: column;
-  width: ${props => `${props.theme.cardWidth}px`};
-  min-height: ${props => `${props.theme.cardWidth}px`};
+  width: ${props => props.theme.cardWidth};
+  min-height: ${props => props.theme.cardWidth};
   background-color: ${props => props.hovered ? props.theme.colorBg : 'transparent'};
   box-shadow: ${props => props.hovered ? props.theme.boxShadow : 'none'};
   transition: box-shadow, background-color ${props => props.theme.transitionStyle};
