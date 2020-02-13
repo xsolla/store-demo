@@ -1,66 +1,46 @@
-import React from "react";
-import { ThemeProvider } from 'styled-components';
-import Cookie from "./components/Cookie";
+import React from 'react';
+import { withSnackbar } from 'notistack';
+
+import Cookie from './components/Cookie';
 import {
   changeItemQuantityCart,
   createCart,
   removeItemFromCart,
   getCart, getVirtualCurrencyBalance
-} from "./components/StoreLoader";
+} from './components/StoreLoader';
 
 const ProductContext = React.createContext();
-
-const theme = {
-  colorText: '#D6E0E7',
-  colorAccent: '#FF005B',
-  colorAccentText: '#F6FAFF',
-  colorBg: '#011627',
-  borderRadius: 8,
-  backgroundUrl: 'https://res.cloudinary.com/maiik/image/upload/v1549624607/Xsolla/HomePage_Hero_Illustration_1440_oabqmk.jpg',
-  cardWidth: '300px',
-  boxShadow: '0 5px 12px 0px rgba(0,0,0,0.2)',
-  padding: '8px',
-  transitionTime: '0.3s',
-  transitionEasing: 'ease-in-out',
-  transition: `all 0.3s ease-in-out`,
-  transitionStyle: '0.3s ease-in-out',
-  fontFamily: '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif'
-};
 
 class ProductProvider extends React.PureComponent {
   state = {
     projectId: this.props.projectId,
     logToken: Cookie(),
     userBalanceVirtualCurrency: [],
+    isSideMenuShown: false,
 
     virtualItems: [],
-    virtualItemsError: '',
     areVirtualItemsFetching: false,
 
     virtualCurrencies: [],
-    virtualCurrenciesError: '',
     areVirtualCurrenciesFetching: false,
 
     physicalItems: [],
-    physicalItemsError: '',
     arePhysicalItemsFetching: false,
 
     inventoryItems: [],
-    inventoryItemsError: '',
     areInventoryItemsFetching: false,
     isItemConsuming: false,
 
+    entitlementItems: [],
+
     cartWithItemsBuyingByVCShown: false,
     cartWithItemsBuyingByVC: {
-      items: []
+      items: [],
+      vcPriceSku: null
     },
 
-    entitlementItems: [],
-    virtualCurrencyPackages: null,
-    currency: null,
-    subscriptions: null,
-    cartShown: false,
-    isSideMenuShown: false,
+    isCartShown: false,
+    isCartProcessing: false,
     cart: {
       cartId: null,
       items: [],
@@ -70,56 +50,23 @@ class ProductProvider extends React.PureComponent {
         currency: '',
       }
     },
-    showCartError: false,
-    cartError: false,
-    isFetching: false,
-    psToken: '',
   };
 
-  showCart = () => this.setState({ cartShown: true });
-  hideCart = () => this.setState({ cartShown: false });
+  setStateFrom = (stateName, stateValue) => this.setState({ [stateName]: stateValue });
 
-  showCartError = (title, message) => {
-    this.setState({
-      showCartError: true,
-      cartError: {
-        title,
-        message
-      }
-    });
-    this.getCart();
-  };
+  showCart = () => this.setState({ isCartShown: true });
+  hideCart = () => this.setState({ isCartShown: false });
 
   setSideMenuVisibility = isSideMenuShown => this.setState({ isSideMenuShown });
-
-  hideCartError = () => {
-    this.setState({
-      showCartError: false,
-      cartError: null
-    });
-  };
-
-  setEntitlementItems = entitlementItems => {
-    this.setState({
-      entitlementItems,
-      isFetching: false
-    })
-  };
-
+  setEntitlementItems = entitlementItems => this.setState({ entitlementItems });
   setInventoryItems = inventoryItems => this.setState({ inventoryItems });
-  setInventoryItemsError = inventoryItemsError => this.setState({ inventoryItemsError });
-
   setPhysicalItems = physicalItems => this.setState({ physicalItems });
-  setPhysicalItemsError = physicalItemsError => this.setState({ physicalItemsError });
-
-  setVirtualItems = virtualItems => this.setState({ virtualItems });
-  setVirtualItemsError = virtualItemsError => this.setState({ virtualItemsError });
-
   setVirtualCurrencies = virtualCurrencies => this.setState({ virtualCurrencies });
-  setVirtualCurrenciesError = virtualCurrenciesError => this.setState({ virtualCurrenciesError });
+  setVirtualItems = virtualItems => this.setState({ virtualItems });
 
   getCart = () => {
-    const cartPromise = getCart(this.state.cart.cartId, this.state.logToken);
+    const { cart, logToken } = this.state;
+    const cartPromise = getCart(cart.cartId, logToken);
     cartPromise.then(response => {
       if (!cartPromise.isCancel && response) {
         this.setState({
@@ -128,7 +75,7 @@ class ProductProvider extends React.PureComponent {
             items: response.data.items.sort(this.compareItems),
             price: response.data.price
           },
-          isFetching: false
+          isCartProcessing: false
         });
       }
     });
@@ -158,10 +105,6 @@ class ProductProvider extends React.PureComponent {
   };
 
   payStationHandler = () => this.clearCart();
-
-  setPsToken = psToken => this.setState({ psToken });
-
-  setStateFrom = (stateName, stateValue) => this.setState({ [stateName]: stateValue });
 
   compareItems = (a, b) => {
     if (a.sku > b.sku) {
@@ -196,28 +139,34 @@ class ProductProvider extends React.PureComponent {
   };
 
   addToCart = product => {
+    const { enqueueSnackbar } = this.props;
     const { cart, logToken } = this.state;
-    const indexFind = cart.items.findIndex(elem => elem.sku === product.sku);
-
-    if (indexFind !== -1) {
+    const isItemExist = cart.items.some(elem => elem.sku === product.sku);
+    if (isItemExist) {
       this.getCart();
-      this.setState({ cartShown: true });
+      this.setState({ isCartShown: true });
     } else {
-      this.setState({
-        cart: {
-          ...cart,
-          items: [{ ...product, quantity: 1 }, ...cart.items].sort(this.compareItems),
-          price: {
-            ...cart.price,
-            amount: cart.price.amount + product.price.amount,
-            amount_without_discount: cart.price.amount_without_discount + product.price.amount_without_discount,
-          },
-        }
-      });
+      this.setState({ isCartProcessing: true });
       changeItemQuantityCart(product, 1, cart.cartId, logToken)
-        .then(this.getCart)
-        .catch(error => this.showCartError('Change Item Quantity Error',error.response.data.errorMessage));
-      this.showCart();
+        .then(() => {
+          this.setState({
+            cart: {
+              ...cart,
+              items: [{ ...product, quantity: 1 }, ...cart.items].sort(this.compareItems),
+              price: {
+                ...cart.price,
+                amount: cart.price.amount + product.price.amount,
+                amount_without_discount: cart.price.amount_without_discount + product.price.amount_without_discount,
+              },
+            },
+            isCartProcessing: false
+          });
+          this.showCart();
+        })
+        .catch(error => {
+          this.setState({ isCartProcessing: false });
+          enqueueSnackbar(error.response.data.errorMessage, { variant: 'error' });
+        });
     }
   };
 
@@ -240,12 +189,13 @@ class ProductProvider extends React.PureComponent {
   };
 
   changeItemQuantityInCart = (product, quantity) => {
+    const { enqueueSnackbar } = this.props;
     const { cart, logToken } = this.state;
 
     if (quantity <= 0) {
       this.removeFromCart(product);
       removeItemFromCart(product, cart.cartId, logToken)
-        .then(getCart);
+        .then(this.getCart);
     } else {
       const indexFind = cart.items.findIndex(elem => elem.sku === product.sku);
       const cartItems = cart.items;
@@ -253,15 +203,13 @@ class ProductProvider extends React.PureComponent {
       this.setState({ cart: { ...cart, items: cartItems.sort(this.compareItems) } });
       changeItemQuantityCart(product, quantity, cart.cartId, logToken)
         .then(this.getCart)
-        .catch(error => this.showCartError('Change Item Quantity Error',error.response.data.errorMessage));
+        .catch(error => enqueueSnackbar(error.response.data.errorMessage, { variant: 'error' }));
     }
   };
 
   getTheme = (what = 'all') => what === 'all' 
     ? this.state.theme
     : `${this.state.theme[what]}${what === 'borderRadius' ? 'px' : ''}`;
-
-  setProducts = storeProducts => this.setState({ storeProducts });
 
   updateVirtualCurrencyBalance = () => {
     getVirtualCurrencyBalance(this.state.logToken).then((reps) => {
@@ -276,23 +224,12 @@ class ProductProvider extends React.PureComponent {
       <ProductContext.Provider
         value={{
           ...this.state,
-          setPsToken: this.setPsToken,
-          setProducts: this.setProducts,
           setStateFrom: this.setStateFrom,
           payStationHandler: this.payStationHandler,
-
           setInventoryItems: this.setInventoryItems,
-          setInventoryItemsError: this.setInventoryItemsError,
-
-          setPhysicalItems: this.setPhysicalItems,
-          setPhysicalItemsError: this.setPhysicalItemsError,
-
           setVirtualCurrencies: this.setVirtualCurrencies,
-          setVirtualCurrenciesError: this.setVirtualCurrenciesError,
-
+          setPhysicalItems: this.setPhysicalItems,
           setVirtualItems: this.setVirtualItems,
-          setVirtualItemsError: this.setVirtualItemsError,
-
           setEntitlementItems: this.setEntitlementItems,
           addToCart: this.addToCart,
           buyByVC: this.buyByVC,
@@ -301,16 +238,12 @@ class ProductProvider extends React.PureComponent {
           createCart: this.createCart,
           showCart: this.showCart,
           changeItemQuantityInCart: this.changeItemQuantityInCart,
-          buyCart: this.buyCart,
           updateVirtualCurrencyBalance: this.updateVirtualCurrencyBalance,
           hideCart: this.hideCart,
-          hideCartError: this.hideCartError,
           setSideMenuVisibility: this.setSideMenuVisibility,
         }}
       >
-        <ThemeProvider theme={theme}>
-          {this.props.children}
-        </ThemeProvider>
+        {this.props.children}
       </ProductContext.Provider>
     );
   }
@@ -318,4 +251,6 @@ class ProductProvider extends React.PureComponent {
 
 const ProductConsumer = ProductContext.Consumer;
 
-export { ProductContext, ProductProvider, ProductConsumer };
+export { ProductContext, ProductConsumer };
+
+export default withSnackbar(ProductProvider);

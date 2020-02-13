@@ -6,6 +6,7 @@ import Dotdotdot from 'react-dotdotdot'
 import Collapse from '@material-ui/core/Collapse';
 import MUICardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const ProductCard = React.memo(({
   image,
@@ -15,13 +16,26 @@ const ProductCard = React.memo(({
   description,
   actionButtonContent,
   onAction,
+  isLoading,
 }) => {
   const [isShown, setShown] = React.useState(false);
   const showCard = () => setShown(true);
 
+  const [isActionedCard, setActionedCard] = React.useState(false);
+  const handleAction = () => {
+    setActionedCard(true);
+    onAction();
+  }
+
   const [isHovered, setHovered] = React.useState(false);
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
+
+  React.useEffect(() => {
+    if (!isLoading) {
+      setActionedCard(false);
+    }
+  }, [isLoading]);
 
   React.useEffect(() => {
     setTimeout(showCard, order * 100);
@@ -53,9 +67,10 @@ const ProductCard = React.memo(({
           </CardQuantity>
           {onAction && <Button
             variant="contained"
-            onClick={onAction}
+            disabled={isLoading && isActionedCard}
+            onClick={handleAction}
           >
-            {actionButtonContent}
+            {isLoading && isActionedCard ? <CircularProgress size={24} color="secondary"/> : actionButtonContent}
           </Button>}
         </CardFooter>
       </Card>

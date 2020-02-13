@@ -95,11 +95,7 @@ export function changeItemQuantityCart(
       quantity: quantity
     })
   };
-  return axios(opts)
-    .then(function(response) {
-      //console.log("Item added = ", response.data);
-      let resp = response.data;
-    });
+  return axios(opts);
 }
 
 export function createCart(loginToken) {

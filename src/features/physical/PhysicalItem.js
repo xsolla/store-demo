@@ -7,6 +7,7 @@ import { Currency } from '../../components/Currency';
 export const PhysicalItem = React.memo(({
   product,
   order,
+  isLoading,
   addToCart,
 }) => {
 
@@ -24,6 +25,7 @@ export const PhysicalItem = React.memo(({
       name={product.name}
       order={order}
       value={price}
+      isLoading={isLoading}
       description={product.description}
       actionButtonContent={<ShoppingCart />}
       onAction={handleItemAdd}

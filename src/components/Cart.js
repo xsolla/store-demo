@@ -77,7 +77,7 @@ function Cart({ style = {} , history}) {
 
   return (
     <div>
-      {valueFromContext.cartShown && (
+      {valueFromContext.isCartShown && (
         <Cart0>
           <CartB
             style={{
@@ -132,7 +132,6 @@ function Cart({ style = {} , history}) {
                           cardType="cart"
                           cartId={valueFromContext.cart.cartId}
                           logToken={valueFromContext.logToken}
-                          removeFromCart={valueFromContext.removeFromCart}
                           changeItemQuantityInCart={
                             valueFromContext.changeItemQuantityInCart
                           }
@@ -265,7 +264,6 @@ function Cart({ style = {} , history}) {
                                             cardType="buy_by_vc"
                                             cartId={valueFromContext.cart.cartId}
                                             logToken={valueFromContext.logToken}
-                                            removeFromCart={valueFromContext.removeFromCart}
                                             changeItemQuantityInCart={
                                                 valueFromContext.changeItemQuantityInCart
                                             }

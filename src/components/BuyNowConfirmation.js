@@ -135,7 +135,7 @@ const CartContent = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: ${props => `${props.theme.borderRadius}px`};
+  border-radius: ${props => `${props.theme.borderRadius}`};
   background-color: ${props => props.theme.colorBg};
   color: ${props => props.theme.colorText};
   padding: 0 32px;

@@ -71,7 +71,7 @@ export class ServerPurchase extends PureComponent {
     }
 
     render() {
-        const {cart, logToken, removeFromCart, changeItemQuantityInCart, isFetching} = this.props;
+        const {cart, logToken, changeItemQuantityInCart, isFetching} = this.props;
         const {operations, showToast, statusToast} = this.state;
 
         return (
@@ -120,7 +120,6 @@ export class ServerPurchase extends PureComponent {
                                         cardType="cart"
                                         cartId={cart.cartId}
                                         logToken={logToken}
-                                        removeFromCart={removeFromCart}
                                         changeItemQuantityInCart={changeItemQuantityInCart}
                                         quantity={oneCartItem.quantity}
                                     />

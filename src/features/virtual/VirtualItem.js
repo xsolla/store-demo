@@ -7,14 +7,14 @@ import { Currency } from '../../components/Currency';
 export const VirtualItem = React.memo(({
   product,
   order,
+  isLoading,
   addToCart,
   buyByVC,
 }) => {
-  const hasVirtualCurrencyPrice = product.virtual_prices && product.virtual_prices.length > 0;
-
-  const handleItemAdd = () => addToCart(product);
   const handleBuyByVC = () => buyByVC(product, product.virtual_prices[0].sku);
-
+  const handleItemAdd = () => addToCart(product);
+  
+  const hasVirtualCurrencyPrice = product.virtual_prices && product.virtual_prices.length > 0;
   const buttonContent = React.useMemo(() => hasVirtualCurrencyPrice ? 'Buy now' : <ShoppingCart />, [product]);
   const price = React.useMemo(() => hasVirtualCurrencyPrice
     ? (
@@ -35,6 +35,7 @@ export const VirtualItem = React.memo(({
       name={product.name}
       order={order}
       value={price}
+      isLoading={isLoading}
       description={product.description}
       actionButtonContent={buttonContent}
       onAction={hasVirtualCurrencyPrice ? handleBuyByVC : handleItemAdd}

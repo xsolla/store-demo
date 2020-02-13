@@ -10,6 +10,7 @@
     "currency-format": "1.0.11",
     "currency-number-format": "1.1.0",
     "gh-pages": "^2.1.1",
+    "notistack": "^0.9.7",
     "qs": "^6.6.0",
     "react": "^16.7.0",
     "react-color": "^2.17.3",

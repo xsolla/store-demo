@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSnackbar } from 'notistack';
 
 import { ProductContext } from '../../context';
 import { Preloader } from '../../components/Preloader';
@@ -15,8 +16,9 @@ const PhysicalList = () => {
     physicalItems,
     arePhysicalItemsFetching,
     setPhysicalItems,
-    setPhysicalItemsError,
+    isCartProcessing,
   } = React.useContext(ProductContext);
+  const { enqueueSnackbar } = useSnackbar();
 
 React.useEffect(() => {
   if (logToken && physicalItems.length === 0) {
@@ -27,7 +29,7 @@ React.useEffect(() => {
         setStateFrom('arePhysicalItemsFetching', false);
       })
       .catch(error => {
-        setPhysicalItemsError(error.message);
+        enqueueSnackbar(error.message, { variant: 'error' });
         setStateFrom('arePhysicalItemsFetching', false);
       });
   }
@@ -40,11 +42,12 @@ const content = React.useMemo(() => physicalItems.length > 0 && (
         order={index}
         key={item.sku}
         product={item}
+        isLoading={isCartProcessing}
         addToCart={addToCart}
       />
     ))}
   </Content>
-), [physicalItems]);
+), [physicalItems, isCartProcessing]);
 
   return (
     <Body>

@@ -80,9 +80,6 @@ const RecipeReviewCard = ({
   addToCart = () => {
     void 0;
   },
-  removeFromCart = () => {
-    void 0;
-  },
   changeItemQuantityInCart = () => {
     void 0;
   },

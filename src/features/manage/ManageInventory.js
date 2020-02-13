@@ -1,53 +1,71 @@
-import React, {PureComponent} from "react";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
+import React, {PureComponent} from 'react';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 import Alert from '@material-ui/core/Snackbar';
 
-import {getVirtualCurrencyList, getVirtualItemList, rewardItems} from './ManageInventoryLoader'
-
+import { ProductContext } from '../../context';
+import { GroupSwitcher } from '../../components/GroupSwitcher';
+import { getVirtualCurrencyList, getVirtualItemList, rewardItems } from './ManageInventoryLoader';
 import './ManageInventory.css';
-import { GroupSwitcher } from "../../components/GroupSwitcher";
+
+const users = [
+  {
+    id: 'd342dad2-9d59-11e9-a384-42010aa8003f',
+    name: 'support@xsolla.com',
+  },
+  {
+    id: '7d8b1f52-7d3f-400b-acd8-46e3a4368596',
+    name: 'v.legotkin@xsolla.com',
+  },
+  {
+    id: '27bc1227-48a3-4da8-bb86-f8d093f68805',
+    name: 'r.ushakov@xsolla.com',
+  },
+  {
+    id: 'a7d10a4e-3f68-43cc-a6b2-893d2c68fd14',
+    name: 'p.sanachev@xsolla.com',
+  },
+];
+
+const ManageInventorys = () => {
+  const {
+    logToken,
+    virtualItems,
+    addToCart,
+    buyByVC,
+    projectId,
+    areVirtualItemsFetching,
+    setVirtualItems,
+    setVirtualItemsError,
+    setStateFrom,
+    updateVirtualCurrencyBalance,
+  } = React.useContext(ProductContext);
+
+  const groups = React.useMemo(() => virtualItems.map(x => ({ id: x.groupID, label: x.groupName })), [virtualItems]);
+  const [activeGroup, setActiveGroup] = React.useState(virtualItems[0] ? virtualItems[0].groupID : null);
+
+  React.useEffect(() => {
+    setActiveGroup(virtualItems[0] ? virtualItems[0].groupID : null);
+  }, [virtualItems]);
+};
 
 export class ManageInventory extends PureComponent {
-    constructor(props) {
-        super(props);
-
-        const users = [
-            {
-                'id': 'd342dad2-9d59-11e9-a384-42010aa8003f',
-                'name': 'support@xsolla.com'
-            },
-            {
-                'id': '7d8b1f52-7d3f-400b-acd8-46e3a4368596',
-                'name': 'v.legotkin@xsolla.com'
-            },
-            {
-                'id': '27bc1227-48a3-4da8-bb86-f8d093f68805',
-                'name': 'r.ushakov@xsolla.com'
-            },
-            {
-                'id': 'a7d10a4e-3f68-43cc-a6b2-893d2c68fd14',
-                'name': 'p.sanachev@xsolla.com'
-            },
-        ];
-        this.state = {
-            fetching: false,
-            isPurchasing: false,
-            inventoryItem: null,
-            quantity: 1,
-            users: users,
-            user: 'd342dad2-9d59-11e9-a384-42010aa8003f',
-            showToast: false,
-            statusToast: 'processing',
-            operationDetails: null,
-            manageInventoryGroups: [],
-            activeInventoryGroup: 'first',
-            manageInventoryItems: null,
-            manageInventoryCurrencies: null,
-            invoice: null,
-            date: null
-        }
-    }
+  state = {
+    fetching: false,
+    isPurchasing: false,
+    inventoryItem: null,
+    quantity: 1,
+    user: 'd342dad2-9d59-11e9-a384-42010aa8003f',
+    showToast: false,
+    statusToast: 'processing',
+    operationDetails: null,
+    manageInventoryGroups: [],
+    activeInventoryGroup: 'first',
+    manageInventoryItems: null,
+    manageInventoryCurrencies: null,
+    invoice: null,
+    date: null
+  }
 
     componentDidMount() {
         if (null === this.state.manageInventoryItems) {
@@ -183,7 +201,7 @@ export class ManageInventory extends PureComponent {
     }
 
     render() {
-        const {quantity, users, showToast, statusToast, operationDetails, manageInventoryGroups, activeInventoryGroup} = this.state;
+        const {quantity, showToast, statusToast, operationDetails, manageInventoryGroups, activeInventoryGroup} = this.state;
         const group = activeInventoryGroup !== 'first'
             ? manageInventoryGroups.find(group => group['id'] === activeInventoryGroup)
             : manageInventoryGroups[0];

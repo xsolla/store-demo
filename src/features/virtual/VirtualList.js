@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSnackbar } from 'notistack';
 
 import { ProductContext } from '../../context';
 import { Preloader } from '../../components/Preloader.js';
@@ -15,14 +16,15 @@ const VirtualList = () => {
     buyByVC,
     projectId,
     areVirtualItemsFetching,
+    isCartProcessing,
     setVirtualItems,
-    setVirtualItemsError,
     setStateFrom,
-    updateVirtualCurrencyBalance,
   } = React.useContext(ProductContext);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [activeGroup, setActiveGroup] = React.useState(virtualItems[0] ? virtualItems[0].groupID : null);
 
   const groups = React.useMemo(() => virtualItems.map(x => ({ id: x.groupID, label: x.groupName })), [virtualItems]);
-  const [activeGroup, setActiveGroup] = React.useState(virtualItems[0] ? virtualItems[0].groupID : null);
 
   React.useEffect(() => {
     setActiveGroup(virtualItems[0] ? virtualItems[0].groupID : null);
@@ -33,11 +35,10 @@ const VirtualList = () => {
       setStateFrom('areVirtualItemsFetching', true);
       loadVirtualItems(projectId, logToken).then(virtualItems => {
         setVirtualItems(virtualItems);
-        updateVirtualCurrencyBalance();
         setStateFrom('areVirtualItemsFetching', false);
       }).catch(error => {
-        setVirtualItemsError(error.message);
-        setStateFrom('areVirtualItemsFetching', false)
+        setStateFrom('areVirtualItemsFetching', false);
+        enqueueSnackbar(error.message, { variant: 'error' });
       });
     }
   }, [virtualItems]);
@@ -61,6 +62,7 @@ const VirtualList = () => {
                 key={item.sku}
                 product={item}
                 addToCart={addToCart}
+                isLoading={isCartProcessing}
                 buyByVC={buyByVC}
               />
             ))}
@@ -68,7 +70,7 @@ const VirtualList = () => {
         </React.Fragment>
       ))}
     </>
-  ), [activeGroup, virtualItems]);
+  ), [activeGroup, virtualItems, isCartProcessing]);
 
   return (
     <Body>

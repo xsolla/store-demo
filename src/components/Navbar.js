@@ -160,6 +160,7 @@ const Tab = styled(MUITab)`
     font-size: 1.4rem;
     font-weight: 700;
     line-height: 1.4rem;
+    min-width: 50px;
   }
 `;
 

@@ -5,6 +5,7 @@ import { ProductCard } from '../../components/ProductCard';
 export const InventoryItem = React.memo(({
   item,
   order,
+  isLoading,
   onConsume,
 }) => {
 
@@ -15,6 +16,7 @@ export const InventoryItem = React.memo(({
       image={item.image_url}
       name={item.name}
       order={order}
+      isLoading={isLoading}
       value={`Quantity: ${item.quantity}`}
       description={item.description}
       actionButtonContent="Consume"

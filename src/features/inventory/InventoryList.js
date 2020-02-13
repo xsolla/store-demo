@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSnackbar } from 'notistack';
 
 import { Preloader } from '../../components/Preloader';
 import { ProductContext } from '../../context';
@@ -8,6 +9,7 @@ import { loadInventory, consumeItem } from './InventoryLoader';
 
 const InventoryList = () => {
   const {
+    cart,
     logToken,
     projectId,
     setStateFrom,
@@ -15,8 +17,8 @@ const InventoryList = () => {
     isItemConsuming,
     areInventoryItemsFetching,
     setInventoryItems,
-    setInventoryItemsError,
   } = React.useContext(ProductContext);
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleConsumeItem = React.useCallback((item) => {
     setStateFrom('isItemConsuming', true);
@@ -26,13 +28,13 @@ const InventoryList = () => {
         setStateFrom('isItemConsuming', false);
       })
       .catch(error => {
-        setInventoryItemsError(error.message);
         setStateFrom('isItemConsuming', false);
+        enqueueSnackbar(error.message, { variant: 'error' });
       });
   });
 
   React.useEffect(() => {
-    if (logToken && inventoryItems.length === 0) {
+    if (logToken && inventoryItems.length === 0 && cart.cartId) {
       setStateFrom('areInventoryItemsFetching', true);
       loadInventory(projectId, logToken)
         .then(data => {
@@ -40,13 +42,13 @@ const InventoryList = () => {
           setStateFrom('areInventoryItemsFetching', false);
         })
         .catch(error => {
-          setInventoryItemsError(error.message);
           setStateFrom('areInventoryItemsFetching', false);
+          enqueueSnackbar(error.message, { variant: 'error' });
         });
     }
 
     return () => inventoryItems.length > 0 && setInventoryItems([]);
-  }, [inventoryItems]);
+  }, [inventoryItems.length, cart.cartId]);
 
   const content = React.useMemo(() => inventoryItems.length > 0 ? (
     <Content>
@@ -55,17 +57,18 @@ const InventoryList = () => {
           order={index}
           key={item.sku}
           item={item}
+          isLoading={isItemConsuming}
           onConsume={handleConsumeItem}
         />
       ))}
     </Content>
   ) : (
     <EmptyText>Oops, you have nothing bought yet!</EmptyText>
-  ), [inventoryItems]);
+  ), [inventoryItems, isItemConsuming]);
 
   return (
     <Body>
-      {areInventoryItemsFetching || isItemConsuming
+      {areInventoryItemsFetching
         ? <Preloader/>
         : content
       }

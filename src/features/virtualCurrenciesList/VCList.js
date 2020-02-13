@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSnackbar } from 'notistack';
 
 import { Preloader } from '../../components/Preloader';
 import { ProductContext } from '../../context';
@@ -14,9 +15,10 @@ const VCList = () => {
     setStateFrom,
     virtualCurrencies,
     areVirtualCurrenciesFetching,
+    isCartProcessing,
     setVirtualCurrencies,
-    setVirtualCurrenciesError,
   } = React.useContext(ProductContext);
+  const { enqueueSnackbar } = useSnackbar();
 
   React.useEffect(() => {
     if (logToken && virtualCurrencies.length === 0) {
@@ -27,7 +29,7 @@ const VCList = () => {
           setStateFrom('areVirtualCurrenciesFetching', false);
         })
         .catch(error => {
-          setVirtualCurrenciesError(error.message);
+          enqueueSnackbar(error.message, { variant: 'error' });
           setStateFrom('areVirtualCurrenciesFetching', false);
         });
     }
@@ -40,11 +42,12 @@ const VCList = () => {
           order={index}
           key={currency.sku}
           product={currency}
+          isLoading={isCartProcessing}
           addToCart={addToCart}
         />
       ))}
     </Content>
-  ), [virtualCurrencies]);
+  ), [virtualCurrencies, isCartProcessing]);
 
   return (
     <Body>
