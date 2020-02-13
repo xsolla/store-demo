@@ -1,12 +1,15 @@
-import React, {PureComponent} from 'react';
+import React from 'react';
+import styled from 'styled-components';
+import { useSnackbar } from 'notistack';
+
+import MUITextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Alert from '@material-ui/core/Snackbar';
 
 import { ProductContext } from '../../context';
 import { GroupSwitcher } from '../../components/GroupSwitcher';
-import { getVirtualCurrencyList, getVirtualItemList, rewardItems } from './ManageInventoryLoader';
-import './ManageInventory.css';
+import { Preloader } from '../../components/Preloader.js';
+import { loadVirtualCurrencies, loadVirtualItems, rewardItems } from './ManageInventoryLoader';
 
 const users = [
   {
@@ -27,291 +30,222 @@ const users = [
   },
 ];
 
-const ManageInventorys = () => {
-  const {
-    logToken,
-    virtualItems,
-    addToCart,
-    buyByVC,
-    projectId,
-    areVirtualItemsFetching,
-    setVirtualItems,
-    setVirtualItemsError,
-    setStateFrom,
-    updateVirtualCurrencyBalance,
-  } = React.useContext(ProductContext);
+const groups = [
+  {
+    id: 'items',
+    label: 'Items',
+  },
+  {
+    id: 'currencies',
+    label: 'Currencies',
+  },
+];
 
-  const groups = React.useMemo(() => virtualItems.map(x => ({ id: x.groupID, label: x.groupName })), [virtualItems]);
-  const [activeGroup, setActiveGroup] = React.useState(virtualItems[0] ? virtualItems[0].groupID : null);
+const ManageInventory = () => {
+  const { projectId } = React.useContext(ProductContext);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [userID, setUserID] = React.useState(null);
+  const [activeGroup, setActiveGroup] = React.useState(null);
+  const [selectedItem, setSelectedItem] = React.useState(null);
+  const [quantity, setQuantity] = React.useState(1);
+  const [isItemProcessing, setItemProcessing] = React.useState(false);
+  
+  const [areManageItemsFetching, setManageItemsFetching] = React.useState(false);
+  const [manageItems, setManageItems] = React.useState([]);
+
+  const [areManageCurrenciesFetching, setManageCurrenciesFetching] = React.useState(false);
+  const [manageCurrencies, setManageCurrencies] = React.useState([]);
+
+  const isFetching = areManageItemsFetching || areManageCurrenciesFetching;
+  const userOptions = React.useMemo(() => users.map(x => <MenuItem value={x.id}>{x.name}</MenuItem>, users));
+  const itemsOptions = React.useMemo(() => manageItems.map(x => <MenuItem value={x.sku}>{x.name}</MenuItem>, manageItems));
+  const currenciesOptions = React.useMemo(() => manageCurrencies.map(x => <MenuItem value={x.sku}>{x.name}</MenuItem>, manageCurrencies));
+
+  const groupsContent = {
+    items: {
+      name: 'Item',
+      items: manageItems,
+      options: itemsOptions,
+    },
+    currencies: {
+      name: 'Currency',
+      items: manageCurrencies,
+      options: currenciesOptions,
+    },
+  };
+
+  const processItem = type => {
+    if (selectedItem === null) {
+      return;
+    }
+    const data = { type, user: userID, item: setSelectedItem, count: quantity };
+    setItemProcessing(true);
+    enqueueSnackbar('Operation is processing', { variant: 'info' });
+    rewardItems(data)
+      .then(() => {
+        setItemProcessing(false);
+        enqueueSnackbar('Complete', { variant: 'success' });
+      })
+      .catch(error => {
+        setItemProcessing(false);
+        enqueueSnackbar(error.message, { variant: 'error' });
+      });
+  }
+  
+  const handleFormSubmit = event => event.preventDefault();
+  const handleRewardItem = () => processItem('reward');
+  const handleRevokeItem = () => processItem('revoke');
+  const handleUserSelect = event => setUserID(event.target.value);
+  const handleItemSelect = event => setSelectedItem(event.target.value);
+  const handleQuantityChange = event => setQuantity(event.target.value);
 
   React.useEffect(() => {
-    setActiveGroup(virtualItems[0] ? virtualItems[0].groupID : null);
-  }, [virtualItems]);
+    setActiveGroup(groups[0] ? groups[0].id : null);
+  }, [groups]);
+
+  React.useEffect(() => {
+    if (!selectedItem && activeGroup && groupsContent[activeGroup] && groupsContent[activeGroup].items[0]) {
+      setSelectedItem(groupsContent[activeGroup].items[0].sku);
+    }
+  }, [manageItems, manageCurrencies]);
+
+  React.useEffect(() => {
+    if (manageItems.length === 0) {
+      setManageItemsFetching(true);
+      loadVirtualItems(projectId)
+        .then(items => {
+          setManageItemsFetching(false);
+          setManageItems(items);
+        })
+        .catch(error => {
+          setManageItemsFetching(false);
+          enqueueSnackbar(error.message, { variant: 'error' })
+        });
+    }
+  }, [manageItems]);
+
+  React.useEffect(() => {
+    if (manageItems.length === 0) {
+      setManageCurrenciesFetching(true);
+      loadVirtualCurrencies(projectId)
+        .then(items => {
+          setManageCurrenciesFetching(false);
+          setManageCurrencies(items);
+        })
+        .catch(error => {
+          setManageCurrenciesFetching(false);
+          enqueueSnackbar(error.message, { variant: 'error' })
+        });
+    }
+  }, [manageCurrencies]);
+    
+  return (
+    <Body>
+      {isFetching
+        ? <Preloader />
+        : (
+          <Form onSubmit={handleFormSubmit}>
+            <TextField
+              select
+              label="User"
+              value={userID}
+              color="secondary"
+              onChange={handleUserSelect}
+            >
+              {userOptions}
+            </TextField>
+            <GroupSwitcher
+              groups={groups}
+              activeGroup={activeGroup}
+              onGroupChange={setActiveGroup}
+            />
+            <Items>
+              {groupsContent[activeGroup] && (
+                <TextField
+                  select
+                  label={groupsContent[activeGroup].name}
+                  value={groupsContent[activeGroup].items[0].sku}
+                  color="secondary"
+                  onChange={handleItemSelect}
+                >
+                  {groupsContent[activeGroup].options}
+                </TextField>
+              )}
+              <TextField
+                type="number"
+                label="Quantity"
+                value={quantity}
+                color="secondary"
+                onChange={handleQuantityChange}
+              />
+            </Items>
+            <FormActions>
+              <RewardButton
+                type="submit"
+                variant="contained"
+                disabled={isItemProcessing}
+                onClick={handleRewardItem}
+              >
+                Reward
+              </RewardButton>
+              <Button
+                variant="contained"
+                disabled={isItemProcessing}
+                onClick={handleRevokeItem}
+              >
+                Revoke
+              </Button>
+            </FormActions>
+          </Form>
+        )
+      }
+    </Body>
+  );
 };
 
-export class ManageInventory extends PureComponent {
-  state = {
-    fetching: false,
-    isPurchasing: false,
-    inventoryItem: null,
-    quantity: 1,
-    user: 'd342dad2-9d59-11e9-a384-42010aa8003f',
-    showToast: false,
-    statusToast: 'processing',
-    operationDetails: null,
-    manageInventoryGroups: [],
-    activeInventoryGroup: 'first',
-    manageInventoryItems: null,
-    manageInventoryCurrencies: null,
-    invoice: null,
-    date: null
+const Body = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+  height: 100%;
+`;
+
+const Form = styled.form`
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+  color: ${props => props.theme.colorText};
+`;
+
+const TextField = styled(MUITextField)`
+  width: 100%;
+
+  & .MuiFormLabel-root {
+    color: ${props => props.theme.colorText}
   }
 
-    componentDidMount() {
-        if (null === this.state.manageInventoryItems) {
-            this.getItems();
-            this.props.updateVirtualCurrencyBalance();
-        }
-        if (null === this.state.manageInventoryCurrencies) {
-            this.getCurrencies();
-        }
-    }
+  & .MuiInput-root {
+    color: ${props => props.theme.colorText}
+  }
+`;
 
-    changeGroupHandler = group => {
-        const {manageInventoryGroups} = this.state;
-        const activeGroup = manageInventoryGroups.find(g => g['id'] === group);
-        const itemSku = activeGroup && activeGroup.items.length > 0 ? activeGroup.items[0].sku : 'helmet_1';
-        this.setState({inventoryItem: itemSku, activeInventoryGroup: group});
-        this.setItemQuantity(1);
-    };
+const Items = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 20px;
+`;
 
+const FormActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 0;
+`;
 
-    getItems() {
-        this.setState({fetching: true});
+const RewardButton = styled(Button)`
+  && {
+    margin-right: 10px;
+  }
+`;
 
-        getVirtualItemList(window.xProjectId)
-            .then(virtualItemsList => {
-                this.setManageInventoryItems(virtualItemsList);
-            })
-            .catch(() => {
-            });
-    }
-
-    getCurrencies() {
-        this.setState({fetching: true});
-
-        getVirtualCurrencyList(window.xProjectId)
-            .then(virtualCurrencyList => {
-                this.setManageInventoryCurrencies(virtualCurrencyList);
-            })
-            .catch(() => {
-            });
-    }
-
-    changeInventoryItem(event) {
-        this.setState({inventoryItem: event.target.value});
-    }
-
-    changeUser(event) {
-        this.setState({user: event.target.value});
-    }
-
-    setItemQuantity(quantity) {
-        if (parseInt(quantity) >= 1) {
-            this.setState({quantity: parseInt(quantity)});
-        }
-    }
-
-    setShowToast(isVisible) {
-        this.setState({showToast: isVisible});
-    }
-
-    setManageInventoryItems = (manageInventoryItems) => {
-        this.setState({
-            manageInventoryItems,
-            fetching: false,
-            manageInventoryGroups: [
-                ...this.state.manageInventoryGroups,
-                {
-                    id: 1,
-                    name: 'items',
-                    items: manageInventoryItems,
-                    singleItemName: 'Item'
-                }
-            ],
-        })
-    };
-
-    setManageInventoryCurrencies = (manageInventoryCurrencies) => {
-        this.setState({
-            manageInventoryCurrencies,
-            fetching: false,
-            manageInventoryGroups: [
-                ...this.state.manageInventoryGroups,
-                {
-                    id: 2,
-                    name: 'currencies',
-                    items: manageInventoryCurrencies,
-                    singleItemName: 'Currency'
-                }
-            ],
-        })
-    };
-
-    itemOperation(type) {
-        let {user, activeInventoryGroup, quantity, inventoryItem, manageInventoryGroups, invoice, date} = this.state;
-        if (inventoryItem === null && manageInventoryGroups && manageInventoryGroups.length) {
-            const group = activeInventoryGroup !== 'first'
-                ? manageInventoryGroups.find(group => group['id'] === activeInventoryGroup)
-                : manageInventoryGroups[0];
-            inventoryItem = group && group.items.length > 0 ? group.items[0].sku : 'helmet_1';
-        }
-
-        const body = {
-            type: type,
-            user: user,
-            item: inventoryItem,
-            count: quantity
-        };
-        if (invoice && date) {
-            body.purchase.external_purchase_id = invoice;
-            body.purchase.external_purchase_date = date;
-        }
-
-        this.setState({showToast: true, statusToast: 'processing', operationDetails: null});
-        rewardItems(body)
-            .then(response => {
-                this.setState({
-                    showToast: true,
-                    statusToast: 'complete',
-                    operationDetails: response.operations[0].items
-                });
-                this.props.updateVirtualCurrencyBalance();
-            })
-            .catch(() => {
-            });
-    }
-
-    rewardItem(e) {
-        this.itemOperation('reward');
-    }
-
-    revokeItem() {
-        this.itemOperation('revoke');
-    }
-
-    render() {
-        const {quantity, showToast, statusToast, operationDetails, manageInventoryGroups, activeInventoryGroup} = this.state;
-        const group = activeInventoryGroup !== 'first'
-            ? manageInventoryGroups.find(group => group['id'] === activeInventoryGroup)
-            : manageInventoryGroups[0];
-        return (
-            <div className="manage-inventory__row">
-                <div className="manage-inventory__alert">
-                    <Alert onClose={(e) => this.setShowToast(false)} open={showToast}
-                           variant={statusToast === 'processing' ? "primary" : "success"} dismissible>
-                        <Alert.Heading>{statusToast === 'processing' ? 'Operation is processing' : 'Operation complete!'}</Alert.Heading>
-                        <p>
-                            {
-                                group && group.items.length && operationDetails && operationDetails.length ?
-                                    operationDetails.map(
-                                        (item) => {
-                                            return (
-                                                <div>
-                                                    <div>Item: <b>{
-                                                        group.items.filter((inventoryItem) => {
-                                                            return inventoryItem.sku === item.sku
-                                                        }).map((inventoryItem) => {
-                                                            return inventoryItem.name;
-                                                        })
-                                                    }</b></div>
-                                                    <div>Quantity: <b>{item.quantity === null ? 0 : item.quantity}</b>
-                                                    </div>
-                                                </div>
-                                            )
-                                        })
-                                    :
-                                    ''
-                            }
-                        </p>
-                    </Alert>
-                </div>
-                <div>
-                    <div className="manage-inventory">
-                        <div className="manage-inventory__user-list">
-                            <div className="manage-inventory__title">User</div>
-                            <div>
-                                <select value={this.state.user} onChange={(e) => this.changeUser(e)}>
-                                    {
-                                        users.map(
-                                            (user) => {
-                                                return (
-                                                    <option key={user.id} value={user.id}>{user.name}</option>
-                                                )
-                                            })
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                        <GroupSwitcher
-                          groups={manageInventoryGroups}
-                          activeGroup={activeInventoryGroup}
-                          onGroupChange={this.changeGroupHandler}
-                        />
-
-                        <div className="manage-inventory-item-container">
-                            <div className="manage-inventory-list">
-                                <div
-                                    className="manage-inventory__title">{group ? group.singleItemName : 'Item'}</div>
-                                <div>
-                                    {group && group.items.length > 0
-                                        ? <select value={this.state.inventoryItem}
-                                                  onChange={(e) => this.changeInventoryItem(e)}>
-                                            {
-                                                group.items.map(
-                                                    (item) => {
-                                                        return (
-                                                            <option key={item.sku}
-                                                                    value={item.sku}>{item.name}</option>
-                                                        )
-                                                    })
-                                            }
-                                        </select>
-                                        : <div>
-                                            Nothing to show
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                            <div className="manage-inventory__quantity">
-                                <div className="manage-inventory__quantity-change">
-                                    <TextField
-                                        label={"Quantity"}
-                                        type={"number"}
-                                        inputProps={{style: {color: 'white'}, min: "0", step: "1"}}
-                                        defaultValue={quantity}
-                                        InputLabelProps={{
-                                            className: "manage-inventory__quantity-input-label"
-                                        }}
-                                        onChange={(e) => this.setItemQuantity(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="manage-inventory-actions">
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                onClick={(e) => this.rewardItem(e)}
-                            >Reward</Button>
-                            <Button
-                                variant="contained"
-                                onClick={(e) => this.revokeItem(e)}
-                            >Revoke</Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-}
+export { ManageInventory };

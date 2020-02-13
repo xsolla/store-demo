@@ -2,9 +2,10 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import Colorer from 'color';
-import MUIIconClose from '@material-ui/icons/Close';
+import IconClose from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
 import MUIModal from '@material-ui/core/Modal';
+import IconButton from '@material-ui/core/IconButton';
 import Grow from '@material-ui/core/Grow';
 import Backdrop from '@material-ui/core/Backdrop';
 
@@ -70,7 +71,9 @@ const CartComponent = ({ history }) => {
         <CartContent>
           <CartHeader>
             <h4>Cart</h4>
-            <IconClose onClick={hideCart} />
+            <IconButton color="inherit" onClick={hideCart}>
+              <IconClose />
+            </IconButton>
           </CartHeader>
           <CartList>
             {cart.items.length > 0
@@ -127,10 +130,6 @@ const Modal = styled(MUIModal)`
   align-items: center;
 `;
 
-const IconClose = styled(MUIIconClose)`
-  cursor: pointer;
-`;
-
 const CartContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -141,6 +140,7 @@ const CartContent = styled.div`
   padding: 0 32px;
   width: 680px;
   max-height: 80vh;
+  outline: none;
 
   @media ${device.tablet} {
     padding: 0 16px;
@@ -156,6 +156,7 @@ const CartHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   background-color: ${props => props.theme.colorBg};
+  color: ${props => props.theme.colorText};
   border-bottom: 1px solid ${props => Colorer(props.theme.colorText).alpha(0.1).string()};
   z-index: 10;
   padding: 24px 0 8px 0;

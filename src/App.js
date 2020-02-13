@@ -19,6 +19,10 @@ import { ProductContext } from './context';
 const App = () => {
   const valueFromContext = React.useContext(ProductContext);
 
+  React.useEffect(() => {
+    valueFromContext.updateVirtualCurrencyBalance();
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -31,8 +35,8 @@ const App = () => {
         <Route path={routes.currencies} component={VCList} />
         <Route path={routes.physical} component={PhysicalList} />
         <Route path={routes.inventory} component={InventoryList} />
+        <Route path={routes.manage} component={ManageInventory} />
         <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
-        <Route path={routes.manage} render={() => <ManageInventory {...valueFromContext} />} />
         <Route path={routes.purchase} render={() => <ServerPurchase {...valueFromContext} />} />
       </Switch>
 

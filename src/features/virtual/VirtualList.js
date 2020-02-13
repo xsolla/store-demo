@@ -22,7 +22,7 @@ const VirtualList = () => {
   } = React.useContext(ProductContext);
   const { enqueueSnackbar } = useSnackbar();
 
-  const [activeGroup, setActiveGroup] = React.useState(virtualItems[0] ? virtualItems[0].groupID : null);
+  const [activeGroup, setActiveGroup] = React.useState(null);
 
   const groups = React.useMemo(() => virtualItems.map(x => ({ id: x.groupID, label: x.groupName })), [virtualItems]);
 
