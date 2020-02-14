@@ -10,6 +10,8 @@ import MUIIconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
 import CartIcon from '@material-ui/icons/ShoppingCart';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
 
 import { routes, getMenuItems } from '../utils/routes';
@@ -87,7 +89,12 @@ const Navbar = ({ location }) => {
           ))}
 
           <Hidden mdDown>
-            <UserMail onClick={handleMenuOpen}>{user.email}</UserMail>
+            <UserMail
+              endIcon={Boolean(menuAnchor) ? <ExpandLessIcon /> : <ExpandMoreIcon/>}
+              onClick={handleMenuOpen}
+            >
+              {user.email}
+            </UserMail>
           </Hidden>
         </LoginPanel>
       )}
@@ -201,6 +208,7 @@ const VCCurrency = styled.div`
 
 const LoginPanel = styled.div`
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   flex-grow: 1;
 
@@ -224,12 +232,13 @@ const LoginButton = styled.div`
   cursor: pointer;
 `;
 
-const UserMail = styled.div`
-  cursor: pointer;
-  font-family: 'Roboto';
-  text-transform: uppercase;
-  color: #ff005b;
-  margin: 0 1rem;
+const UserMail = styled(Button)`
+  && {
+    font-family: 'Roboto';
+    text-transform: uppercase;
+    color: ${props => props.theme.colorAccent};
+    margin: 0 1rem;
+  }
 `;
 
 const Header = styled.header`
