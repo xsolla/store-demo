@@ -149,7 +149,7 @@ const ManageInventory = () => {
             <TextField
               select
               label="User"
-              value={userID}
+              value={userID || users[0].id}
               color="secondary"
               onChange={handleUserSelect}
             >
@@ -208,7 +208,6 @@ const Body = styled.div`
   display: flex;
   justify-content: center;
   padding-top: 50px;
-  height: 100%;
 `;
 
 const Form = styled.form`
