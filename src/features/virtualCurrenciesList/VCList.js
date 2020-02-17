@@ -61,10 +61,7 @@ const VCList = () => {
 
 const Body = styled.div`
   color: ${props => props.theme.colorText};
-  position: relative;
   background-color: transparent;
-  z-index: 1;
-  height: 100%;
 `;
 
 const Content = styled.div`

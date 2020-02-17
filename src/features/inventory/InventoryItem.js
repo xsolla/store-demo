@@ -9,7 +9,7 @@ export const InventoryItem = React.memo(({
   onConsume,
 }) => {
 
-  const handleItemConsume = () => onConsume(item);
+  const handleItemConsume = () => onConsume(item, order);
 
   return (
     <ProductCard

@@ -20,11 +20,29 @@ const InventoryList = () => {
   } = React.useContext(ProductContext);
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleConsumeItem = React.useCallback((item) => {
+  const handleConsumeItem = React.useCallback(item => {
     setStateFrom('isItemConsuming', true);
     consumeItem(projectId, logToken, item)
       .then(() => {
-        setInventoryItems([]);
+        const updateInventoryItemIndex = inventoryItems.findIndex(x => x.sku === item.sku);
+        const updatedInventoryItem = inventoryItems[updateInventoryItemIndex];
+
+        if (updatedInventoryItem) {
+          const newInventoryItems = updatedInventoryItem.quantity > 1 ? [
+            ...inventoryItems.slice(0, updateInventoryItemIndex),
+            {
+              ...updatedInventoryItem,
+              quantity: updatedInventoryItem.quantity - 1,
+            },
+            ...inventoryItems.slice(updateInventoryItemIndex + 1),
+          ] : [
+            ...inventoryItems.slice(0, updateInventoryItemIndex),
+            ...inventoryItems.slice(updateInventoryItemIndex + 1),
+          ];
+
+          setInventoryItems(newInventoryItems);
+        }
+
         setStateFrom('isItemConsuming', false);
       })
       .catch(error => {
@@ -46,9 +64,9 @@ const InventoryList = () => {
           enqueueSnackbar(error.message, { variant: 'error' });
         });
     }
-
-    return () => inventoryItems.length > 0 && setInventoryItems([]);
   }, [inventoryItems.length, cart.cartId]);
+
+  React.useEffect(() => () => inventoryItems.length > 0 && setInventoryItems([]), []);
 
   const content = React.useMemo(() => inventoryItems.length > 0 ? (
     <Content>
@@ -78,10 +96,7 @@ const InventoryList = () => {
 
 const Body = styled.div`
   color: ${props => props.theme.colorText};
-  position: relative;
   background-color: transparent;
-  z-index: 1;
-  height: 100%;
 `;
 
 const Content = styled.div`

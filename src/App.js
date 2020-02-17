@@ -30,15 +30,17 @@ const App = () => {
         <MobileNavbar />
       </Hidden>
       <Cart />
-      <Switch>
-        <Route path={routes.items} exact component={VirtualList} />
-        <Route path={routes.currencies} component={VCList} />
-        <Route path={routes.physical} component={PhysicalList} />
-        <Route path={routes.inventory} component={InventoryList} />
-        <Route path={routes.manage} component={ManageInventory} />
-        <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
-        <Route path={routes.purchase} component={ServerPurchase} />
-      </Switch>
+      <Content>
+        <Switch>
+          <Route path={routes.items} exact component={VirtualList} />
+          <Route path={routes.currencies} component={VCList} />
+          <Route path={routes.physical} component={PhysicalList} />
+          <Route path={routes.inventory} component={InventoryList} />
+          <Route path={routes.manage} component={ManageInventory} />
+          <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
+          <Route path={routes.purchase} component={ServerPurchase} />
+        </Switch>
+      </Content>
 
       <Background>
         <BackgroundOverlay />
@@ -47,14 +49,20 @@ const App = () => {
   );
 };
 
+const Content = styled.div`
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+`;
+
 const Background = styled.div`
   background-image: url(${props => props.theme.backgroundUrl});
   z-index: -1;
   background-size: cover;
   position: fixed;
   height: 100vh;
+  width: 100vw;
   left: 0;
-  right: 0;
   top: 0;
 `;
 

@@ -84,10 +84,7 @@ const VirtualList = () => {
 
 const Body = styled.div`
   color: ${props => props.theme.colorText};
-  position: relative;
   background-color: transparent;
-  z-index: 4;
-  height: 100%;
 `;
 
 const Group = styled.div`
