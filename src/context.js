@@ -207,10 +207,6 @@ class ProductProvider extends React.PureComponent {
     }
   };
 
-  getTheme = (what = 'all') => what === 'all' 
-    ? this.state.theme
-    : `${this.state.theme[what]}${what === 'borderRadius' ? 'px' : ''}`;
-
   updateVirtualCurrencyBalance = () => {
     getVirtualCurrencyBalance(this.state.logToken).then((reps) => {
       this.setState({
@@ -234,7 +230,6 @@ class ProductProvider extends React.PureComponent {
           addToCart: this.addToCart,
           buyByVC: this.buyByVC,
           clearVCCart: this.clearVCCart,
-          getTheme: this.getTheme,
           createCart: this.createCart,
           showCart: this.showCart,
           changeItemQuantityInCart: this.changeItemQuantityInCart,

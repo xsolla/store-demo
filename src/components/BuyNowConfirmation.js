@@ -9,7 +9,7 @@ import Grow from '@material-ui/core/Grow';
 import Backdrop from '@material-ui/core/Backdrop';
 
 import { ProductContext } from '../../context';
-import { getFormattedCurrency } from '../../components/formatCurrency';
+import { getFormattedCurrency } from '../utils/formatCurrency';
 import { getPsTokenBuyCart } from '../../components/StoreLoader';
 import { device } from '../../styles/devices';
 import { CartItem } from './CartItem';

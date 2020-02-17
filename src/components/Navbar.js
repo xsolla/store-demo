@@ -21,7 +21,7 @@ import { ProductContext } from '../context';
 import { eraseCookie } from './Cookie';
 import XLogin from './XLogin.js';
 
-const Navbar = ({ location }) => {
+const NavbarComponent = ({ location }) => {
   const {
     logToken,
     user,
@@ -45,11 +45,17 @@ const Navbar = ({ location }) => {
   };
 
   const isLogged = logToken && user;
+
   const generalMenuItems = getMenuItems([
     routes.items,
     routes.currencies,
     ...projectId === 44056 ? [routes.physical] : [],
-  ])
+  ]);
+
+  const isLocationExistsInTabs = React.useMemo(
+    () => generalMenuItems.some(x => x.route === location.pathname),
+    [generalMenuItems, location.pathname]
+  );
 
   const userMenuItems = getMenuItems([
     routes.inventory,
@@ -61,7 +67,7 @@ const Navbar = ({ location }) => {
   return (
     <Header>
       <Hidden mdDown>
-        <Tabs value={location.pathname} component="nav">
+        <Tabs value={isLocationExistsInTabs ? location.pathname : false} component="nav">
           {generalMenuItems.map(x => (
             <Tab
               key={x.route}
@@ -251,4 +257,4 @@ const Header = styled.header`
   background-color: ${props => props.theme.colorBg};
 `;
 
-export default withRouter(Navbar);
+export const Navbar = withRouter(NavbarComponent);

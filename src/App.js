@@ -11,9 +11,9 @@ import { ServerPurchase } from './features/serverPurchase/ServerPurchase';
 import { EntitlementList } from './features/entitlement/EntitlementList';
 import { Cart } from './features/cart/Cart';
 import { VCList } from './features/virtualCurrenciesList/VCList';
-import { routes } from './utils/routes';
-import Navbar from './components/Navbar';
+import { Navbar } from './components/Navbar';
 import { MobileNavbar } from './components/MobileNavbar';
+import { routes } from './utils/routes';
 import { ProductContext } from './context';
 
 const App = () => {
@@ -37,7 +37,7 @@ const App = () => {
         <Route path={routes.inventory} component={InventoryList} />
         <Route path={routes.manage} component={ManageInventory} />
         <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
-        <Route path={routes.purchase} render={() => <ServerPurchase {...valueFromContext} />} />
+        <Route path={routes.purchase} component={ServerPurchase} />
       </Switch>
 
       <Background>
@@ -52,10 +52,10 @@ const Background = styled.div`
   z-index: -1;
   background-size: cover;
   position: fixed;
+  height: 100vh;
   left: 0;
   right: 0;
   top: 0;
-  bottom: 0;
 `;
 
 const BackgroundOverlay = styled.div`

@@ -54,6 +54,7 @@ const CartItemComponent = ({ item, changeItemQuantity }) => {
 const CartItem = styled.div`
   display: grid;
   grid-template-columns: 0.7fr 1.3fr 1fr;
+  color: ${props => props.theme.colorText};
   overflow: hidden;
   height: 130px;
 

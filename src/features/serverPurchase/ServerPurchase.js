@@ -1,168 +1,182 @@
-import React, {PureComponent} from "react";
+import React from 'react';
+import styled from 'styled-components';
+import { useSnackbar } from 'notistack';
+import Button from '@material-ui/core/Button';
+import Loader from '@material-ui/core/CircularProgress';
+import MUIDivider from '@material-ui/core/Divider';
 
-import './ServerPurchase.css';
-import Product from "../../components/Product";
-import {CssCartList, CssSubtotal} from "../../components/Cart";
-import {getFormattedCurrency} from "../../components/formatCurrency";
-import Button from "@material-ui/core/Button";
-import {purchaseItems} from "./ServerPurchaseLoader";
-import Alert from "@material-ui/core/Snackbar";
+import { ProductContext } from '../../context';
+import { CartItem } from '../cart/CartItem';
+import { getFormattedCurrency } from '../../utils/formatCurrency';
+import { generateUUID } from '../../utils/generateUUID';
+import { device } from '../../styles/devices';
+import { purchaseItems } from './ServerPurchaseLoader';
 
-export class ServerPurchase extends PureComponent {
-    constructor(props) {
-        super(props);
+const ServerPurchase = () => {
+  const { cart, changeItemQuantityInCart } = React.useContext(ProductContext);
+  const { enqueueSnackbar } = useSnackbar();
 
-        this.state = {
-            showToast: false,
-            statusToast: 'processing',
-            operations: null
-        }
-    }
+  const [isPurchasing, setPurchasing] = React.useState();
 
-    calculateSubtotal = cart => {
-        let subtotal = 0;
-        cart.forEach(function (element) {
-            subtotal += element.price.amount * element.quantity;
-        });
-        return Math.round(subtotal * 100) / 100;
+  const calculateSubtotal = cart => {
+    const subtotal = cart.reduce((acc, x) => acc + x.price.amount * x.quantity, 0);
+    return Math.round(subtotal * 100) / 100;
+  };
+
+  const purchase = React.useCallback(() => {
+    const data = {
+      type: 'purchase',
+      user: 'd342dad2-9d59-11e9-a384-42010aa8003f',
+      platform: 'playstation_network',
+      purchase: {
+        amount: cart.price.amount,
+        currency: cart.price.currency,
+        external_purchase_id: generateUUID(),
+        external_purchase_date: (new Date()).toISOString()
+      },
+      items: cart.items.map(({ sku, quantity }) => ({ sku, quantity })),
     };
 
-    generateUUID() {
-        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-        );
-    }
+    setPurchasing(true);
+    enqueueSnackbar('Operation is processing', { variant: 'info' });
+    purchaseItems(data)
+      .then(() => {
+        setPurchasing(false);
+        enqueueSnackbar('Complete', { variant: 'success' });
+      })
+      .catch(error => {
+        setPurchasing(false);
+        enqueueSnackbar(error.message, { variant: 'error' });
+      });
+  }, []);
 
-    setShowToast(isVisible) {
-        this.setState({showToast: isVisible});
-    }
+  const cartContent = React.useMemo(
+    () => cart.items.length > 0
+      ? (
+        <CartItems>
+          {cart.items.map(x => (
+            <React.Fragment key={x.sku}>
+              <CartItem
+                item={x}
+                changeItemQuantity={changeItemQuantityInCart}
+              />
+              <Divider/>
+            </React.Fragment>
+          ))}
+        </CartItems>
+      ) : (
+        <EmptyText>
+          Oops, you have nothing bought yet!
+        </EmptyText>
+      ),
+    [cart]
+  );
 
-    purchase() {
-        let {cart} = this.props;
+  const footerContent = React.useMemo(() => cart.items.length > 0 && (
+    <CartFooter>
+      <Subtotal>
+        Subtotal:
+        <Price>
+          {
+            getFormattedCurrency(
+              calculateSubtotal(cart.items),
+              cart.price.currency || cart.items[0].price.currency
+            ).formattedCurrency
+          }
+        </Price>
+      </Subtotal>
+      <CartActions>
+        <Button
+          variant="contained"
+          disabled={isPurchasing}
+          onClick={purchase}
+        >
+          {isPurchasing ? <Loader size={24} color="secondary" /> : 'Grant purchase'}
+        </Button>
+      </CartActions>
+    </CartFooter>
+  ), [cart, isPurchasing]);
 
-        const body = {
-            type: "purchase",
-            user: "d342dad2-9d59-11e9-a384-42010aa8003f",
-            platform: "playstation_network",
-            purchase: {
-                amount: cart.price.amount,
-                currency: cart.price.currency,
-                external_purchase_id: this.generateUUID(),
-                external_purchase_date: (new Date()).toISOString()
-            },
-            items: cart.items.map((cartItem) => {
-                return {
-                    sku: cartItem.sku,
-                    quantity: cartItem.quantity
-                }
-            })
-        };
-        this.setState({showToast: true, statusToast: 'processing', operationDetails: null});
-        purchaseItems(body)
-            .then(response => {
-                this.setState({
-                    showToast: true,
-                    statusToast: 'complete',
-                    operations: response.operations
-                });
-            })
-            .catch(() => {
-            });
-    }
+  return (
+    <Body>
+      <Content>
+        {cartContent}
+        {footerContent}
+      </Content>
+    </Body>
+  );
+};
 
-    render() {
-        const {cart, logToken, changeItemQuantityInCart, isFetching} = this.props;
-        const {operations, showToast, statusToast} = this.state;
+const Body = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+`;
 
-        return (
-            <div>
-                <div className="server-purchase__alert">
-                    <Alert onClose={(e) => this.setShowToast(false)} open={showToast}
-                           variant={statusToast === 'processing' ? "primary" : "success"} dismissible>
-                        <Alert.Heading>{statusToast === 'processing' ? 'Operation is processing' : 'Operation complete!'}</Alert.Heading>
-                        {
-                            operations && operations.length ?
-                                operations.map(
-                                    (operation) => {
-                                        return operation.items.map(
-                                            (item, index) => {
-                                                return (
-                                                    <div key={index}>
-                                                        <div>Item: <b>{item.sku}</b></div>
-                                                        <div>Quantity: <b>{item.quantity === null ? 0 : item.quantity}</b>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            }
-                                        )
-                                    })
-                                :
-                                ''
-                        }
-                    </Alert>
-                </div>
-                <div className="server-purchase">
-                    <CssCartList>
-                        {cart && cart.items.map((oneCartItem, i) => {
-                            return (
-                                <div key={`cartitem${i}`}>
-                                    <Product
-                                        product={oneCartItem}
-                                        key={oneCartItem.sku}
-                                        order={i}
-                                        initClass="initialFlow1"
-                                        sku={oneCartItem.sku}
-                                        title={oneCartItem.name}
-                                        description={oneCartItem.description}
-                                        price={oneCartItem.price.amount}
-                                        image_url={oneCartItem.image_url}
-                                        currency={oneCartItem.price.currency}
-                                        cardType="cart"
-                                        cartId={cart.cartId}
-                                        logToken={logToken}
-                                        changeItemQuantityInCart={changeItemQuantityInCart}
-                                        quantity={oneCartItem.quantity}
-                                    />
-                                </div>
-                            );
-                        })}
-                        {cart && cart.items.length <= 0 && <div>Oops, you have empty cart!</div>}
-                    </CssCartList>
-                    <div className=""/>
-                    {cart && cart.items.length > 0 && (
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <CssSubtotal style={{paddingTop: "7px"}}>
-                                Subtotal:
-                                <div
-                                    style={{
-                                        minWidth: 80,
-                                        textAlign: "right"
-                                    }}
-                                >
-                                    {isFetching &&
-                                    getFormattedCurrency(
-                                        this.calculateSubtotal(cart.items),
-                                        cart.items[0].price.currency
-                                    ).formattedCurrency}
-                                    {!isFetching &&
-                                    getFormattedCurrency(
-                                        cart.price.amount,
-                                        cart.price.currency
-                                    ).formattedCurrency}
-                                </div>
-                            </CssSubtotal>
-                            <Button
-                                variant="contained"
-                                onClick={() => {
-                                    this.purchase(cart)
-                                }}
-                            >
-                                Grant purchase
-                            </Button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    }
-}
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  max-width: 600px;
+  padding: 0 20px;
+`;
+
+const CartItems = styled.div`
+  display: grid;
+  grid-row-gap: 30px;
+  padding: 16px 0;
+`;
+
+const EmptyText = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${props => props.theme.colorText};
+  height: 100%;
+`;
+
+const CartFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 24px 0 24px 0;
+`;
+
+const CartActions = styled.div`
+  display: flex;
+
+  @media ${device.tablet} {
+    justify-content: flex-end;
+    width: 100%;
+  }
+`;
+
+const Subtotal = styled.div`
+  display: flex;
+  font-weight: bold;
+  color: ${props => props.theme.colorText};
+  margin-right: 10px;
+
+  @media ${device.tablet} {
+    justify-content: flex-end;
+    width: 100%;
+    margin-bottom: 15px;
+    margin-right: 0;
+  }
+`;
+
+const Price = styled.div`
+  min-width: 80px;
+  text-align: right;
+`;
+
+const Divider = styled(MUIDivider)`
+  &.MuiDivider-root {
+    background-color: ${props => props.theme.colorAccentText};
+    opacity: 0.1;
+    margin-bottom: 5px;
+  }
+`;
+
+export { ServerPurchase };

@@ -1,9 +1,0 @@
-.application-alert {
-  z-index: 200;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  margin-top: -100px;
-  margin-left: -300px;
-  max-width: 600px;
-}
