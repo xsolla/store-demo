@@ -66,7 +66,7 @@ const InventoryList = () => {
     }
   }, [inventoryItems.length, cart.cartId]);
 
-  React.useEffect(() => () => inventoryItems.length > 0 && setInventoryItems([]), []);
+  React.useEffect(() => () => setInventoryItems([]), []);
 
   const content = React.useMemo(() => inventoryItems.length > 0 ? (
     <Content>
@@ -96,12 +96,11 @@ const InventoryList = () => {
 
 const Body = styled.div`
   color: ${props => props.theme.colorText};
-  background-color: transparent;
+  padding: 30px 0;
 `;
 
 const Content = styled.div`
   display: grid;
-  padding: 30px 0;
   grid-gap: 30px;
   grid-template-columns: ${props => `repeat(auto-fit, minmax(
     ${props.theme.cardWidth}, 

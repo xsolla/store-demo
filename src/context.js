@@ -73,7 +73,7 @@ class ProductProvider extends React.PureComponent {
           cart: {
             cartId: response.data.cart_id,
             items: response.data.items.sort(this.compareItems),
-            price: response.data.price
+            price: response.data.price || 0,
           },
           isCartProcessing: false
         });
@@ -165,7 +165,8 @@ class ProductProvider extends React.PureComponent {
         })
         .catch(error => {
           this.setState({ isCartProcessing: false });
-          enqueueSnackbar(error.response.data.errorMessage, { variant: 'error' });
+          const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+          enqueueSnackbar(errorMsg, { variant: 'error' });
         });
     }
   };
