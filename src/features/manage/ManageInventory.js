@@ -76,10 +76,11 @@ const ManageInventory = () => {
   };
 
   const processItem = type => {
-    if (selectedItem === null) {
+    if (!selectedItem || !userID) {
       return;
     }
-    const data = { type, user: userID, item: setSelectedItem, count: quantity };
+
+    const data = { type, user: userID, item: selectedItem, count: quantity };
     setItemProcessing(true);
     enqueueSnackbar('Operation is processing', { variant: 'info' });
     rewardItems(data)
