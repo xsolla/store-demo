@@ -101,6 +101,10 @@ const ManageInventory = () => {
   const handleQuantityChange = event => setQuantity(event.target.value);
 
   React.useEffect(() => {
+    setUserID(users[0] ? users[0].id : null);
+  }, [users]);
+
+  React.useEffect(() => {
     setActiveGroup(groups[0] ? groups[0].id : null);
   }, [groups]);
 
@@ -149,7 +153,7 @@ const ManageInventory = () => {
             <TextField
               select
               label="User"
-              value={userID || users[0].id}
+              value={userID}
               color="secondary"
               onChange={handleUserSelect}
             >
