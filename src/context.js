@@ -33,8 +33,9 @@ class ProductProvider extends React.PureComponent {
 
     entitlementItems: [],
 
-    cartWithItemsBuyingByVCShown: false,
-    cartWithItemsBuyingByVC: {
+    isVCCartShown: false,
+    isVCCartProcessing: false,
+    vcCart: {
       items: [],
       vcPriceSku: null
     },
@@ -56,6 +57,9 @@ class ProductProvider extends React.PureComponent {
 
   showCart = () => this.setState({ isCartShown: true });
   hideCart = () => this.setState({ isCartShown: false });
+
+  showVCCart = () => this.setState({ isVCCartShown: true });
+  hideVCCart = () => this.setState({ isVCCartShown: false });
 
   setSideMenuVisibility = isSideMenuShown => this.setState({ isSideMenuShown });
   setEntitlementItems = entitlementItems => this.setState({ entitlementItems });
@@ -116,26 +120,18 @@ class ProductProvider extends React.PureComponent {
     return 0;
   };
 
-  buyByVC = (product, vcSku) => {
+  buyByVC = product => {
     this.setState({
-      cartWithItemsBuyingByVCShown: true,
-      cartWithItemsBuyingByVC: {
-        items: [product],
-        vcPriceSku: vcSku
-      }
+      isVCCartShown: true,
+      vcCart: { items: [product] },
     });
   };
 
   clearVCCart = () => {
     this.setState({
-      cartWithItemsBuyingByVCShown: false,
-      cartWithItemsBuyingByVC: {
-        items: [],
-        vcPriceSku: null
-      }
+      isVCCartShown: false,
+      vcCart: { items: [] },
     });
-
-    this.updateVirtualCurrencyBalance();
   };
 
   addToCart = product => {
@@ -209,7 +205,9 @@ class ProductProvider extends React.PureComponent {
   };
 
   updateVirtualCurrencyBalance = () => {
-    getVirtualCurrencyBalance(this.state.logToken).then((reps) => {
+    const { logToken } = this.state;
+
+    getVirtualCurrencyBalance(logToken).then(reps => {
       this.setState({
         userBalanceVirtualCurrency: reps.data.items
       });
@@ -229,6 +227,8 @@ class ProductProvider extends React.PureComponent {
           setVirtualItems: this.setVirtualItems,
           setEntitlementItems: this.setEntitlementItems,
           addToCart: this.addToCart,
+          showVCCart: this.showVCCart,
+          hideVCCart: this.hideVCCart,
           buyByVC: this.buyByVC,
           clearVCCart: this.clearVCCart,
           createCart: this.createCart,

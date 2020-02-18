@@ -11,7 +11,7 @@ export const VirtualItem = React.memo(({
   addToCart,
   buyByVC,
 }) => {
-  const handleBuyByVC = () => buyByVC(product, product.virtual_prices[0].sku);
+  const handleBuyByVC = () => buyByVC(product);
   const handleItemAdd = () => addToCart(product);
   
   const hasVirtualCurrencyPrice = product.virtual_prices && product.virtual_prices.length > 0;

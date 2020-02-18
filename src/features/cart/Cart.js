@@ -162,7 +162,7 @@ const CartHeader = styled.div`
   padding: 24px 0 8px 0;
 `;
 
-export const CartList = styled.div`
+const CartList = styled.div`
   display: grid;
   grid-row-gap: 30px;
   flex-grow: 1;

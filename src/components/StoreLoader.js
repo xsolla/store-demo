@@ -40,14 +40,7 @@ export function createCart(loginToken) {
       Authorization: "Bearer " + loginToken
     }
   };
-  return axios(opts)
-    .then(function(response) {
-      //console.log('createCart ', response.data["id"]);
-      return response;
-    })
-    .catch(function(error) {
-      //console.log("L2PS ERROR = ", error.response);
-    });
+  return axios(opts);
 }
 
 export function removeItemFromCart({ sku = "sku" }, cartId, loginToken) {
@@ -66,14 +59,7 @@ export function removeItemFromCart({ sku = "sku" }, cartId, loginToken) {
       Authorization: "Bearer " + loginToken
     }
   };
-  return axios(opts)
-    .then(function(response) {
-      //console.log("Item removed = ", response.data);
-      let resp = response.data;
-    })
-    .catch(function(error) {
-      //console.log("L2PS ERROR = ", error.response);
-    });
+  return axios(opts);
 }
 
 export function getPsTokenBuyCart(cartId, loginToken) {
@@ -119,20 +105,17 @@ export function getCart(cartId, loginToken) {
     .catch(error => console.error(error));
 }
 
-export function quickPurchaseBuyVirtualCurrency(product, vcPriceSku, loginToken) {
-  let opts = {
-    url:
-        "https://store.xsolla.com/api/v2/project/" +
-        window.xProjectId +
-        "/payment/item/" +
-        product.sku +
-        "/virtual/" + vcPriceSku,
-    method: "POST",
+export const quickPurchaseBuyVirtualCurrency = async (projectId, product, loginToken) => {
+  const url = `https://store.xsolla.com/api/v2/project/${projectId}/payment/item/${product.sku}/virtual/${product.virtual_prices[0].sku}`;
+  const params = {
     headers: {
-      Authorization: "Bearer " + loginToken
+      Authorization: `Bearer ${loginToken}`
     }
   };
-  return axios(opts);
+
+  const response = await axios.post(url, {}, params);
+
+  return response.data;
 }
 
 export function getVirtualCurrencyBalance(loginToken) {

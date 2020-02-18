@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import styled from 'styled-components';
 import Hidden from '@material-ui/core/Hidden';
 
@@ -10,6 +10,7 @@ import { VirtualList } from './features/virtual/VirtualList';
 import { ServerPurchase } from './features/serverPurchase/ServerPurchase';
 import { EntitlementList } from './features/entitlement/EntitlementList';
 import { Cart } from './features/cart/Cart';
+import { VCCart } from './features/cart/VCCart';
 import { VCList } from './features/virtualCurrenciesList/VCList';
 import { Navbar } from './components/Navbar';
 import { MobileNavbar } from './components/MobileNavbar';
@@ -30,6 +31,7 @@ const App = () => {
         <MobileNavbar />
       </Hidden>
       <Cart />
+      <VCCart />
       <Content>
         <Switch>
           <Route path={routes.items} exact component={VirtualList} />
@@ -39,6 +41,7 @@ const App = () => {
           <Route path={routes.manage} component={ManageInventory} />
           <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
           <Route path={routes.purchase} component={ServerPurchase} />
+          <Redirect to={routes.items} />
         </Switch>
       </Content>
 
