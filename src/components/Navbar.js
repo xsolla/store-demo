@@ -46,23 +46,23 @@ const NavbarComponent = ({ location }) => {
 
   const isLogged = logToken && user;
 
-  const generalMenuItems = getMenuItems([
+  const generalMenuItems = React.useMemo(() => getMenuItems([
     routes.items,
     routes.currencies,
     ...projectId === 44056 ? [routes.physical] : [],
-  ]);
+  ]), [routes, projectId]);
 
   const isLocationExistsInTabs = React.useMemo(
     () => generalMenuItems.some(x => x.route === location.pathname),
     [generalMenuItems, location.pathname]
   );
 
-  const userMenuItems = getMenuItems([
+  const userMenuItems = React.useMemo(() => getMenuItems([
     routes.inventory,
     routes.entitlement,
     routes.manage,
     routes.purchase,
-  ]);
+  ]), [routes]);
 
   return (
     <Header>
@@ -107,16 +107,24 @@ const NavbarComponent = ({ location }) => {
 
       <XLogin />
 
-      {!logToken && <LoginButton>Log In</LoginButton>}
+      {!logToken && (
+        <LoginButton
+          variant="outlined"
+          color="secondary"
+          size="small"
+        >
+          Log In
+        </LoginButton>
+      )}
       {isLogged && projectId !== 44056 && (
-       <Button
+       <LogoutButton
           variant="outlined"
           color="secondary"
           size="small"
           onClick={logOutHandler}
         >
           <LogoutIcon size="inherit" />
-        </Button>
+        </LogoutButton>
       )}
 
       <Button
@@ -208,6 +216,12 @@ const MenuButton = styled(MUIIconButton)`
   }
 `;
 
+const LogoutButton = styled(Button)`
+  &.MuiButton-root {
+    margin-right: 10px;
+  }
+`;
+
 const VCCurrency = styled.div`
   margin-right: 10px;
 `;
@@ -223,19 +237,11 @@ const LoginPanel = styled.div`
   }
 `;
 
-const LoginButton = styled.div`
-  display: flex;
-  flex-direction: row;
-  font-size: 0.8rem;
-  line-height: 2em;
-  display: flex;
-  flex-direction: column;
-  justify-content: stretch;
-  font-family: 'Roboto';
-  color: black;
-  border-radius: 4px;
-  padding: 0 0.6rem;
-  cursor: pointer;
+const LoginButton = styled(Button)`
+  &.MuiButton-root {
+    margin-right: 10px;
+    font-size: 0.8rem;
+  }
 `;
 
 const UserMail = styled(Button)`
