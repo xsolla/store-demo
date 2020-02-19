@@ -45,7 +45,7 @@ const CartComponent = ({ history }) => {
     getPsTokenBuyCart(cart.cartId, logToken)
       .then(response => {
         setBuyButtonDisabled(true);
-        window.xPayStationInit(response.data.token);
+        window.xPayStationInit(response.data.token, {sandbox: true, host: 'sandbox-secure.xsolla.com'});
         window.XPayStationWidget.open();
         window.XPayStationWidget.on(
           window.XPayStationWidget.eventTypes.CLOSE,
