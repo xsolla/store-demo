@@ -10,6 +10,9 @@ export function getPsTokenByItem(item, loginToken) {
     method: "POST",
     headers: {
       Authorization: "Bearer " + loginToken
+    },
+    data: {
+      sandbox: true
     }
   };
   return axios(opts);
