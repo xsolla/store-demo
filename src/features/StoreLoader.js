@@ -12,7 +12,12 @@ export function getPsTokenByItem(item, loginToken) {
       Authorization: "Bearer " + loginToken
     },
     data: {
-      sandbox: true
+      sandbox: true,
+      settings: {
+        ui: {
+          theme: 'dark'
+        }
+      }
     }
   };
   return axios(opts);
