@@ -110,10 +110,10 @@ const ManageInventory = () => {
   }, [groups]);
 
   React.useEffect(() => {
-    if (!selectedItem && activeGroup && groupsContent[activeGroup] && groupsContent[activeGroup].items[0]) {
+    if (activeGroup && groupsContent[activeGroup] && groupsContent[activeGroup].items[0]) {
       setSelectedItem(groupsContent[activeGroup].items[0].sku);
     }
-  }, [manageItems, manageCurrencies]);
+  }, [manageItems, manageCurrencies, activeGroup]);
 
   React.useEffect(() => {
     if (manageItems.length === 0) {
@@ -170,7 +170,7 @@ const ManageInventory = () => {
                 <TextField
                   select
                   label={groupsContent[activeGroup].name}
-                  value={groupsContent[activeGroup].items[0].sku}
+                  value={selectedItem}
                   color="secondary"
                   onChange={handleItemSelect}
                 >
