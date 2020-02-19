@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSnackbar } from 'notistack';
 import Colorer from 'color';
 import IconButton from '@material-ui/core/IconButton';
 import IconClose from '@material-ui/icons/Close';
@@ -26,6 +27,7 @@ const VCCart = () => {
     isVCCartProcessing,
     updateVirtualCurrencyBalance,
   } = React.useContext(ProductContext);
+  const { enqueueSnackbar } = useSnackbar();
 
   const buyByVirtualCurrencyButtonAction = () => {
     setStateFrom('isVCCartProcessing', true);
@@ -35,8 +37,10 @@ const VCCart = () => {
         clearVCCart();
         updateVirtualCurrencyBalance();
       })
-      .catch(() => {
+      .catch(error => {
         setStateFrom('isVCCartProcessing', false);
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+        enqueueSnackbar(errorMsg, { variant: 'error' });
       });
   };
 

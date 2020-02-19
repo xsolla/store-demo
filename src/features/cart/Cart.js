@@ -1,5 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import styled from 'styled-components';
 import Colorer from 'color';
 import IconClose from '@material-ui/icons/Close';
@@ -25,6 +26,7 @@ const CartComponent = ({ history }) => {
     isCartShown,
     changeItemQuantityInCart,
   } = React.useContext(ProductContext);
+  const { enqueueSnackbar } = useSnackbar();
 
   const calculateSubtotal = cart => {
     const subtotal = cart.reduce((acc, x) => acc + x.price.amount * x.quantity, 0);
@@ -56,7 +58,11 @@ const CartComponent = ({ history }) => {
           payStationHandler
         );
       })
-      .catch(() => setBuyButtonDisabled(false));
+      .catch(error => {
+        setBuyButtonDisabled(false);
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+        enqueueSnackbar(errorMsg, { variant: 'error' });
+      });
   };
 
   return (
