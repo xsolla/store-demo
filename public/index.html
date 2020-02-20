@@ -112,8 +112,11 @@
           sandbox: options && options['sandbox'] || false,
           access_token: accessToken,
           lightbox: {
-            height: options && options['height'] || 600,
-            spinner: 'round'
+            height: options && options['height'] || 640,
+            spinner: 'round',
+            width: '740px',
+            spinnerColor: '#fff',
+            contentBackground: "rgba(0,0,0,0.5)"
           }
         });
       }

@@ -12,7 +12,12 @@ export function getPsTokenByItem(item, loginToken) {
       Authorization: "Bearer " + loginToken
     },
     data: {
-      sandbox: true
+      sandbox: true,
+      settings: {
+        ui: {
+          theme: 'dark'
+        }
+      }
     }
   };
   return axios(opts);
@@ -28,7 +33,7 @@ export const loadVirtualItems = async (projectID, token) => {
       }
     }
   );
-  console.log(response.data.groups);
+
   const [...items] = await Promise.all(response.data.groups.map(g => loadVirtualItemsByGroup(projectID, g.external_id)));
   return items.reduce((acc, x) => acc.concat(x), [])
 };
