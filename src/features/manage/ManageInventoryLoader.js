@@ -1,41 +1,22 @@
-import axios from "axios";
+import axios from 'axios';
 
-export const getVirtualItemList = (projectId) => {
-    let opts = {
-        url:
-            `https://store.xsolla.com/api/v2/project/${projectId}/items/virtual_items`,
-        method: "GET",
-    };
+export const loadVirtualItems = async projectID => {
+  const url = `https://store.xsolla.com/api/v2/project/${projectID}/items/virtual_items`;
+  const response = await axios.get(url);
 
-    return axios(opts)
-        .then(function(response) {
-            return response.data.items;
-        });
+  return response.data.items;
 }
 
-export const getVirtualCurrencyList = (projectId) => {
-    let opts = {
-        url:
-            `https://store.xsolla.com/api/v2/project/${projectId}/items/virtual_currency`,
-        method: "GET",
-    };
+export const loadVirtualCurrencies = async projectID => {
+  const url = `https://store.xsolla.com/api/v2/project/${projectID}/items/virtual_currency`;
+  const response = await axios.get(url);
 
-    return axios(opts)
-        .then(function(response) {
-            return response.data.items;
-        });
+  return response.data.items;
 }
 
-export const rewardItems = (data) => {
-    let opts = {
-        url:
-            `https://livedemo.xsolla.com/store-demo/api/index.php`,
-        method: "POST",
-        data: data
-    }
+export const rewardItems = async data => {
+  const url = 'https://livedemo.xsolla.com/store-demo/api/index.php';
+  const response = await axios.post(url, data);
 
-    return axios(opts)
-        .then(function(response) {
-            return response.data;
-        });
+  return response.data;
 }

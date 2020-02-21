@@ -27,8 +27,7 @@ export default class XLogin extends Component {
 
   render() {
     return (
-      <div style={{ flexGrow: 1 }}>
-        <ProductConsumer>
+      <ProductConsumer>
           {valueFromContext => {
             this.setStateFrom = valueFromContext.setStateFrom;
             this.createCart = valueFromContext.createCart;
@@ -76,7 +75,6 @@ export default class XLogin extends Component {
             );
           }}
         </ProductConsumer>
-      </div>
     );
   }
 

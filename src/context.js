@@ -1,192 +1,105 @@
-import React, { Component } from "react";
-import Cookie from "./components/Cookie";
+import React from 'react';
+import { withSnackbar } from 'notistack';
+
+import Cookie from './components/Cookie';
 import {
   changeItemQuantityCart,
   createCart,
   removeItemFromCart,
   getCart, getVirtualCurrencyBalance
-} from "./components/StoreLoader";
+} from './components/StoreLoader';
 
 const ProductContext = React.createContext();
-//Provider
-//Consumer
 
-const theme = {
-  colorText: "#D6E0E7",
-  colorAccent: "#FF005B",
-  colorAccentText: "#F6FAFF",
-  colorBg: "#011627",
-  colorSecondary: "#495C6B", //TODO: delete
+class ProductProvider extends React.PureComponent {
+  state = {
+    projectId: this.props.projectId,
+    logToken: Cookie(),
+    userBalanceVirtualCurrency: [],
+    isSideMenuShown: false,
 
-  borderRadius: 8,
-  backgroundUrl:
-    "https://res.cloudinary.com/maiik/image/upload/v1549624607/Xsolla/HomePage_Hero_Illustration_1440_oabqmk.jpg",
+    virtualItems: [],
+    areVirtualItemsFetching: false,
 
-  cardWidth: "300",
+    virtualCurrencies: [],
+    areVirtualCurrenciesFetching: false,
 
-  boxShadow: "0 5px 12px 0px rgba(0,0,0,0.2)",
-  padding: "8px",
-  transitionTime: "0.3s",
-  transitionEasing: "ease-in-out",
-  transition: `all 0.3s ease-in-out`,
-  // transition: `all ${theme['transitionTime']} ${theme['transitionTime']}`,
-  transitionStyle: "0.3s ease-in-out",
-  fontFamily:
-    '"Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'
-};
+    physicalItems: [],
+    arePhysicalItemsFetching: false,
 
-class ProductProvider extends Component {
-  constructor(props) {
-    super(props);
+    inventoryItems: [],
+    areInventoryItemsFetching: false,
+    isItemConsuming: false,
 
-    this.state = {
-      projectId: props.projectId,
-      logToken: Cookie(),
-      userBalanceVirtualCurrency: [],
+    entitlementItems: [],
 
-      activeGroup: "first",
-      loginShown: true,
-      activeModule: "virtualItems",
-      virtualItems: null,
-      virtualCurrencyPackages: null,
-      currency: null,
-      subscriptions: null,
-      inventoryItems: null,
-      entitlementItems: null,
-      physicalItems: null,
+    isVCCartShown: false,
+    isVCCartProcessing: false,
+    vcCart: {
+      items: [],
+      vcPriceSku: null
+    },
 
-      cartShown: false,
-      cart: {
-        cartId: null,
-        items: [],
-        price: {
-          amount: 0,
-          amount_without_discount: 0
-        }
-      },
-
-      cartWithItemsBuyingByVCShown: false,
-      cartWithItemsBuyingByVC: {
-        items: []
-      },
-
-      showCartError: false,
-      cartError: false,
-
-      isFetching: false,
-
-      psToken: "",
-
-      theme: theme
-    };
-  }
-
-  showCart = () => {
-    this.setState({
-      cartShown: !this.state.cartShown
-    });
-  };
-
-  showCartError = (title, message) => {
-    this.setState({
-      showCartError: true,
-      cartError: {
-        title,
-        message
+    isCartShown: false,
+    isCartProcessing: false,
+    cart: {
+      cartId: null,
+      items: [],
+      price: {
+        amount: 0,
+        amount_without_discount: 0,
+        currency: '',
       }
-    });
-    this.getCart();
+    },
   };
 
-  hideCartError = () => {
-    this.setState({
-      showCartError: false,
-      cartError: null
-    });
-  };
+  setStateFrom = (stateName, stateValue) => this.setState({ [stateName]: stateValue });
 
-  setInventoryItems = (inventoryItems) => {
-    this.setState({
-      inventoryItems,
-      fetching: false
-    })
-  };
+  showCart = () => this.setState({ isCartShown: true });
+  hideCart = () => this.setState({ isCartShown: false });
 
-  setEntitlementItems = (entitlementItems) => {
-    this.setState({
-      entitlementItems,
-      fetching: false
-    })
-  };
+  showVCCart = () => this.setState({ isVCCartShown: true });
+  hideVCCart = () => this.setState({ isVCCartShown: false });
 
-  setPhysicalItems = (physicalItems) => {
-    this.setState({
-      physicalItems,
-      fetching: false
-    })
-  };
+  setSideMenuVisibility = isSideMenuShown => this.setState({ isSideMenuShown });
+  setEntitlementItems = entitlementItems => this.setState({ entitlementItems });
+  setInventoryItems = inventoryItems => this.setState({ inventoryItems });
+  setPhysicalItems = physicalItems => this.setState({ physicalItems });
+  setVirtualCurrencies = virtualCurrencies => this.setState({ virtualCurrencies });
+  setVirtualItems = virtualItems => this.setState({ virtualItems });
 
   getCart = () => {
-    let cartPromise = getCart(this.state.cart.cartId, this.state.logToken);
+    const { cart, logToken } = this.state;
+    const cartPromise = getCart(cart.cartId, logToken);
     cartPromise.then(response => {
       if (!cartPromise.isCancel && response) {
-        this.setState(prevState => ({
+        this.setState({
           cart: {
-            cartId: response.data["cart_id"],
-            items: response.data["items"].sort(this.compareItems),
-            price: response.data["price"]
+            cartId: response.data.cart_id,
+            items: response.data.items.sort(this.compareItems),
+            price: response.data.price || 0,
           },
-          isFetching: false
-        }));
+          isCartProcessing: false
+        });
       }
     });
   };
 
-  createCart = function() {
-    let cartIdPromise = createCart(this.state.logToken);
+  createCart = () => {
+    const cartIdPromise = createCart(this.state.logToken);
     cartIdPromise.then(response => {
-      this.setState(prevState => ({
+      this.setState({
         cart: {
-          cartId: response.data["id"],
+          cartId: response.data.id,
           items: [],
           price: {
             amount: 0,
-            amount_without_discount: 0
+            amount_without_discount: 0,
+            currency: '',
           }
-        }
-      }));
-    });
-  }.bind(this);
-
-  changeTheme = newTheme => {
-    let newColor = null;
-    if (typeof newTheme === "string") {
-      newColor = newTheme;
-      this.setState({
-        ...this.state,
-        theme: {
-          ...this.state.theme,
-          colorBg: newColor
         }
       });
-    } else {
-      this.setState(
-        {
-          ...this.state,
-          theme: {
-            ...this.state.theme,
-            ...newTheme
-          }
-        },
-        () => {}
-      );
-    }
-  };
-
-  changeCardSize = newSize => {
-    let newTheme = this.state.theme;
-    newTheme["cardWidth"] = newSize;
-    this.changeTheme(newTheme);
+    });
   };
 
   clearCart = () => {
@@ -195,24 +108,7 @@ class ProductProvider extends Component {
     this.updateVirtualCurrencyBalance();
   };
 
-  payStationHandler = (event, data) => {
-    this.clearCart();
-  };
-
-  setPsToken = function(psToken) {
-    this.setState({ psToken: psToken });
-  }.bind(this);
-
-  handleDetail = () => {
-    console.log("hello from handleDetail");
-  };
-
-  setStateFrom = function(stateName, stateValue) {
-    this.setState({
-      ...this.state,
-      [stateName]: stateValue
-    });
-  }.bind(this);
+  payStationHandler = () => this.clearCart();
 
   compareItems = (a, b) => {
     if (a.sku > b.sku) {
@@ -224,230 +120,123 @@ class ProductProvider extends Component {
     return 0;
   };
 
-  buyByVC = (product, vcSku) => {
+  buyByVC = product => {
     this.setState({
-      cartWithItemsBuyingByVCShown: true,
-      cartWithItemsBuyingByVC: {
-        items: [product],
-        vcPriceSku: vcSku
-      }
+      isVCCartShown: true,
+      vcCart: { items: [product] },
     });
   };
 
   clearVCCart = () => {
     this.setState({
-      cartWithItemsBuyingByVCShown: false,
-      cartWithItemsBuyingByVC: {
-        items: [],
-        vcPriceSku: null
-      }
+      isVCCartShown: false,
+      vcCart: { items: [] },
     });
-
-    this.updateVirtualCurrencyBalance();
   };
 
   addToCart = product => {
-    if (this.state.cart) {
-      let indexFind = this.state.cart.items.findIndex(elem => {
-        return elem.sku === product.sku;
-      });
-      if (indexFind !== -1) {
-        this.getCart();
-        this.setState({
-          cartShown: true
-        });
-      } else {
-        this.setState({
-          isFetching: true,
-          cart: {
-            ...this.state.cart,
-            items: [{ ...product, quantity: 1 }, ...this.state.cart.items].sort(
-              this.compareItems
-            ),
-            price: {
-              ...this.state.cart.price,
-              amount:
-                this.state.cart.price &&
-                this.state.cart.price.amount + product.price.amount,
-              amount_without_discount:
-                this.state.cart.price &&
-                this.state.cart.price.amount_without_discount +
-                  product.price.amount_without_discount
-            }
-          }
-        });
-        changeItemQuantityCart(
-          product,
-          1,
-          this.state.cart.cartId,
-          this.state.logToken
-        ).then(response => {
-          this.getCart();
-        }).catch(error => {
-          this.showCartError('Change Item Quantity Error',error.response.data.errorMessage);
-        });
-        this.showCart();
-      }
+    const { enqueueSnackbar } = this.props;
+    const { cart, logToken } = this.state;
+    const isItemExist = cart.items.some(elem => elem.sku === product.sku);
+    if (isItemExist) {
+      this.getCart();
+      this.setState({ isCartShown: true });
     } else {
-      this.setState({ isFetching: true });
-      changeItemQuantityCart(
-        product,
-        1,
-        this.state.cart.cartId,
-        this.state.logToken
-      ).then(response => {
-        this.getCart();
-      }).catch(error => {
-        this.showCartError('Change Item Quantity Error',error.response.data.errorMessage);
-      });
-      this.showCart();
+      this.setState({ isCartProcessing: true });
+      changeItemQuantityCart(product, 1, cart.cartId, logToken)
+        .then(() => {
+          this.setState({
+            cart: {
+              ...cart,
+              items: [{ ...product, quantity: 1 }, ...cart.items].sort(this.compareItems),
+              price: {
+                ...cart.price,
+                amount: cart.price.amount + product.price.amount,
+                amount_without_discount: cart.price.amount_without_discount + product.price.amount_without_discount,
+              },
+            },
+            isCartProcessing: false
+          });
+          this.showCart();
+        })
+        .catch(error => {
+          this.setState({ isCartProcessing: false });
+          const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+          enqueueSnackbar(errorMsg, { variant: 'error' });
+        });
     }
   };
 
   removeFromCart = product => {
-    if (this.state.cart) {
-      this.setState({
-        isFetching: true,
-        cart: {
-          ...this.state.cart,
-          items: this.state.cart.items
-            .filter(function(prod) {
-              return prod.sku !== product.sku;
-            })
-            .sort(this.compareItems),
-          price: {
-            ...this.state.cart.price,
-            amount:
-              this.state.cart.price.amount -
-              product.price.amount * product.quantity,
-            amount_without_discount:
-              this.state.cart.price.amount_without_discount -
-              product.price.amount_without_discount * product.quantity
-          }
+    const { cart } = this.state;
+    
+    this.setState({
+      cart: {
+        ...cart,
+        items: cart.items
+          .filter(prod => prod.sku !== product.sku)
+          .sort(this.compareItems),
+        price: {
+          ...cart.price,
+          amount: cart.price.amount - product.price.amount * product.quantity,
+          amount_without_discount: cart.price.amount_without_discount - product.price.amount_without_discount * product.quantity
         }
-      });
-    }
+      }
+    });
   };
 
   changeItemQuantityInCart = (product, quantity) => {
+    const { enqueueSnackbar } = this.props;
+    const { cart, logToken } = this.state;
+
     if (quantity <= 0) {
       this.removeFromCart(product);
-      removeItemFromCart(
-        product,
-        this.state.cart.cartId,
-        this.state.logToken
-      ).then(() => {
-        this.getCart();
-      });
+      removeItemFromCart(product, cart.cartId, logToken)
+        .then(this.getCart);
     } else {
-      let indexFind = this.state.cart.items.findIndex(elem => {
-        return elem.sku === product.sku;
-      });
-      let cartItems = this.state.cart.items;
-      cartItems.splice(indexFind, 1, {
-        ...product,
-        quantity: quantity
-      });
-      this.setState({
-        isFetching: true,
-        cart: {
-          ...this.state.cart,
-          items: cartItems.sort(this.compareItems)
-        }
-      });
-      changeItemQuantityCart(
-        product,
-        quantity,
-        this.state.cart.cartId,
-        this.state.logToken
-      ).then(() => {
-        this.getCart();
-      }).catch(error => {
-        this.showCartError('Change Item Quantity Error',error.response.data.errorMessage);
-      });
+      const indexFind = cart.items.findIndex(elem => elem.sku === product.sku);
+      const cartItems = cart.items;
+      cartItems.splice(indexFind, 1, { ...product, quantity });
+      this.setState({ cart: { ...cart, items: cartItems.sort(this.compareItems) } });
+      changeItemQuantityCart(product, quantity, cart.cartId, logToken)
+        .then(this.getCart)
+        .catch(error => enqueueSnackbar(error.response.data.errorMessage, { variant: 'error' }));
     }
   };
-
-  hideCart = function () {
-    this.setState({
-      cartShown: false,
-      cartWithItemsBuyingByVCShown: false
-    })
-  }.bind(this);
-
-  setGroups = function(virtualItems) {
-    this.setState({
-      virtualItems: virtualItems,
-      fetching: false
-    });
-  }.bind(this);
-
-  setCurrs = function(resolvedData) {
-    this.setState({
-      fetching: false,
-      virtualItems: resolvedData["virtualItems"],
-      currency: resolvedData["currency"],
-      subscriptions: resolvedData["subscriptions"],
-      virtualCurrencyPackages: resolvedData["virtualCurrencyPackages"],
-    });
-  }.bind(this);
-
-  getTheme = (what = "all") => {
-    if (what === "all") {
-      return this.state.theme;
-    }
-    return `${this.state.theme[what]}${what === "borderRadius" ? "px" : ""}`;
-  };
-
-  setProducts = function(storeProducts) {
-    this.setState({
-      storeProducts: storeProducts
-    });
-  }.bind(this);
-
-  componentWillUpdate(nextProps, nextState) {}
 
   updateVirtualCurrencyBalance = () => {
-    getVirtualCurrencyBalance(this.state.logToken).then((reps) => {
+    const { logToken } = this.state;
+
+    getVirtualCurrencyBalance(logToken).then(reps => {
       this.setState({
         userBalanceVirtualCurrency: reps.data.items
       });
     });
   };
 
-  componentDidMount() {}
-
   render() {
-    // (this.state.storeProducts) && this.loadFromPS()
-
     return (
       <ProductContext.Provider
         value={{
-          // products: this.state.products, //full
-          ...this.state, //all props and vals
-          handleDetail: this.handleDetail,
-          setPsToken: this.setPsToken,
-          setGroups: this.setGroups,
-          setProducts: this.setProducts,
+          ...this.state,
           setStateFrom: this.setStateFrom,
-          setCurrs: this.setCurrs,
+          payStationHandler: this.payStationHandler,
           setInventoryItems: this.setInventoryItems,
-          setEntitlementItems: this.setEntitlementItems,
+          setVirtualCurrencies: this.setVirtualCurrencies,
           setPhysicalItems: this.setPhysicalItems,
+          setVirtualItems: this.setVirtualItems,
+          setEntitlementItems: this.setEntitlementItems,
           addToCart: this.addToCart,
+          showVCCart: this.showVCCart,
+          hideVCCart: this.hideVCCart,
           buyByVC: this.buyByVC,
           clearVCCart: this.clearVCCart,
-          getTheme: this.getTheme.bind(this),
-          changeTheme: this.changeTheme,
-          changeCardSize: this.changeCardSize,
           createCart: this.createCart,
           showCart: this.showCart,
           changeItemQuantityInCart: this.changeItemQuantityInCart,
-          buyCart: this.buyCart,
-          payStationHandler: this.payStationHandler,
           updateVirtualCurrencyBalance: this.updateVirtualCurrencyBalance,
           hideCart: this.hideCart,
-          hideCartError: this.hideCartError
+          setSideMenuVisibility: this.setSideMenuVisibility,
         }}
       >
         {this.props.children}
@@ -458,4 +247,6 @@ class ProductProvider extends Component {
 
 const ProductConsumer = ProductContext.Consumer;
 
-export { ProductContext, ProductProvider, ProductConsumer };
+export { ProductContext, ProductConsumer };
+
+export default withSnackbar(ProductProvider);

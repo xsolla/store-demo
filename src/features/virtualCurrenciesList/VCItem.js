@@ -4,7 +4,7 @@ import ShoppingCart from '@material-ui/icons/ShoppingCart';
 import { ProductCard } from '../../components/ProductCard';
 import { Currency } from '../../components/Currency';
 
-export const PhysicalItem = React.memo(({
+export const VCItem = React.memo(({
   product,
   order,
   isLoading,

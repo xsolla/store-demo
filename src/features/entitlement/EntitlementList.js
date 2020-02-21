@@ -25,15 +25,15 @@ export class EntitlementList extends PureComponent {
     }
 
     componentDidMount() {
-        if (this.props.logToken && null === this.props.entitlementItems) {
+        if (this.props.logToken && this.props.entitlementItems.length === 0) {
             this.updateEntitlement();
-            this.props.setStateFrom("fetching", true);
+            this.props.setStateFrom("isFetching", true);
         }
     }
 
     componentWillUnmount() {
         if (null !== this.props.entitlementItems) {
-            this.props.setEntitlementItems(null);
+            this.props.setEntitlementItems([]);
         }
     }
 
@@ -43,7 +43,7 @@ export class EntitlementList extends PureComponent {
             version: 'v2'
         });
 
-        this.props.setStateFrom("fetching", true);
+        this.props.setStateFrom("isFetching", true);
 
         getEntitlement(window.xProjectId, this.props.logToken)
             .then(items => {

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 const CancelToken = axios.CancelToken;
 let cancel;
@@ -23,26 +23,26 @@ export const getEntitlement = (projectId, loginToken) => {
     });
 };
 
-export const redeem = (projectId, loginToken, redeemCode, sku) => {
+export const redeem = async (projectId, loginToken, redeemCode, sku) => {
   cancel && cancel();
+  const url = 'https://store.xsolla.com/api/v1/game_delivery/xsolla_login/redeem_key';
+  const data = {
+    project_id: projectId,
+    digital_content_sku: sku,
+    language: "en",
+    key: redeemCode
+  };
 
-  let opts = {
-    url:
-        `https://store.xsolla.com/api/v1/game_delivery/xsolla_login/redeem_key`,
-    method: "POST",
+  const params = {
     headers: {
       Authorization: "Bearer " + loginToken
     },
-    data: {
-      project_id: projectId,
-      digital_content_sku: sku,
-      language: "en",
-      key: redeemCode
-    },
-    cancelToken: new CancelToken(function executor(c) {
+    cancelToken: new CancelToken(c => {
       cancel = c;
     }),
   };
 
-  return axios(opts);
+  const response = axios.post(url, data, params);
+
+  return response.data;
 };
