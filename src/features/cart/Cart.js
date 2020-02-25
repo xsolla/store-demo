@@ -22,7 +22,7 @@ const CartComponent = ({ history }) => {
     cart,
     hideCart,
     logToken,
-    payStationHandler,
+    clearCart,
     isCartShown,
     changeItemQuantityInCart,
   } = React.useContext(ProductContext);
@@ -55,7 +55,7 @@ const CartComponent = ({ history }) => {
         );
         window.XPayStationWidget.on(
           window.XPayStationWidget.eventTypes.STATUS_DONE,
-          payStationHandler
+          clearCart
         );
       })
       .catch(error => {

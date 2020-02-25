@@ -103,12 +103,9 @@ class ProductProvider extends React.PureComponent {
   };
 
   clearCart = () => {
-    this.showCart();
     this.createCart();
     this.updateVirtualCurrencyBalance();
   };
-
-  payStationHandler = () => this.clearCart();
 
   compareItems = (a, b) => {
     if (a.sku > b.sku) {
@@ -200,7 +197,10 @@ class ProductProvider extends React.PureComponent {
       this.setState({ cart: { ...cart, items: cartItems.sort(this.compareItems) } });
       changeItemQuantityCart(product, quantity, cart.cartId, logToken)
         .then(this.getCart)
-        .catch(error => enqueueSnackbar(error.response.data.errorMessage, { variant: 'error' }));
+        .catch(error => {
+          const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+          enqueueSnackbar(errorMsg, { variant: 'error' });
+        });
     }
   };
 
@@ -220,7 +220,6 @@ class ProductProvider extends React.PureComponent {
         value={{
           ...this.state,
           setStateFrom: this.setStateFrom,
-          payStationHandler: this.payStationHandler,
           setInventoryItems: this.setInventoryItems,
           setVirtualCurrencies: this.setVirtualCurrencies,
           setPhysicalItems: this.setPhysicalItems,
