@@ -15,8 +15,10 @@ class ProductProvider extends React.PureComponent {
   state = {
     projectId: this.props.projectId,
     logToken: Cookie(),
-    userBalanceVirtualCurrency: [],
     isSideMenuShown: false,
+
+    userBalanceVirtualCurrency: [],
+    isUserBalanceFetching: false,
 
     virtualItems: [],
     areVirtualItemsFetching: false,
@@ -205,13 +207,22 @@ class ProductProvider extends React.PureComponent {
   };
 
   updateVirtualCurrencyBalance = () => {
+    const { enqueueSnackbar } = this.props;
     const { logToken } = this.state;
 
-    getVirtualCurrencyBalance(logToken).then(reps => {
-      this.setState({
-        userBalanceVirtualCurrency: reps.data.items
-      });
-    });
+    this.setState({ isUserBalanceFetching: true });
+    getVirtualCurrencyBalance(logToken)
+      .then(response => {
+        this.setState({
+          isUserBalanceFetching: false,
+          userBalanceVirtualCurrency: response.data.items,
+        });
+      })
+      .catch(error => {
+        this.setState({ isUserBalanceFetching: false });
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+        enqueueSnackbar(errorMsg, { variant: 'error' });
+      })
   };
 
   render() {
@@ -220,6 +231,7 @@ class ProductProvider extends React.PureComponent {
         value={{
           ...this.state,
           setStateFrom: this.setStateFrom,
+          clearCart: this.clearCart,
           setInventoryItems: this.setInventoryItems,
           setVirtualCurrencies: this.setVirtualCurrencies,
           setPhysicalItems: this.setPhysicalItems,

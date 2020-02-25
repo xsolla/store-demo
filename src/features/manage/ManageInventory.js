@@ -42,7 +42,7 @@ const groups = [
 ];
 
 const ManageInventory = () => {
-  const { projectId } = React.useContext(ProductContext);
+  const { projectId, updateVirtualCurrencyBalance } = React.useContext(ProductContext);
   const { enqueueSnackbar } = useSnackbar();
 
   const [userID, setUserID] = React.useState(null);
@@ -86,6 +86,7 @@ const ManageInventory = () => {
     rewardItems(data)
       .then(() => {
         setItemProcessing(false);
+        updateVirtualCurrencyBalance();
         enqueueSnackbar('Complete', { variant: 'success' });
       })
       .catch(error => {
@@ -99,7 +100,7 @@ const ManageInventory = () => {
   const handleRevokeItem = () => processItem('revoke');
   const handleUserSelect = event => setUserID(event.target.value);
   const handleItemSelect = event => setSelectedItem(event.target.value);
-  const handleQuantityChange = event => setQuantity(event.target.value);
+  const handleQuantityChange = event => setQuantity(Number(event.target.value));
 
   React.useEffect(() => {
     setUserID(users[0] ? users[0].id : null);
@@ -185,23 +186,26 @@ const ManageInventory = () => {
                 onChange={handleQuantityChange}
               />
             </Items>
-            <FormActions>
-              <RewardButton
-                type="submit"
-                variant="contained"
-                disabled={isItemProcessing}
-                onClick={handleRewardItem}
-              >
-                Reward
-              </RewardButton>
-              <Button
-                variant="contained"
-                disabled={isItemProcessing}
-                onClick={handleRevokeItem}
-              >
-                Revoke
-              </Button>
-            </FormActions>
+            <FormFooter>
+              <FormActions>
+                {isItemProcessing && <Preloader size={24} />}
+                <RewardButton
+                  type="submit"
+                  variant="contained"
+                  disabled={isItemProcessing}
+                  onClick={handleRewardItem}
+                >
+                  Reward
+                </RewardButton>
+                <Button
+                  variant="contained"
+                  disabled={isItemProcessing}
+                  onClick={handleRevokeItem}
+                >
+                  Revoke
+                </Button>
+              </FormActions>
+            </FormFooter>
           </Form>
         )
       }
@@ -240,10 +244,14 @@ const Items = styled.div`
   grid-column-gap: 20px;
 `;
 
-const FormActions = styled.div`
+const FormFooter = styled.div`
   display: flex;
   justify-content: flex-end;
   padding: 20px 0;
+`;
+
+const FormActions = styled.div`
+  position: relative;
 `;
 
 const RewardButton = styled(Button)`

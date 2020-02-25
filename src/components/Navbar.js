@@ -7,6 +7,7 @@ import Hidden from '@material-ui/core/Hidden';
 import MUITabs from '@material-ui/core/Tabs';
 import MUITab from '@material-ui/core/Tab';
 import MUIIconButton from '@material-ui/core/IconButton';
+import Loader from '@material-ui/core/CircularProgress';
 import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
 import CartIcon from '@material-ui/icons/ShoppingCart';
@@ -29,6 +30,7 @@ const NavbarComponent = ({ location }) => {
     projectId,
     showCart,
     setSideMenuVisibility,
+    isUserBalanceFetching,
     isSideMenuShown,
   } = React.useContext(ProductContext);
 
@@ -88,11 +90,14 @@ const NavbarComponent = ({ location }) => {
 
       {isLogged && (
         <LoginPanel>
-          {userBalanceVirtualCurrency.map(vc => (
-            <VCCurrency key={vc.sku}>
-              <Currency image={vc.image_url} value={vc.amount} />
-            </VCCurrency>
-          ))}
+          {isUserBalanceFetching
+            ? <Loader size={24} color="secondary"/>
+            : userBalanceVirtualCurrency.map(vc => (
+              <VCCurrency key={vc.sku}>
+                <Currency image={vc.image_url} value={vc.amount} />
+              </VCCurrency>
+            ))
+          }
 
           <Hidden mdDown>
             <UserMail
