@@ -100,7 +100,10 @@ const ManageInventory = () => {
   const handleRevokeItem = () => processItem('revoke');
   const handleUserSelect = event => setUserID(event.target.value);
   const handleItemSelect = event => setSelectedItem(event.target.value);
-  const handleQuantityChange = event => setQuantity(Number(event.target.value));
+  const handleQuantityChange = event => {
+    const value = Number(event.target.value);
+    setQuantity(value >= 1 ? value : 1);
+  };
 
   React.useEffect(() => {
     setUserID(users[0] ? users[0].id : null);
@@ -113,6 +116,7 @@ const ManageInventory = () => {
   React.useEffect(() => {
     if (activeGroup && groupsContent[activeGroup] && groupsContent[activeGroup].items[0]) {
       setSelectedItem(groupsContent[activeGroup].items[0].sku);
+      setQuantity(1);
     }
   }, [manageItems, manageCurrencies, activeGroup]);
 
