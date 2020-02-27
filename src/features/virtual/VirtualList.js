@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useSnackbar } from 'notistack';
 
 import { ProductContext } from '../../context';
+import { loadInventory } from '../inventory/InventoryLoader';
 import { Preloader } from '../../components/Preloader.js';
 import { GroupSwitcher } from '../../components/GroupSwitcher';
 import { loadVirtualItems } from './VirtualItemsLoader';
@@ -10,13 +11,17 @@ import { VirtualItem } from './VirtualItem';
 
 const VirtualList = () => {
   const {
+    cart,
     logToken,
     virtualItems,
+    inventoryItems,
     addToCart,
     buyByVC,
     projectId,
     areVirtualItemsFetching,
+    areInventoryItemsFetching,
     isCartProcessing,
+    setInventoryItems,
     setVirtualItems,
     setStateFrom,
   } = React.useContext(ProductContext);
@@ -43,6 +48,21 @@ const VirtualList = () => {
     }
   }, [virtualItems]);
 
+  React.useEffect(() => {
+    if (!areInventoryItemsFetching && logToken && inventoryItems.length === 0 && cart.cartId) {
+      setStateFrom('areInventoryItemsFetching', true);
+      loadInventory(projectId, logToken)
+        .then(data => {
+          setInventoryItems(data);
+          setStateFrom('areInventoryItemsFetching', false);
+        })
+        .catch(error => {
+          setStateFrom('areInventoryItemsFetching', false);
+          enqueueSnackbar(error.message, { variant: 'error' });
+        });
+    }
+  }, [inventoryItems, cart.cartId]);
+
   const content = React.useMemo(() => virtualItems.length > 0 && (
     <>
       <GroupSwitcher
@@ -61,6 +81,7 @@ const VirtualList = () => {
                 order={index}
                 key={item.sku}
                 product={item}
+                isPurchased={item.inventory_options.consumable === null && inventoryItems.some(x => item.sku === x.sku)}
                 addToCart={addToCart}
                 isLoading={isCartProcessing}
                 buyByVC={buyByVC}
@@ -70,11 +91,11 @@ const VirtualList = () => {
         </React.Fragment>
       ))}
     </>
-  ), [activeGroup, virtualItems, isCartProcessing]);
+  ), [activeGroup, virtualItems, inventoryItems, isCartProcessing]);
 
   return (
     <Body>
-      {areVirtualItemsFetching
+      {areVirtualItemsFetching || areInventoryItemsFetching
         ? <Preloader />
         : content
       }

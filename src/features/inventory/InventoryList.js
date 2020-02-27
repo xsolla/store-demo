@@ -52,7 +52,7 @@ const InventoryList = () => {
   });
 
   React.useEffect(() => {
-    if (logToken && inventoryItems.length === 0 && cart.cartId) {
+    if (!areInventoryItemsFetching && logToken && cart.cartId) {
       setStateFrom('areInventoryItemsFetching', true);
       loadInventory(projectId, logToken)
         .then(data => {
@@ -65,8 +65,6 @@ const InventoryList = () => {
         });
     }
   }, [inventoryItems.length, cart.cartId]);
-
-  React.useEffect(() => () => setInventoryItems([]), []);
 
   const content = React.useMemo(() => inventoryItems.length > 0 ? (
     <Content>
