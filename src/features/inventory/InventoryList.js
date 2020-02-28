@@ -51,18 +51,26 @@ const InventoryList = () => {
       });
   });
 
+  const loadInventoryItems = () => {
+    setStateFrom('areInventoryItemsFetching', true);
+    loadInventory(projectId, logToken)
+      .then(data => {
+        setInventoryItems(data);
+        setStateFrom('areInventoryItemsFetching', false);
+      })
+      .catch(error => {
+        setStateFrom('areInventoryItemsFetching', false);
+        enqueueSnackbar(error.message, { variant: 'error' });
+      });
+  }
+
   React.useEffect(() => {
-    if (!areInventoryItemsFetching && logToken && cart.cartId) {
-      setStateFrom('areInventoryItemsFetching', true);
-      loadInventory(projectId, logToken)
-        .then(data => {
-          setInventoryItems(data);
-          setStateFrom('areInventoryItemsFetching', false);
-        })
-        .catch(error => {
-          setStateFrom('areInventoryItemsFetching', false);
-          enqueueSnackbar(error.message, { variant: 'error' });
-        });
+    loadInventoryItems();
+  }, []);
+
+  React.useEffect(() => {
+    if (!areInventoryItemsFetching && cart.cartId && inventoryItems.length === 0) {
+      loadInventoryItems();
     }
   }, [inventoryItems.length, cart.cartId]);
 
