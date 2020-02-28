@@ -121,6 +121,7 @@ const CardFooter = styled.div`
   align-items: center;
   border-top: 1px solid ${props => Colorer(props.theme.colorText).alpha(0.1).string()};
   padding: 8px 0;
+  height: 53px;
   margin: 0px 16px 0 16px;
 `;
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
 
 import { ProductCard } from '../../components/ProductCard';
@@ -21,7 +22,7 @@ export const VirtualItem = React.memo(({
   const buttonContent = React.useMemo(() => hasVirtualCurrencyPrice ? 'Buy now' : <ShoppingCart />, [product]);
   const price = React.useMemo(() => {
     if (isPurchased) {
-      return 'Purchased';
+      return <Purchased>Purchased</Purchased>;
     }
 
     if (hasVirtualCurrencyPrice) {
@@ -54,3 +55,8 @@ export const VirtualItem = React.memo(({
     />
   )
 });
+
+const Purchased = styled.div`
+  color: ${props => props.theme.colorText};
+  opacity: 0.8;
+`;
