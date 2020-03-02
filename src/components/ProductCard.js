@@ -61,18 +61,24 @@ const ProductCard = React.memo(({
             )}
           </Collapse>
         </CardContent>
-        <CardFooter>
-          <CardQuantity>
-            {value}
-          </CardQuantity>
-          {onAction && <Button
-            variant="contained"
-            disabled={isLoading && isActionedCard}
-            onClick={handleAction}
-          >
-            {isLoading && isActionedCard ? <CircularProgress size={24} color="secondary"/> : actionButtonContent}
-          </Button>}
-        </CardFooter>
+        {(onAction || value) && (
+          <CardFooter>
+            {value && (
+              <CardQuantity>
+                {value}
+              </CardQuantity>
+            )}
+            {onAction && (
+              <Button
+                variant="contained"
+                disabled={isLoading && isActionedCard}
+                onClick={handleAction}
+              >
+                {isLoading && isActionedCard ? <CircularProgress size={24} color="secondary"/> : actionButtonContent}
+              </Button>
+            )}
+          </CardFooter>
+        )}
       </Card>
     </CardAppear>
   );

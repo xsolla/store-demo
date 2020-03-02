@@ -34,6 +34,8 @@ class ProductProvider extends React.PureComponent {
     isItemConsuming: false,
 
     entitlementItems: [],
+    areEntitlementItemsFetching: false,
+    isRedeeming: false,
 
     isVCCartShown: false,
     isVCCartProcessing: false,

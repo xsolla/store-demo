@@ -18,10 +18,10 @@ import { routes } from './utils/routes';
 import { ProductContext } from './context';
 
 const App = () => {
-  const valueFromContext = React.useContext(ProductContext);
+  const { updateVirtualCurrencyBalance } = React.useContext(ProductContext);
 
   React.useEffect(() => {
-    valueFromContext.updateVirtualCurrencyBalance();
+    updateVirtualCurrencyBalance();
   }, []);
 
   return (
@@ -39,7 +39,7 @@ const App = () => {
           <Route path={routes.physical} component={PhysicalList} />
           <Route path={routes.inventory} component={InventoryList} />
           <Route path={routes.manage} component={ManageInventory} />
-          <Route path={routes.entitlement} render={() => <EntitlementList {...valueFromContext} />} />
+          <Route path={routes.entitlement} component={EntitlementList} />
           <Route path={routes.purchase} component={ServerPurchase} />
           <Redirect to={routes.items} />
         </Switch>

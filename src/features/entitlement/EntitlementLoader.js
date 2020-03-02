@@ -1,30 +1,20 @@
 import axios from 'axios';
+import { init } from 'store-js-sdk/src/init';
 
-const CancelToken = axios.CancelToken;
-let cancel;
-
-export const getEntitlement = (projectId, loginToken) => {
-  cancel && cancel();
-  let opts = {
-    url:
-    `https://store.xsolla.com/api/v2/projects/entitlement`,
-    method: "GET",
+export const getEntitlement = async loginToken => {
+  const url = 'https://store.xsolla.com/api/v2/projects/entitlement';
+  const params = {
     headers: {
-      Authorization: "Bearer " + loginToken
+      Authorization: `Bearer ${loginToken}`
     },
-    cancelToken: new CancelToken(function executor(c) {
-      cancel = c;
-    })
   };
+  const response = await axios.get(url, params);
 
-  return axios(opts)
-    .then(function(response) {
-      return response.data;
-    });
+  return response.data;
 };
 
 export const redeem = async (projectId, loginToken, redeemCode, sku) => {
-  cancel && cancel();
+  init({ projectId, version: 'v2' });
   const url = 'https://store.xsolla.com/api/v1/game_delivery/xsolla_login/redeem_key';
   const data = {
     project_id: projectId,
@@ -35,14 +25,11 @@ export const redeem = async (projectId, loginToken, redeemCode, sku) => {
 
   const params = {
     headers: {
-      Authorization: "Bearer " + loginToken
+      Authorization: `Bearer ${loginToken}`
     },
-    cancelToken: new CancelToken(c => {
-      cancel = c;
-    }),
   };
 
-  const response = axios.post(url, data, params);
+  const response = await axios.post(url, data, params);
 
   return response.data;
 };

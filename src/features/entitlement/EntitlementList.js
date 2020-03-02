@@ -1,159 +1,148 @@
-import React, {PureComponent} from "react";
+import React from 'react';
+import styled from 'styled-components';
+import { useSnackbar } from 'notistack';
+import MUITextField from '@material-ui/core/TextField';
+import MUIButton from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-import {EntitlementItem} from './EntitlementItem';
-import {getEntitlement, redeem} from './EntitlementLoader';
-import {init} from 'store-js-sdk/src/init';
+import { ProductContext } from '../../context';
+import { ProductCard } from '../../components/ProductCard';
+import { getEntitlement, redeem } from './EntitlementLoader';
 
-import './EntitlementList.css';
-import './EntitlementRedeem.css';
-import Button from "@material-ui/core/Button";
-import {CircularProgress} from "@material-ui/core";
+const EntitlementList = () => {
+  const {
+    projectId,
+    logToken,
+    setEntitlementItems,
+    entitlementItems,
+    areEntitlementItemsFetching,
+    isRedeeming,
+    setStateFrom,
+  } = React.useContext(ProductContext);
+  const { enqueueSnackbar } = useSnackbar();
 
-export class EntitlementList extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {
-            code: '',
-            sku: '',
-            hasRedeemError: false,
-            isFetching: false
-        };
+  const [sku, setSku] = React.useState('');
+  const [code, setCode] = React.useState('');
 
-        this.handleChangeCode = this.handleChangeCode.bind(this);
-        this.handleChangeSku = this.handleChangeSku.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
+  const handleCodeChange = React.useCallback(event => setCode(event.target.value));
+  const handleSkuChange = React.useCallback(event => setSku(event.target.value));
 
-    componentDidMount() {
-        if (this.props.logToken && this.props.entitlementItems.length === 0) {
-            this.updateEntitlement();
-            this.props.setStateFrom("isFetching", true);
-        }
-    }
+  const loadEntitlementItems = () => {
+    setStateFrom('areEntitlementItemsFetching', true);
+    getEntitlement(logToken)
+      .then(items => {
+        setStateFrom('areEntitlementItemsFetching', false);
+        setEntitlementItems(items);
+      })
+      .catch(error => {
+        setStateFrom('areEntitlementItemsFetching', false);
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+        enqueueSnackbar(errorMsg, { variant: 'error' });
+      });
+  }
 
-    componentWillUnmount() {
-        if (null !== this.props.entitlementItems) {
-            this.props.setEntitlementItems([]);
-        }
-    }
+  const handleSubmit = event => {
+    event.preventDefault();
+    setStateFrom('isRedeeming', true);
+    redeem(projectId, logToken, code, sku)
+      .then(() => {
+        setStateFrom('isRedeeming', false);
+        loadEntitlementItems();
+      })
+      .catch(error => {
+        setStateFrom('isRedeeming', false);
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+        enqueueSnackbar(errorMsg, { variant: 'error' });
+      });
+  }
 
-    updateEntitlement() {
-        init({
-            projectId: window.xProjectId,
-            version: 'v2'
-        });
+  React.useEffect(() => {
+    loadEntitlementItems();
+  }, []);
 
-        this.props.setStateFrom("isFetching", true);
+  const entitlementList = React.useMemo(() => entitlementItems.length > 0
+    ? entitlementItems.map((item, key) => (
+        <ProductCard
+          key={item.digital_content_sku}
+          order={key}
+          name={item.name}
+          description={item.description}
+          image={item.image_url}
+        />
+      ))
+    : (
+    <div>
+      Oops, you have no games yet!
+    </div>
+  ), [entitlementItems]);
 
-        getEntitlement(window.xProjectId, this.props.logToken)
-            .then(items => {
-                this.props.setEntitlementItems(items);
-            })
-            .catch(() => {
-                this.props.setEntitlementItems([]);
-            });
-    }
-
-    handleChangeCode(event) {
-        this.setState({code: event.target.value});
-    }
-
-    handleChangeSku(event) {
-        this.setState({sku: event.target.value});
-    }
-
-    handleSubmit(event) {
-        this.setState({
-            ...this.state,
-            isFetching: true
-        });
-
-        redeem(window.xProjectId, this.props.logToken, this.state.code, this.state.sku)
-            .then((e, k) => {
-                this.updateEntitlement();
-                this.setState({
-                    ...this.state,
-                    hasRedeemError: false,
-                    isFetching: false
-                });
-            })
-            .catch(() => {
-                console.log('error');
-                this.setState({
-                    ...this.state,
-                    hasRedeemError: true,
-                    isFetching: false
-                });
-            });
-
-        event.preventDefault();
-    }
-
-    render() {
-        const {entitlementItems} = this.props;
-
-        return (
-            <div className="">
-                <form className="entitlement-redeem-form"
-                      onSubmit={this.handleSubmit}
-                >
-                    <input
-                        className="entitlement-redeem-input"
-                        type="text"
-                        size="40"
-                        placeholder={"Enter your code"}
-                        onChange={this.handleChangeCode} value={this.state.code}
-                    />
-                    <input
-                        className="entitlement-redeem-input"
-                        type="text"
-                        size="40"
-                        placeholder={"Enter sku of your game"}
-                        onChange={this.handleChangeSku} value={this.state.sku}
-                    />
-                    {
-                        this.state.hasRedeemError && !this.state.isFetching && <span className="entitlement-redeem-error">Wrong code</span>
-                    }
-                    {
-                        this.state.isFetching &&
-                        <div className="entitlement-redeem-loader">
-                            <CircularProgress />
-                        </div>
-                    }
-                    <Button
-                        type="submit"
-                        className="entitlement-redeem-button"
-                        variant="contained"
-                    >
-                        Redeem Code
-                    </Button>
-                </form>
-                <div className="entitlement-list">
-                    {
-                        entitlementItems && entitlementItems.length
-                            ?
-                            entitlementItems
-                                .map(
-                                    (oneProduct, key) => {
-                                        return (
-                                            <EntitlementItem
-                                                key={oneProduct.digital_content_sku}
-                                                order={key}
-                                                initClass="initialFlow1"
-                                                title={oneProduct.name}
-                                                description={oneProduct.description}
-                                                imageUrl={oneProduct.image_url}
-                                            />
-                                        );
-                                    }
-                                )
-                            :
-                            <div>
-                                Oops, you have no games yet!
-                            </div>
-                    }
-                </div>
-            </div>
-        );
-    }
+  return (
+    <Body>
+      <Form onSubmit={handleSubmit}>
+        <TextField
+          color="secondary"
+          placeholder="Enter your code"
+          onChange={handleCodeChange}
+          value={code}
+        />
+        <TextField
+          color="secondary"
+          placeholder="Enter sku of your game"
+          onChange={handleSkuChange}
+          value={sku}
+        />
+        <FormFooter>
+          <Button type="submit" variant="contained">
+            {isRedeeming ? <CircularProgress size={24} color="secondary" /> : 'Redeem Code'}
+          </Button>
+        </FormFooter>
+      </Form>
+      <List>
+        {areEntitlementItemsFetching ? <CircularProgress size={24} color="secondary" /> : entitlementList}
+      </List>
+    </Body>
+  );
 }
+
+const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 50px;
+`;
+
+const Form = styled.form`
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+  color: ${props => props.theme.colorText};
+`;
+
+const List = styled.div`
+  color: ${props => props.theme.colorText};
+`;
+
+const TextField = styled(MUITextField)`
+  && {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  & .MuiInput-root {
+    color: ${props => props.theme.colorText}
+  }
+`;
+
+const Button = styled(MUIButton)`
+  && {
+    min-width: 140px;
+  }
+`;
+
+const FormFooter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 0;
+`;
+
+export {EntitlementList};
