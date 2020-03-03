@@ -36,13 +36,13 @@ const App = () => {
   }, []);
 
   return React.useMemo(() => (
-    <Body hasBackground={!isSpecificProject}>
+    <Body>
       <Navbar isSpecificProject={isSpecificProject} />
       <Hidden lgUp>
         <MobileNavbar />
       </Hidden>
       <Cart />
-      {!isSpecificProject && <VCCart />}
+      <VCCart />
       <Content>
         <Switch>
           <Route path={routes.items} exact component={VirtualList} />
@@ -64,18 +64,12 @@ const Body = styled.div`
   flex-direction: column;
   height: 100%;
   font-family: ${({ theme }) => theme.typography.fontFamily};
-  ${({ theme, hasBackground }) => hasBackground
-  ? css`
-    background: ${({ theme }) =>
+  background: ${({ theme }) =>
       `url(${theme.palette.background.imageUrl}) ${Colorer(theme.palette.background.default).alpha(0.8)}`
     };
-    background-attachment: fixed;
-    background-size: cover;
-    background-blend-mode: darken;
-  `
-  : css`
-    background-color: ${theme.palette.background.default};
-  `};
+  background-attachment: fixed;
+  background-size: cover;
+  background-blend-mode: darken;
 `;
 
 const Content = styled.div`
