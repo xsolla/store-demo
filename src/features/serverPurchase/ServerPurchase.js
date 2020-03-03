@@ -131,7 +131,7 @@ const EmptyText = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.theme.colorText};
+  color: ${({ theme }) => theme.palette.text.primary};
   height: 100%;
 `;
 
@@ -154,8 +154,8 @@ const CartActions = styled.div`
 
 const Subtotal = styled.div`
   display: flex;
-  font-weight: bold;
-  color: ${props => props.theme.colorText};
+  font-weight: bold; 
+  color: ${({ theme }) => theme.palette.text.primary};
   margin-right: 10px;
 
   @media ${device.tablet} {
@@ -173,7 +173,7 @@ const Price = styled.div`
 
 const Divider = styled(MUIDivider)`
   &.MuiDivider-root {
-    background-color: ${props => props.theme.colorAccentText};
+    background-color: ${({ theme }) => theme.palette.primary.contrastText};
     opacity: 0.1;
     margin-bottom: 5px;
   }

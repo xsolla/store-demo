@@ -6,6 +6,7 @@ const routes = {
   entitlement: '/entitlement',
   manage: '/manage',
   purchase: '/purchase',
+  specificProject: '/projects/:projectID'
 }
 
 const navItems = [

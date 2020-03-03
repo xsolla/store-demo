@@ -80,26 +80,26 @@ const EntitlementList = () => {
     <Body>
       <Form onSubmit={handleSubmit}>
         <TextField
-          color="secondary"
+          color="primary"
           placeholder="Enter your code"
           onChange={handleCodeChange}
           value={code}
         />
         <TextField
-          color="secondary"
+          color="primary"
           placeholder="Enter sku of your game"
           onChange={handleSkuChange}
           value={sku}
         />
         <FormFooter>
-          <Button type="submit" variant="contained">
-            {isRedeeming ? <CircularProgress size={24} color="secondary" /> : 'Redeem Code'}
+          <Button color="secondary" type="submit" variant="contained">
+            {isRedeeming ? <CircularProgress size={24} color="primary" /> : 'Redeem Code'}
           </Button>
         </FormFooter>
       </Form>
-      <List>
-        {areEntitlementItemsFetching ? <CircularProgress size={24} color="secondary" /> : entitlementList}
-      </List>
+      <div>
+        {areEntitlementItemsFetching ? <CircularProgress size={24} color="primary" /> : entitlementList}
+      </div>
     </Body>
   );
 }
@@ -115,21 +115,12 @@ const Form = styled.form`
   max-width: 400px;
   width: 100%;
   padding: 20px;
-  color: ${props => props.theme.colorText};
-`;
-
-const List = styled.div`
-  color: ${props => props.theme.colorText};
 `;
 
 const TextField = styled(MUITextField)`
   && {
     width: 100%;
     margin-bottom: 20px;
-  }
-
-  & .MuiInput-root {
-    color: ${props => props.theme.colorText}
   }
 `;
 
@@ -145,4 +136,4 @@ const FormFooter = styled.div`
   padding: 20px 0;
 `;
 
-export {EntitlementList};
+export { EntitlementList };

@@ -71,10 +71,11 @@ const ProductCard = React.memo(({
             {onAction && (
               <Button
                 variant="contained"
+                color="secondary"
                 disabled={isLoading && isActionedCard}
                 onClick={handleAction}
               >
-                {isLoading && isActionedCard ? <CircularProgress size={24} color="secondary"/> : actionButtonContent}
+                {isLoading && isActionedCard ? <CircularProgress size={24} color="primary"/> : actionButtonContent}
               </Button>
             )}
           </CardFooter>
@@ -87,8 +88,8 @@ const ProductCard = React.memo(({
 const CardAppear = styled.div`
   position: relative;
   z-index: ${props => props.hovered ? 1 : 0};
-  width: ${props => props.theme.cardWidth};
-  height: ${props => props.theme.cardWidth};
+  width: ${({ theme }) => theme.shape.cardWidth};
+  height: ${({ theme }) => theme.shape.cardWidth};
   transition: transform 350ms ease-out, opacity 150ms ease-out;
   opacity: ${props => props.shown ? 1 : 0};
   transform: ${props => props.shown ? 'none' : 'translateY(20px)'};;
@@ -96,15 +97,15 @@ const CardAppear = styled.div`
 
 const Card = styled.div`
   position: absolute;
-  color: ${props => props.theme.colorText};
+  color: ${({ theme }) => theme.palette.text.primary};
   display: flex;
   flex-direction: column;
-  width: ${props => props.theme.cardWidth};
-  min-height: ${props => props.theme.cardWidth};
-  background-color: ${props => props.hovered ? props.theme.colorBg : 'transparent'};
-  box-shadow: ${props => props.hovered ? props.theme.boxShadow : 'none'};
-  transition: box-shadow, background-color ${props => props.theme.transitionStyle};
-  border-radius: ${props => `${props.theme.borderRadius}px`};
+  width: ${({ theme }) => theme.shape.cardWidth};
+  min-height: ${({ theme }) => theme.shape.cardWidth};
+  background-color: ${({ theme, hovered }) => hovered ? theme.palette.background.default : 'transparent'};
+  box-shadow: ${({ theme, hovered }) => hovered ? theme.shadows[8] : 'none'};
+  transition: ${({ theme }) => theme.transitions.create(['box-shadow', 'background-color'])};
+  border-radius: ${({ theme }) => `${theme.shape.borderRadius}px`};
 `;
 
 const CardContent = styled(MUICardContent)`
@@ -116,6 +117,7 @@ const CardContent = styled(MUICardContent)`
 `;
 
 const CardTitle = styled.div`
+  color: ${({ theme }) => theme.palette.primary.contrastText};
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -125,7 +127,7 @@ const CardTitle = styled.div`
 const CardFooter = styled.div`
   display: flex;
   align-items: center;
-  border-top: 1px solid ${props => Colorer(props.theme.colorText).alpha(0.1).string()};
+  border-top: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
   padding: 8px 0;
   height: 53px;
   margin: 0px 16px 0 16px;
@@ -144,7 +146,7 @@ const CardImage = styled.div`
 
 const CardQuantity = styled.div`
   flex-grow: 1;
-  color: ${props => props.theme.colorAccent};
+  color: ${({ theme }) => theme.palette.primary.main};
   font-weight: 600;
 `;
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import MUITabs from '@material-ui/core/Tabs';
-import MUITab from '@material-ui/core/Tab';
+import Tab from '@material-ui/core/Tab';
 
 const GroupSwitcher = ({
   groups,
@@ -15,13 +15,13 @@ const GroupSwitcher = ({
       value={activeGroup}
       onChange={handleGroupChange}
       variant="scrollable"
+      textColor="primary"
+      indicatorColor="primary"
     >
       {groups.map(group => (
         <Tab
           value={group.id}
           key={group.id}
-          color="secondary"
-          textColor="secondary"
           label={group.label}
         />
       ))}
@@ -31,17 +31,9 @@ const GroupSwitcher = ({
 
 const Tabs = styled(MUITabs)`
   padding: 30px 0;
-  color: ${props => props.theme.colorAccent};
   
   & .MuiTabs-flexContainer {
     justify-content: center;
-  };
-`;
-
-const Tab = styled(MUITab)`
-  &.MuiTab-root {
-    color: ${props => props.theme.colorAccentText};
-    font-family: ${props => props.theme.fontFamily};
   };
 `;
 

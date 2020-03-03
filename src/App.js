@@ -1,6 +1,7 @@
 import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
-import styled from 'styled-components';
+import Colorer from 'color';
+import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import styled, { css } from 'styled-components';
 import Hidden from '@material-ui/core/Hidden';
 
 import { InventoryList } from './features/inventory/InventoryList';
@@ -18,20 +19,30 @@ import { routes } from './utils/routes';
 import { ProductContext } from './context';
 
 const App = () => {
-  const { updateVirtualCurrencyBalance } = React.useContext(ProductContext);
+  const { updateVirtualCurrencyBalance, clearCart, projectId } = React.useContext(ProductContext);
+
+  const isSpecificProject = useRouteMatch({
+    path: routes.specificProject,
+    strict: true,
+    sensitive: true
+  });
+
+  React.useEffect(() => {
+    clearCart();
+  }, [projectId]);
 
   React.useEffect(() => {
     updateVirtualCurrencyBalance();
   }, []);
 
-  return (
-    <>
-      <Navbar />
+  return React.useMemo(() => (
+    <Body hasBackground={!isSpecificProject}>
+      <Navbar isSpecificProject={isSpecificProject} />
       <Hidden lgUp>
         <MobileNavbar />
       </Hidden>
       <Cart />
-      <VCCart />
+      {!isSpecificProject && <VCCart />}
       <Content>
         <Switch>
           <Route path={routes.items} exact component={VirtualList} />
@@ -41,42 +52,36 @@ const App = () => {
           <Route path={routes.manage} component={ManageInventory} />
           <Route path={routes.entitlement} component={EntitlementList} />
           <Route path={routes.purchase} component={ServerPurchase} />
-          <Redirect to={routes.items} />
+          <Route path={routes.specificProject} component={PhysicalList} />
         </Switch>
       </Content>
-
-      <Background>
-        <BackgroundOverlay />
-      </Background>
-    </>
-  );
+    </Body>
+  ), [isSpecificProject]);
 };
+
+const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: ${({ theme }) => theme.typography.fontFamily};
+  ${({ theme, hasBackground }) => hasBackground
+  ? css`
+    background: ${({ theme }) =>
+      `url(${theme.palette.background.imageUrl}) ${Colorer(theme.palette.background.default).alpha(0.8)}`
+    };
+    background-attachment: fixed;
+    background-size: cover;
+    background-blend-mode: darken;
+  `
+  : css`
+    background-color: ${theme.palette.background.default};
+  `};
+`;
 
 const Content = styled.div`
   position: relative;
   height: 100%;
   overflow-y: auto;
-`;
-
-const Background = styled.div`
-  background-image: url(${props => props.theme.backgroundUrl});
-  z-index: -1;
-  background-size: cover;
-  position: fixed;
-  height: 100vh;
-  width: 100vw;
-  left: 0;
-  top: 0;
-`;
-
-const BackgroundOverlay = styled.div`
-  position: absolute;
-  background-color: ${props => props.theme.colorBg};
-  opacity: 0.8;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
 `;
 
 export default App;

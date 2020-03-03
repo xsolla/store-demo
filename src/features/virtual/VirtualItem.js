@@ -57,6 +57,6 @@ export const VirtualItem = React.memo(({
 });
 
 const Purchased = styled.div`
-  color: ${props => props.theme.colorText};
+  color: ${({ theme }) => theme.palette.text.primary};
   opacity: 0.8;
 `;

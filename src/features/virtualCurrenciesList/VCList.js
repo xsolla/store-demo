@@ -21,19 +21,17 @@ const VCList = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   React.useEffect(() => {
-    if (logToken && virtualCurrencies.length === 0) {
-      setStateFrom('areVirtualCurrenciesFetching', true);
-      loadVirtualCurrencies(projectId, logToken)
-        .then(data => {
-          setVirtualCurrencies(data);
-          setStateFrom('areVirtualCurrenciesFetching', false);
-        })
-        .catch(error => {
-          enqueueSnackbar(error.message, { variant: 'error' });
-          setStateFrom('areVirtualCurrenciesFetching', false);
-        });
-    }
-  }, [virtualCurrencies]);
+    setStateFrom('areVirtualCurrenciesFetching', true);
+    loadVirtualCurrencies(projectId, logToken)
+      .then(data => {
+        setVirtualCurrencies(data);
+        setStateFrom('areVirtualCurrenciesFetching', false);
+      })
+      .catch(error => {
+        enqueueSnackbar(error.message, { variant: 'error' });
+        setStateFrom('areVirtualCurrenciesFetching', false);
+      });
+  }, []);
 
   const content = React.useMemo(() => virtualCurrencies.length > 0 && (
     <Content>
@@ -60,7 +58,6 @@ const VCList = () => {
 }
 
 const Body = styled.div`
-  color: ${props => props.theme.colorText};
   background-color: transparent;
 `;
 
@@ -68,9 +65,9 @@ const Content = styled.div`
   display: grid;
   padding: 30px 0;
   grid-gap: 30px;
-  grid-template-columns: ${props => `repeat(auto-fit, minmax(
-    ${props.theme.cardWidth}, 
-    ${props.theme.cardWidth}
+  grid-template-columns: ${({ theme }) => `repeat(auto-fit, minmax(
+    ${theme.shape.cardWidth}, 
+    ${theme.shape.cardWidth}
   ))`};
   justify-content: center;
 `;

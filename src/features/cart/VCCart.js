@@ -91,9 +91,9 @@ const CartContent = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: ${props => `${props.theme.borderRadius}px`};
-  background-color: ${props => props.theme.colorBg};
-  color: ${props => props.theme.colorText};
+  border-radius: ${({ theme }) => `${theme.shape.borderRadius}px`};
+  background-color: ${({ theme }) => theme.palette.background.default};
+  color: ${({ theme }) => theme.palette.text.primary};
   padding: 0 32px;
   width: 680px;
   max-height: 80vh;
@@ -112,9 +112,7 @@ const CartHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: ${props => props.theme.colorBg};
-  color: ${props => props.theme.colorText};
-  border-bottom: 1px solid ${Colorer(props => props.theme.colorText).alpha(0.1).string()};
+  border-bottom: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
   z-index: 10;
   padding: 24px 0 8px 0;
 `;
@@ -131,8 +129,7 @@ const CartList = styled.div`
 const CartFooter = styled.div`
   display: flex;
   justify-content: flex-end;
-  background-color: ${props => props.theme.colorBg};
-  border-top: 1px solid ${Colorer(props => props.theme.colorText).alpha(0.1).string()};
+  border-top: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
   padding: 24px 0 24px 0;
 `;
 

@@ -104,7 +104,6 @@ const VirtualList = () => {
 }
 
 const Body = styled.div`
-  color: ${props => props.theme.colorText};
   background-color: transparent;
 `;
 
@@ -112,15 +111,15 @@ const Group = styled.div`
   display: grid;
   padding: 30px 0;
   grid-gap: 30px;
-  grid-template-columns: ${props => `repeat(auto-fit, minmax(
-    ${props.theme.cardWidth}, 
-    ${props.theme.cardWidth}
+  grid-template-columns: ${({ theme }) => `repeat(auto-fit, minmax(
+    ${theme.shape.cardWidth}, 
+    ${theme.shape.cardWidth}
   ))`};
   justify-content: center;
 `;
 
 const Title = styled.div`
-  color: ${props => props.theme.colorText};
+  color: ${({ theme }) => theme.palette.primary.contrastText};
   min-height: 2em;
   display: flex;
   align-items: center;

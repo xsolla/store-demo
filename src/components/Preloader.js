@@ -4,7 +4,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 
 const Preloader = ({ size  }) => (
   <CssPreloader>
-    <CircularProgress size={size} color="secondary" />
+    <CircularProgress size={size} color="primary" />
   </CssPreloader>
 );
 

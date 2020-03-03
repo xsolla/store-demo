@@ -1,11 +1,12 @@
 import React from 'react';
+import Colorer from 'color';
 import styled from 'styled-components';
-import { NavLink, withRouter } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import Drawer from '@material-ui/core/SwipeableDrawer';
 import MUIIconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MUIDivider from '@material-ui/core/Divider';
-import MUITabs from '@material-ui/core/Tabs';
+import Tabs from '@material-ui/core/Tabs';
 import MUITab from '@material-ui/core/Tab';
 import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
 
@@ -13,7 +14,7 @@ import { ProductContext } from '../context';
 import { routes, getMenuItems } from '../utils/routes';
 import { eraseCookie } from './Cookie';
 
-const MobileNavbarComponent = ({ location }) => {
+const MobileNavbar = () => {
   const {
     isSideMenuShown,
     user,
@@ -21,6 +22,7 @@ const MobileNavbarComponent = ({ location }) => {
     projectId,
     setSideMenuVisibility,
   } = React.useContext(ProductContext);
+  const location = useLocation();
 
   const closeMenu = () => setSideMenuVisibility(false);
   const openMenu = () => setSideMenuVisibility(true);
@@ -67,33 +69,34 @@ const MobileNavbarComponent = ({ location }) => {
             <ChevronLeftIcon />
           </IconButton>
         </Header>
-        <Divider />
-          <Tabs
-            value={location.pathname}
-            onChange={closeMenu}
-            component="nav"
-            variant="scrollable"
-            orientation="vertical"
-          
-          >
-          {generalMenuItems.map(x => (
-            <Tab
-              component={NavLink}
-              label={x.label}
-              value={x.route}
-              to={x.route}
-            />
-          ))}
-          <MenuDivider />
-          {userMenuItems.map(x => (
-            <Tab
-              component={NavLink}
-              label={x.label}
-              value={x.route}
-              to={x.route}
-            />
-          ))}
-          </Tabs>
+        <Tabs
+          value={location.pathname}
+          onChange={closeMenu}
+          component="nav"
+          variant="scrollable"
+          color="primary"
+          indicatorColor="primary"
+          orientation="vertical"
+        
+        >
+        {generalMenuItems.map(x => (
+          <Tab
+            component={NavLink}
+            label={x.label}
+            value={x.route}
+            to={x.route}
+          />
+        ))}
+        <MenuDivider />
+        {userMenuItems.map(x => (
+          <Tab
+            component={NavLink}
+            label={x.label}
+            value={x.route}
+            to={x.route}
+          />
+        ))}
+        </Tabs>
       </Content>
     </Drawer>
   );
@@ -104,38 +107,25 @@ const Content = styled.div`
   flex-direction: column;
   width: 320px;
   height: 100%;
-  background-color: ${props => props.theme.colorBg};
+  background-color: ${({ theme }) => theme.palette.background.default};
 `;
 
-const Divider = styled(MUIDivider)`
+const MenuDivider = styled(MUIDivider)`
   &.MuiDivider-root {
-    background-color: ${props => props.theme.colorAccentText};
-    opacity: 0.1;
-    margin-bottom: 5px;
-  }
-`;
-
-const MenuDivider = styled(Divider)`
-  &.MuiDivider-root {
+    background-color: ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
     margin: 5px 0;
   }
 `;
 
 const IconButton = styled(MUIIconButton)`
   &.MuiIconButton-root {
-    color: ${props => props.theme.colorAccentText};
+    color: ${({ theme }) => theme.palette.primary.main};
   }
-`;
-
-const Tabs = styled(MUITabs)`
-  color: ${props => props.theme.colorAccent};
 `;
 
 const Tab = styled(MUITab)`
   &.MuiTab-root {
-    color: ${props => props.theme.colorAccentText};
     padding: 15px;
-    font-family: ${props => props.theme.fontFamily};
     font-size: 1.3rem;
     line-height: 1.3rem;
     font-weight: 700;
@@ -151,6 +141,7 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   height: 49px;
+  border-bottom: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
 `;
 
 const UserMail = styled.div`
@@ -158,7 +149,7 @@ const UserMail = styled.div`
   padding: 0 15px;
   text-transform: uppercase;
   font-family: Roboto;
-  color: ${props => props.theme.colorAccent};
+  color: ${({ theme }) => theme.palette.primary.main};
 `;
 
-export const MobileNavbar = withRouter(MobileNavbarComponent);
+export { MobileNavbar };

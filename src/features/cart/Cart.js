@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import styled from 'styled-components';
 import Colorer from 'color';
@@ -14,9 +14,10 @@ import { ProductContext } from '../../context';
 import { getFormattedCurrency } from '../../utils/formatCurrency';
 import { getPsTokenBuyCart } from '../../components/StoreLoader';
 import { device } from '../../styles/devices';
+import { routes } from '../../utils/routes';
 import { CartItem } from './CartItem';
 
-const CartComponent = ({ history }) => {
+const Cart = () => {
   const [buyButtonDisabled, setBuyButtonDisabled] = React.useState(false);
   const {
     cart,
@@ -27,6 +28,7 @@ const CartComponent = ({ history }) => {
     changeItemQuantityInCart,
   } = React.useContext(ProductContext);
   const { enqueueSnackbar } = useSnackbar();
+  const history = useHistory();
 
   const calculateSubtotal = cart => {
     const subtotal = cart.reduce((acc, x) => acc + x.price.amount * x.quantity, 0);
@@ -37,8 +39,8 @@ const CartComponent = ({ history }) => {
     if (buyButtonDisabled || cart.items.length <= 0) {
       return;
     }
-    const path = "/purchase";
-    history.push(path);
+
+    history.push(routes.purchase);
     hideCart();
   };
 
@@ -109,6 +111,7 @@ const CartComponent = ({ history }) => {
             <CartActions>
               <Button
                 variant="contained"
+                color="secondary"
                 disabled={cart.items.length === 0}
                 style={{ marginRight: '7px' }}
                 onClick={buyAnotherPlatform}
@@ -117,6 +120,7 @@ const CartComponent = ({ history }) => {
               </Button>
               <Button
                 variant="contained"
+                color="secondary"
                 disabled={cart.items.length === 0}
                 onClick={buyButtonAction}
               >
@@ -140,9 +144,9 @@ const CartContent = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: ${props => `${props.theme.borderRadius}px`};
-  background-color: ${props => props.theme.colorBg};
-  color: ${props => props.theme.colorText};
+  border-radius: ${({ theme }) => `${theme.shape.borderRadius}px`};
+  background-color: ${({ theme }) => theme.palette.background.default};
+  color: ${({ theme }) => theme.palette.text.primary};
   padding: 0 32px;
   width: 680px;
   max-height: 80vh;
@@ -161,9 +165,8 @@ const CartHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: ${props => props.theme.colorBg};
-  color: ${props => props.theme.colorText};
-  border-bottom: 1px solid ${props => Colorer(props.theme.colorText).alpha(0.1).string()};
+  color: ${({ theme }) => theme.palette.text.primary};
+  border-bottom: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
   z-index: 10;
   padding: 24px 0 8px 0;
 `;
@@ -180,10 +183,9 @@ const CartList = styled.div`
 const CartFooter = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   flex-wrap: wrap;
-  background-color: ${props => props.theme.colorBg};
-  border-top: 1px solid ${Colorer(props => props.theme.colorText).alpha(0.1).string()};
+  border-top: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
   padding: 24px 0 24px 0;
 `;
 
@@ -198,6 +200,7 @@ const CartActions = styled.div`
 
 const Subtotal = styled.div`
   display: flex;
+  flex-grow: 1;
   font-weight: bold;
   margin-right: 10px;
 
@@ -214,4 +217,4 @@ const Price = styled.div`
   text-align: right;
 `;
 
-export const Cart = withRouter(CartComponent);
+export { Cart };

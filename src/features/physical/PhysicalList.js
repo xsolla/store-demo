@@ -20,8 +20,7 @@ const PhysicalList = () => {
   } = React.useContext(ProductContext);
   const { enqueueSnackbar } = useSnackbar();
 
-React.useEffect(() => {
-  if (logToken && physicalItems.length === 0) {
+  const loadPhysicalGoodsList = () => {
     setStateFrom('arePhysicalItemsFetching', true);
     loadPhysicalGoods(projectId, logToken)
       .then(data => {
@@ -33,21 +32,24 @@ React.useEffect(() => {
         setStateFrom('arePhysicalItemsFetching', false);
       });
   }
-}, [physicalItems]);
 
-const content = React.useMemo(() => physicalItems.length > 0 && (
-  <Content>
-    {physicalItems.map((item, index) => (
-      <PhysicalItem
-        order={index}
-        key={item.sku}
-        product={item}
-        isLoading={isCartProcessing}
-        addToCart={addToCart}
-      />
-    ))}
-  </Content>
-), [physicalItems, isCartProcessing]);
+  React.useEffect(() => {
+    loadPhysicalGoodsList();
+  }, [projectId]);
+
+  const content = React.useMemo(() => physicalItems.length > 0 && (
+    <Content>
+      {physicalItems.map((item, index) => (
+        <PhysicalItem
+          order={index}
+          key={item.sku}
+          product={item}
+          isLoading={isCartProcessing}
+          addToCart={addToCart}
+        />
+      ))}
+    </Content>
+  ), [physicalItems, isCartProcessing]);
 
   return (
     <Body>
@@ -60,10 +62,6 @@ const content = React.useMemo(() => physicalItems.length > 0 && (
 }
 
 const Body = styled.div`
-  color: ${props => props.theme.colorText};
-  position: relative;
-  background-color: transparent;
-  z-index: 1;
   height: 100%;
 `;
 
@@ -71,9 +69,9 @@ const Content = styled.div`
   display: grid;
   padding: 30px 0;
   grid-gap: 30px;
-  grid-template-columns: ${props => `repeat(auto-fit, minmax(
-    ${props.theme.cardWidth}, 
-    ${props.theme.cardWidth}
+  grid-template-columns: ${({ theme }) => `repeat(auto-fit, minmax(
+    ${theme.shape.cardWidth}, 
+    ${theme.shape.cardWidth}
   ))`};
   justify-content: center;
 `;

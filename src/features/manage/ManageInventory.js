@@ -160,7 +160,7 @@ const ManageInventory = () => {
               select
               label="User"
               value={userID}
-              color="secondary"
+              color="primary"
               onChange={handleUserSelect}
             >
               {userOptions}
@@ -176,7 +176,7 @@ const ManageInventory = () => {
                   select
                   label={groupsContent[activeGroup].name}
                   value={selectedItem}
-                  color="secondary"
+                  color="primary"
                   onChange={handleItemSelect}
                 >
                   {groupsContent[activeGroup].options}
@@ -186,7 +186,7 @@ const ManageInventory = () => {
                 type="number"
                 label="Quantity"
                 value={quantity}
-                color="secondary"
+                color="primary"
                 onChange={handleQuantityChange}
               />
             </Items>
@@ -227,19 +227,10 @@ const Form = styled.form`
   max-width: 400px;
   width: 100%;
   padding: 20px;
-  color: ${props => props.theme.colorText};
 `;
 
 const TextField = styled(MUITextField)`
   width: 100%;
-
-  & .MuiFormLabel-root {
-    color: ${props => props.theme.colorText}
-  }
-
-  & .MuiInput-root {
-    color: ${props => props.theme.colorText}
-  }
 `;
 
 const Items = styled.div`

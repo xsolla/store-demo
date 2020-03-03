@@ -101,16 +101,15 @@ const InventoryList = () => {
 }
 
 const Body = styled.div`
-  color: ${props => props.theme.colorText};
   padding: 30px 0;
 `;
 
 const Content = styled.div`
   display: grid;
   grid-gap: 30px;
-  grid-template-columns: ${props => `repeat(auto-fit, minmax(
-    ${props.theme.cardWidth}, 
-    ${props.theme.cardWidth}
+  grid-template-columns: ${({ theme }) => `repeat(auto-fit, minmax(
+    ${theme.shape.cardWidth}, 
+    ${theme.shape.cardWidth}
   ))`};
   justify-content: center;
 `;
