@@ -1,6 +1,6 @@
 import React from 'react';
 import Colorer from 'color';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import Hidden from '@material-ui/core/Hidden';
 
@@ -53,6 +53,7 @@ const App = () => {
           <Route path={routes.entitlement} component={EntitlementList} />
           <Route path={routes.purchase} component={ServerPurchase} />
           <Route path={routes.specificProject} component={PhysicalList} />
+          <Redirect to={routes.items}/>
         </Switch>
       </Content>
     </Body>

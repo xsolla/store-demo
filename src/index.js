@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 
 import './index.css';
 import App from './App';
@@ -8,11 +8,11 @@ import Provider from './provider';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-  <HashRouter basename='/'>
+  <BrowserRouter>
     <Provider>
       <App />
     </Provider>
-  </HashRouter>,
+  </BrowserRouter>,
   document.getElementById('root')
 );
 
