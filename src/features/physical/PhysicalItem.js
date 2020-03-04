@@ -13,11 +13,11 @@ export const PhysicalItem = React.memo(({
 
   const handleItemAdd = () => addToCart(product);
 
-  const price = React.useMemo(() => (
+  const price = React.useMemo(() => product.price ? (
     <Currency
       currency={product.price.currency}
       value={Math.round(product.price.amount * 100) / 100} />
-  ), [product]);
+  ) : null, [product]);
 
   return (
     <ProductCard
