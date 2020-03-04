@@ -83,9 +83,7 @@ class ProductProvider extends React.PureComponent {
     virtualCurrencies: items.filter(item => Boolean(item.price))
   });
 
-  setVirtualItems = items => this.setState({
-    virtualItems: items.filter(item => Boolean(item.price))
-  });
+  setVirtualItems = items => this.setState({ virtualItems: items });
 
   getCart = () => {
     const { enqueueSnackbar } = this.props;

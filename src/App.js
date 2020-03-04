@@ -1,7 +1,7 @@
 import React from 'react';
 import Colorer from 'color';
 import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import Hidden from '@material-ui/core/Hidden';
 
 import { InventoryList } from './features/inventory/InventoryList';

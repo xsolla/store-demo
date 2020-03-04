@@ -45,13 +45,15 @@ const VirtualList = () => {
   React.useEffect(() => {
     if (!areVirtualItemsFetching && logToken && virtualItems.length === 0) {
       setStateFrom('areVirtualItemsFetching', true);
-      loadVirtualItems(projectId, logToken).then(virtualItems => {
-        setVirtualItems(virtualItems);
-        setStateFrom('areVirtualItemsFetching', false);
-      }).catch(error => {
-        setStateFrom('areVirtualItemsFetching', false);
-        enqueueSnackbar(error.message, { variant: 'error' });
-      });
+      loadVirtualItems(projectId, logToken)
+        .then(virtualItems => {
+          setVirtualItems(virtualItems);
+          setStateFrom('areVirtualItemsFetching', false);
+        })
+        .catch(error => {
+          setStateFrom('areVirtualItemsFetching', false);
+          enqueueSnackbar(error.message, { variant: 'error' });
+        });
     }
   }, [virtualItems]);
 

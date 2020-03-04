@@ -2,19 +2,12 @@ import axios from 'axios';
 import { Inventory } from 'store-js-sdk/src/inventory/inventory';
 import { init } from 'store-js-sdk/src/init';
 
-const CancelToken = axios.CancelToken;
-let cancel = () => void 0;
-
 export const loadInventory = async (projectId, loginToken) => {
   const URL = `https://store.xsolla.com/api/v2/project/${projectId}/user/inventory/items`;
   const params = {
     headers: {
-      Authorization: "Bearer " + loginToken
+      Authorization: `Bearer ${loginToken}`
     },
-    cancelToken: new CancelToken(c => {
-      cancel();
-      cancel = c;
-    })
   };
   const response = await axios.get(URL, params);
 
