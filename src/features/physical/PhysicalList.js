@@ -16,15 +16,22 @@ const PhysicalList = () => {
     physicalItems,
     arePhysicalItemsFetching,
     setPhysicalItems,
-    isCartProcessing,
+    isItemAdding,
   } = React.useContext(ProductContext);
   const { enqueueSnackbar } = useSnackbar();
+
+  const [activeItemID, setActiveItemID] = React.useState(null);
+
+  const handleItemAdding = React.useCallback(item => {
+    addToCart(item);
+    setActiveItemID(item.sku);
+  }, []);
 
   const loadPhysicalGoodsList = () => {
     setStateFrom('arePhysicalItemsFetching', true);
     loadPhysicalGoods(projectId, logToken)
-      .then(data => {
-        setPhysicalItems(data);
+      .then(items => {
+        setPhysicalItems(items);
         setStateFrom('arePhysicalItemsFetching', false);
       })
       .catch(error => {
@@ -35,6 +42,7 @@ const PhysicalList = () => {
 
   React.useEffect(() => {
     loadPhysicalGoodsList();
+    setActiveItemID(null);
   }, [projectId]);
 
   const content = React.useMemo(() => physicalItems.length > 0 && (
@@ -44,12 +52,12 @@ const PhysicalList = () => {
           order={index}
           key={item.sku}
           product={item}
-          isLoading={isCartProcessing}
-          addToCart={addToCart}
+          isLoading={isItemAdding && activeItemID === item.sku}
+          addToCart={handleItemAdding}
         />
       ))}
     </Content>
-  ), [physicalItems, isCartProcessing]);
+  ), [physicalItems, isItemAdding]);
 
   return (
     <Body>

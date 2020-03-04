@@ -20,8 +20,11 @@ const InventoryList = () => {
   } = React.useContext(ProductContext);
   const { enqueueSnackbar } = useSnackbar();
 
+  const [activeItemID, setActiveItemID] = React.useState(null);
+
   const handleConsumeItem = React.useCallback(item => {
     setStateFrom('isItemConsuming', true);
+    setActiveItemID(item.sku);
     consumeItem(projectId, logToken, item)
       .then(() => {
         const updateInventoryItemIndex = inventoryItems.findIndex(x => x.sku === item.sku);
@@ -81,7 +84,7 @@ const InventoryList = () => {
           order={index}
           key={item.sku}
           item={item}
-          isLoading={isItemConsuming}
+          isLoading={isItemConsuming && activeItemID === item.sku}
           onConsume={handleConsumeItem}
         />
       ))}

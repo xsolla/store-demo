@@ -21,21 +21,9 @@ const ProductCard = React.memo(({
   const [isShown, setShown] = React.useState(false);
   const showCard = () => setShown(true);
 
-  const [isActionedCard, setActionedCard] = React.useState(false);
-  const handleAction = () => {
-    setActionedCard(true);
-    onAction();
-  }
-
   const [isHovered, setHovered] = React.useState(false);
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
-
-  React.useEffect(() => {
-    if (!isLoading) {
-      setActionedCard(false);
-    }
-  }, [isLoading]);
 
   React.useEffect(() => {
     setTimeout(showCard, order * 100);
@@ -72,10 +60,10 @@ const ProductCard = React.memo(({
               <Button
                 variant="contained"
                 color="secondary"
-                disabled={isLoading && isActionedCard}
-                onClick={handleAction}
+                disabled={isLoading}
+                onClick={onAction}
               >
-                {isLoading && isActionedCard ? <CircularProgress size={24} color="primary"/> : actionButtonContent}
+                {isLoading ? <CircularProgress size={24} color="primary"/> : actionButtonContent}
               </Button>
             )}
           </CardFooter>
@@ -127,6 +115,7 @@ const CardTitle = styled.div`
 const CardFooter = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   border-top: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
   padding: 8px 0;
   height: 53px;

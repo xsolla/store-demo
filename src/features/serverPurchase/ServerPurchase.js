@@ -13,7 +13,7 @@ import { device } from '../../styles/devices';
 import { purchaseItems } from './ServerPurchaseLoader';
 
 const ServerPurchase = () => {
-  const { cart, changeItemQuantityInCart } = React.useContext(ProductContext);
+  const { cart, removeFromCart, changeItemQuantityInCart } = React.useContext(ProductContext);
   const { enqueueSnackbar } = useSnackbar();
 
   const [isPurchasing, setPurchasing] = React.useState();
@@ -58,6 +58,7 @@ const ServerPurchase = () => {
             <React.Fragment key={x.sku}>
               <CartItem
                 item={x}
+                removeItem={removeFromCart}
                 changeItemQuantity={changeItemQuantityInCart}
               />
               <Divider/>

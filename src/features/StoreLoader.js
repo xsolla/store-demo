@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-export function getPsTokenByItem(item, loginToken) {
+export function getPsTokenByItem(projectId, loginToken, item) {
   let opts = {
     url:
     "https://store.xsolla.com/api/v2/project/" +
-    window.xProjectId +
+    projectId +
     "/payment/item/" +
     item.sku,
     method: "POST",

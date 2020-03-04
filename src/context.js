@@ -3,10 +3,11 @@ import { withSnackbar } from 'notistack';
 
 import Cookie from './components/Cookie';
 import {
-  changeItemQuantityCart,
+  getCart,
   createCart,
   removeItemFromCart,
-  getCart, getVirtualCurrencyBalance
+  changeItemQuantityCart,
+  getVirtualCurrencyBalance
 } from './components/StoreLoader';
 
 const ProductContext = React.createContext();
@@ -45,7 +46,11 @@ class ProductProvider extends React.PureComponent {
     },
 
     isCartShown: false,
-    isCartProcessing: false,
+    isCartCreating: false,
+    isCartLoading: false,
+    isQuantityChanging: false,
+    isItemAdding: false,
+    isItemRemoving: false,
     cart: {
       cartId: null,
       items: [],
@@ -66,44 +71,74 @@ class ProductProvider extends React.PureComponent {
   hideVCCart = () => this.setState({ isVCCartShown: false });
 
   setSideMenuVisibility = isSideMenuShown => this.setState({ isSideMenuShown });
+
   setEntitlementItems = entitlementItems => this.setState({ entitlementItems });
   setInventoryItems = inventoryItems => this.setState({ inventoryItems });
-  setPhysicalItems = physicalItems => this.setState({ physicalItems });
-  setVirtualCurrencies = virtualCurrencies => this.setState({ virtualCurrencies });
-  setVirtualItems = virtualItems => this.setState({ virtualItems });
+
+  setPhysicalItems = items => this.setState({
+    physicalItems: items.filter(item => Boolean(item.price))
+  });
+
+  setVirtualCurrencies = items => this.setState({
+    virtualCurrencies: items.filter(item => Boolean(item.price))
+  });
+
+  setVirtualItems = items => this.setState({
+    virtualItems: items.filter(item => Boolean(item.price))
+  });
 
   getCart = () => {
-    const { cart, logToken } = this.state;
-    const cartPromise = getCart(cart.cartId, logToken);
-    cartPromise.then(response => {
-      if (!cartPromise.isCancel && response) {
+    const { enqueueSnackbar } = this.props;
+    const { cart, logToken, projectId } = this.state;
+
+    this.setState({ isCartLoading: true });
+    getCart(projectId, logToken, cart.cartId)
+      .then(cart => {
         this.setState({
+          isCartLoading: false,
           cart: {
-            cartId: response.data.cart_id,
-            items: response.data.items.sort(this.compareItems),
-            price: response.data.price || 0,
+            cartId: cart.cart_id,
+            items: cart.items
+              .filter(item => Boolean(item.price))
+              .sort(this.compareItems),
+            price: cart.price || 0,
           },
-          isCartProcessing: false
-        });
-      }
-    });
+        })
+      })
+      .catch(error => {
+        this.setState({ isCartLoading: false });
+        if (!error.__CANCEL__) {
+          const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+          enqueueSnackbar(errorMsg, { variant: 'error' });
+        }
+      });
   };
 
   createCart = () => {
-    const cartIdPromise = createCart(this.state.logToken);
-    cartIdPromise.then(response => {
-      this.setState({
-        cart: {
-          cartId: response.data.id,
-          items: [],
-          price: {
-            amount: 0,
-            amount_without_discount: 0,
-            currency: '',
+    const { enqueueSnackbar } = this.props;
+    const { projectId, logToken } = this.state;
+
+    this.setState({ isCartCreating: true });
+    createCart(projectId, logToken)
+      .then(cart => {
+        this.setState({
+          isCartCreating: false,
+          cart: {
+            cartId: cart.id,
+            items: [],
+            price: {
+              amount: 0,
+              amount_without_discount: 0,
+              currency: '',
+            }
           }
-        }
+        });
+      })
+      .catch(error => {
+        this.setState({ isCartCreating: false });
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+        enqueueSnackbar(errorMsg, { variant: 'error' });
       });
-    });
   };
 
   clearCart = () => {
@@ -111,15 +146,7 @@ class ProductProvider extends React.PureComponent {
     this.updateVirtualCurrencyBalance();
   };
 
-  compareItems = (a, b) => {
-    if (a.sku > b.sku) {
-      return 1;
-    }
-    if (a.sku < b.sku) {
-      return -1;
-    }
-    return 0;
-  };
+  compareItems = (a, b) => a.sku > b.sku ? 1 : -1;
 
   buyByVC = product => {
     this.setState({
@@ -137,16 +164,17 @@ class ProductProvider extends React.PureComponent {
 
   addToCart = product => {
     const { enqueueSnackbar } = this.props;
-    const { cart, logToken } = this.state;
+    const { cart, logToken, projectId } = this.state;
     const isItemExist = cart.items.some(elem => elem.sku === product.sku);
+
     if (isItemExist) {
-      this.getCart();
       this.setState({ isCartShown: true });
     } else {
-      this.setState({ isCartProcessing: true });
-      changeItemQuantityCart(product, 1, cart.cartId, logToken)
+      this.setState({ isItemAdding: true });
+      changeItemQuantityCart(projectId, logToken, cart.cartId, product.sku, 1)
         .then(() => {
           this.setState({
+            isItemAdding: false,
             cart: {
               ...cart,
               items: [{ ...product, quantity: 1 }, ...cart.items].sort(this.compareItems),
@@ -156,22 +184,25 @@ class ProductProvider extends React.PureComponent {
                 amount_without_discount: cart.price.amount_without_discount + product.price.amount_without_discount,
               },
             },
-            isCartProcessing: false
           });
+          this.getCart();
           this.showCart();
         })
         .catch(error => {
-          this.setState({ isCartProcessing: false });
-          const errorMsg = error.response ? error.response.data.errorMessage : error.message;
-          enqueueSnackbar(errorMsg, { variant: 'error' });
+          this.setState({ isItemAdding: false });
+          if (!error.__CANCEL__) {
+            const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+            enqueueSnackbar(errorMsg, { variant: 'error' });
+          }
         });
     }
   };
 
   removeFromCart = product => {
-    const { cart } = this.state;
-    
+    const { enqueueSnackbar } = this.props;
+    const { projectId, logToken, cart } = this.state;
     this.setState({
+      isItemRemoving: true,
       cart: {
         ...cart,
         items: cart.items
@@ -184,40 +215,57 @@ class ProductProvider extends React.PureComponent {
         }
       }
     });
+    removeItemFromCart(projectId, logToken, cart.cartId, product.sku)
+      .then(() => {
+        this.setState({ isItemRemoving: false });
+        this.getCart();
+      })
+      .catch(error => {
+        this.getCart();
+        this.setState({ isItemRemoving: false });
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+        enqueueSnackbar(errorMsg, { variant: 'error' });
+      });
   };
 
   changeItemQuantityInCart = (product, quantity) => {
     const { enqueueSnackbar } = this.props;
-    const { cart, logToken } = this.state;
+    const { cart, logToken, projectId } = this.state;
 
-    if (quantity <= 0) {
-      this.removeFromCart(product);
-      removeItemFromCart(product, cart.cartId, logToken)
-        .then(this.getCart);
-    } else {
-      const indexFind = cart.items.findIndex(elem => elem.sku === product.sku);
-      const cartItems = cart.items;
-      cartItems.splice(indexFind, 1, { ...product, quantity });
-      this.setState({ cart: { ...cart, items: cartItems.sort(this.compareItems) } });
-      changeItemQuantityCart(product, quantity, cart.cartId, logToken)
-        .then(this.getCart)
-        .catch(error => {
+    const updatedItemIndex = cart.items.findIndex(item => item.sku === product.sku);
+    const updatedItem = { ...product, quantity };
+
+    this.setState({
+      cart: {
+        ...cart,
+        items: [
+          ...cart.items.slice(0, updatedItemIndex),
+          updatedItem,
+          ...cart.items.slice(updatedItemIndex + 1),
+        ].sort(this.compareItems),
+      }
+    });
+    changeItemQuantityCart(projectId, logToken, cart.cartId, product.sku, quantity)
+      .then(this.getCart)
+      .catch(error => {
+        if (!error.__CANCEL__) {
           const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+          this.getCart();
           enqueueSnackbar(errorMsg, { variant: 'error' });
-        });
-    }
+        }
+      });
   };
 
   updateVirtualCurrencyBalance = () => {
     const { enqueueSnackbar } = this.props;
-    const { logToken } = this.state;
+    const { projectId, logToken } = this.state;
 
     this.setState({ isUserBalanceFetching: true });
-    getVirtualCurrencyBalance(logToken)
-      .then(response => {
+    getVirtualCurrencyBalance(projectId, logToken)
+      .then(data => {
         this.setState({
           isUserBalanceFetching: false,
-          userBalanceVirtualCurrency: response.data.items,
+          userBalanceVirtualCurrency: data.items,
         });
       })
       .catch(error => {
@@ -233,22 +281,24 @@ class ProductProvider extends React.PureComponent {
         value={{
           ...this.state,
           setStateFrom: this.setStateFrom,
-          clearCart: this.clearCart,
           setInventoryItems: this.setInventoryItems,
           setVirtualCurrencies: this.setVirtualCurrencies,
           setPhysicalItems: this.setPhysicalItems,
           setVirtualItems: this.setVirtualItems,
           setEntitlementItems: this.setEntitlementItems,
           addToCart: this.addToCart,
+          removeFromCart: this.removeFromCart,
+          createCart: this.createCart,
+          getCart: this.getCart,
+          clearCart: this.clearCart,
+          clearVCCart: this.clearVCCart,
           showVCCart: this.showVCCart,
           hideVCCart: this.hideVCCart,
           buyByVC: this.buyByVC,
-          clearVCCart: this.clearVCCart,
-          createCart: this.createCart,
           showCart: this.showCart,
+          hideCart: this.hideCart,
           changeItemQuantityInCart: this.changeItemQuantityInCart,
           updateVirtualCurrencyBalance: this.updateVirtualCurrencyBalance,
-          hideCart: this.hideCart,
           setSideMenuVisibility: this.setSideMenuVisibility,
         }}
       >

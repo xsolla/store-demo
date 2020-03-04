@@ -39,7 +39,7 @@ export default class XLogin extends Component {
                 >
                   <CssXpopB>
                     <CssLoginInfo>
-                      Current project: <b>{window.xProjectId}</b>
+                      Current project: <b>{valueFromContext.projectId}</b>
                     </CssLoginInfo>
 
                     <CssLoginPop>

@@ -9,6 +9,7 @@ import MUIModal from '@material-ui/core/Modal';
 import IconButton from '@material-ui/core/IconButton';
 import Grow from '@material-ui/core/Grow';
 import Backdrop from '@material-ui/core/Backdrop';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import { ProductContext } from '../../context';
 import { getFormattedCurrency } from '../../utils/formatCurrency';
@@ -23,17 +24,25 @@ const Cart = () => {
     cart,
     hideCart,
     logToken,
+    projectId,
     clearCart,
     isCartShown,
+    removeFromCart,
+    isItemRemoving,
+    isCartLoading,
     changeItemQuantityInCart,
   } = React.useContext(ProductContext);
   const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
 
-  const calculateSubtotal = cart => {
-    const subtotal = cart.reduce((acc, x) => acc + x.price.amount * x.quantity, 0);
+  const isLoading = isCartLoading || isItemRemoving;
+
+  const cartSubtotal = React.useMemo(() => {
+    const subtotal = cart.items
+      .filter(item => Boolean(item.price))
+      .reduce((acc, item) => acc + item.price.amount * item.quantity, 0);
     return Math.round(subtotal * 100) / 100;
-  };
+  }, [cart.items]);
 
   const buyAnotherPlatform = () => {
     if (buyButtonDisabled || cart.items.length <= 0) {
@@ -46,10 +55,10 @@ const Cart = () => {
 
   const buyButtonAction = () => {
     hideCart();
-    getPsTokenBuyCart(cart.cartId, logToken)
-      .then(response => {
+    getPsTokenBuyCart(projectId, logToken, cart.cartId)
+      .then(data => {
         setBuyButtonDisabled(true);
-        window.xPayStationInit(response.data.token, {sandbox: true, host: 'sandbox-secure.xsolla.com'});
+        window.xPayStationInit(data.token, {sandbox: true, host: 'sandbox-secure.xsolla.com'});
         window.XPayStationWidget.open();
         window.XPayStationWidget.on(
           window.XPayStationWidget.eventTypes.CLOSE,
@@ -87,13 +96,18 @@ const Cart = () => {
             {cart.items.length > 0
               ? cart.items.map(item => (
                 <CartItem
+                  key={item.sku}
                   item={item}
+                  removeItem={removeFromCart}
                   changeItemQuantity={changeItemQuantityInCart}
                 />
               ))
               : <p>Empty cart</p>
             }
           </CartList>
+          <Loader>
+            {isLoading && <Progress />}
+          </Loader>
           <CartFooter>
             {cart.items.length > 0 && (
               <Subtotal>
@@ -101,7 +115,7 @@ const Cart = () => {
                 <Price>
                   {
                     getFormattedCurrency(
-                      calculateSubtotal(cart.items),
+                      cartSubtotal,
                       cart.price.currency || cart.items[0].price.currency
                     ).formattedCurrency
                   }
@@ -170,6 +184,17 @@ const CartHeader = styled.div`
   z-index: 10;
   padding: 24px 0 8px 0;
 `;
+
+const Loader = styled.div`
+  position: relative;
+`;
+
+const Progress = styled(LinearProgress)`
+  && {
+    position: absolute;
+    width: 100%;
+  }
+`
 
 const CartList = styled.div`
   display: grid;

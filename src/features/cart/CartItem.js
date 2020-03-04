@@ -7,10 +7,11 @@ import MUIDecrementIcon from "@material-ui/icons/IndeterminateCheckBox";
 
 import { device } from '../../styles/devices';
 
-const CartItemComponent = ({ item, changeItemQuantity }) => {
+const CartItemComponent = ({ item, changeItemQuantity, removeItem }) => {
   const calcPrice = (price, quantity) => Math.round(price * quantity * 100) / 100;
   const handleQuantityDec = () => changeItemQuantity(item, item.quantity - 1);
   const handleQuantityInc = () => changeItemQuantity(item, item.quantity + 1);
+  const handelItemRemove = () => removeItem(item);
   
   return (
     <CartItem>
@@ -36,7 +37,7 @@ const CartItemComponent = ({ item, changeItemQuantity }) => {
                 <DecrementIcon />
               </IconButton>
             ) : (
-              <IconButton color="inherit" onClick={handleQuantityDec}>
+              <IconButton color="inherit" onClick={handelItemRemove}>
                 <DeleteIcon />
               </IconButton>
             )
@@ -116,6 +117,7 @@ const ItemPrice = styled.div`
 `;
 
 const CartItemTotal = styled.div`
+  color: ${({ theme }) => theme.palette.primary.main};
   font-weight: 600;
 `;
 

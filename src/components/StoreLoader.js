@@ -1,116 +1,101 @@
-import axios from "axios";
+import axios from 'axios';
 
 const CancelToken = axios.CancelToken;
-let cancel;
 
-export function changeItemQuantityCart(
-  { sku = "sku" },
-  quantity,
-  cartId,
-  loginToken
-) {
-  cancel && cancel();
-  //console.log("sku added = ", sku, " to cartId = ", cartId);
-  let opts = {
-    url:
-      "https://store.xsolla.com/api/v2/project/" +
-      window.xProjectId +
-      "/cart/" +
-      cartId +
-      "/item/" +
-      sku,
-    method: "PUT",
+let cartGettingCancel = () => void 0
+export const getCart = async (projectId, loginToken, cartId) => {
+  const url = `https://store.xsolla.com/api/v2/project/${projectId}/cart/${cartId}`
+  const params = {
     headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      Authorization: "Bearer " + loginToken
+      Authorization: `Bearer ${loginToken}`,
     },
-    data: JSON.stringify({
-      quantity: quantity
+    cancelToken: new CancelToken(c => {
+      cartGettingCancel();
+      cartGettingCancel = c;
     })
   };
-  return axios(opts);
+
+  const response = await axios.get(url, params);
+
+  return response.data;
 }
 
-export function createCart(loginToken) {
-  let opts = {
-    url:
-      "https://store.xsolla.com/api/v1/project/" + window.xProjectId + "/cart",
-    method: "POST",
+let quantityChangingCancel = () => void 0;
+export const changeItemQuantityCart = async (
+  projectId,
+  loginToken,
+  cartId,
+  sku,
+  quantity,
+) => {
+  const url = `https://store.xsolla.com/api/v2/project/${projectId}/cart/${cartId}/item/${sku}`;
+  const data = JSON.stringify({ quantity });
+  const params = {
     headers: {
-      Authorization: "Bearer " + loginToken
-    }
-  };
-  return axios(opts);
-}
-
-export function removeItemFromCart({ sku = "sku" }, cartId, loginToken) {
-  cancel && cancel();
-  //console.log("sku removed = ", sku, " from cartId = ", cartId);
-  let opts = {
-    url:
-      "https://store.xsolla.com/api/v2/project/" +
-      window.xProjectId +
-      "/cart/" +
-      cartId +
-      "/item/" +
-      sku,
-    method: "DELETE",
-    headers: {
-      Authorization: "Bearer " + loginToken
-    }
-  };
-  return axios(opts);
-}
-
-export function getPsTokenBuyCart(cartId, loginToken) {
-  let opts = {
-    url:
-      "https://store.xsolla.com/api/v2/project/" +
-      window.xProjectId +
-      "/payment/cart/" +
-      cartId,
-    method: "POST",
-    headers: {
-      Authorization: "Bearer " + loginToken
+      "Content-Type": "application/json; charset=utf-8",
+      Authorization: `Bearer ${loginToken}`
     },
-    data: {
-      sandbox: true,
-      settings: {
-        ui: {
-          theme: 'dark'
-        }
+    cancelToken: new CancelToken(c => {
+      cartGettingCancel();
+      quantityChangingCancel();
+      quantityChangingCancel = c;
+    })
+  }
+
+  const response = await axios.put(url, data, params);
+ 
+  return response.data;
+}
+
+export const createCart = async (projectId, loginToken) => {
+  const url = `https://store.xsolla.com/api/v1/project/${projectId}/cart`;
+  const params = {
+    headers: {
+      Authorization: `Bearer ${loginToken}`,
+    }
+  }
+
+  const response = await axios.post(url, undefined, params);
+
+  return response.data;
+}
+
+export const removeItemFromCart = async (projectId, loginToken, cartId, sku) => {
+  const url = `https://store.xsolla.com/api/v2/project/${projectId}/cart/${cartId}/item/${sku}`;
+  const params = {
+    headers: {
+      Authorization: `Bearer ${loginToken}`
+    },
+    cancelToken: new CancelToken(c => {
+      cartGettingCancel();
+      quantityChangingCancel();
+    })
+  }
+  
+  const response = await axios.delete(url, params);
+
+  return response.data;
+}
+
+export const getPsTokenBuyCart = async (projectId, loginToken, cartId) => {
+  const url = `https://store.xsolla.com/api/v2/project/${projectId}/payment/cart/${cartId}`;
+  const data = {
+    sandbox: true,
+    settings: {
+      ui: {
+        theme: 'dark'
       }
     }
   };
-  return axios(opts)
-    .then(function(response) {
-      //console.log("PsToken generated = ", response.data);
-      return response;
-    })
-    .catch(function(error) {
-      //console.log("L2PS ERROR = ", error.response);
-    });
-}
-
-export function getCart(cartId, loginToken) {
-  cancel && cancel();
-  const opts = {
-    url:
-      "https://store.xsolla.com/api/v2/project/" +
-      window.xProjectId +
-      "/cart/" +
-      cartId,
-    method: "GET",
+  const params = {
     headers: {
       Authorization: "Bearer " + loginToken
-    },
-    cancelToken: new CancelToken(c => {
-      cancel = c;
-    })
+    }
   };
-  return axios(opts)
-    .then(response => response)
-    .catch(error => console.error(error));
+
+  const response = await axios.post(url, data, params);
+
+  return response.data;
 }
 
 export const quickPurchaseBuyVirtualCurrency = async (projectId, product, loginToken) => {
@@ -126,14 +111,15 @@ export const quickPurchaseBuyVirtualCurrency = async (projectId, product, loginT
   return response.data;
 }
 
-export function getVirtualCurrencyBalance(loginToken) {
-  let opts = {
-    url:
-        "https://store.xsolla.com/api/v2/project/" + window.xProjectId + "/user/virtual_currency_balance",
-    method: "GET",
+export const getVirtualCurrencyBalance = async (projectId, loginToken) => {
+  const url = `https://store.xsolla.com/api/v2/project/${projectId}/user/virtual_currency_balance`;
+  const params = {
     headers: {
-      Authorization: "Bearer " + loginToken
+      Authorization: `Bearer ${loginToken}`,
     }
-  };
-  return axios(opts);
+  }
+
+  const response = await axios.get(url, params);
+
+  return response.data;
 }

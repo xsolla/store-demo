@@ -15,12 +15,20 @@ const VCList = () => {
     setStateFrom,
     virtualCurrencies,
     areVirtualCurrenciesFetching,
-    isCartProcessing,
+    isItemAdding,
     setVirtualCurrencies,
   } = React.useContext(ProductContext);
   const { enqueueSnackbar } = useSnackbar();
 
+  const [activeItemID, setActiveItemID] = React.useState(null);
+
+  const handleItemAdding = React.useCallback(item => {
+    addToCart(item);
+    setActiveItemID(item.sku);
+  }, []);
+
   React.useEffect(() => {
+    setActiveItemID(null);
     setStateFrom('areVirtualCurrenciesFetching', true);
     loadVirtualCurrencies(projectId, logToken)
       .then(data => {
@@ -40,12 +48,12 @@ const VCList = () => {
           order={index}
           key={currency.sku}
           product={currency}
-          isLoading={isCartProcessing}
-          addToCart={addToCart}
+          isLoading={isItemAdding && currency.sku === activeItemID}
+          addToCart={handleItemAdding}
         />
       ))}
     </Content>
-  ), [virtualCurrencies, isCartProcessing]);
+  ), [virtualCurrencies, isItemAdding]);
 
   return (
     <Body>

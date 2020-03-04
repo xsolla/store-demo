@@ -20,7 +20,7 @@ const VirtualList = () => {
     projectId,
     areVirtualItemsFetching,
     areInventoryItemsFetching,
-    isCartProcessing,
+    isItemAdding,
     setInventoryItems,
     setVirtualItems,
     setStateFrom,
@@ -28,11 +28,18 @@ const VirtualList = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [activeGroup, setActiveGroup] = React.useState(null);
+  const [activeItemID, setActiveItemID] = React.useState(null);
 
   const groups = React.useMemo(() => virtualItems.map(x => ({ id: x.groupID, label: x.groupName })), [virtualItems]);
 
+  const handleItemAdding = React.useCallback(item => {
+    addToCart(item);
+    setActiveItemID(item.sku);
+  }, []);
+
   React.useEffect(() => {
     setActiveGroup(virtualItems[0] ? virtualItems[0].groupID : null);
+    setActiveItemID(null);
   }, [virtualItems]);
 
   React.useEffect(() => {
@@ -82,8 +89,8 @@ const VirtualList = () => {
                 key={item.sku}
                 product={item}
                 isPurchased={item.inventory_options.consumable === null && inventoryItems.some(x => item.sku === x.sku)}
-                addToCart={addToCart}
-                isLoading={isCartProcessing}
+                addToCart={handleItemAdding}
+                isLoading={isItemAdding && activeItemID === item.sku}
                 buyByVC={buyByVC}
               />
             ))}
@@ -91,7 +98,7 @@ const VirtualList = () => {
         </React.Fragment>
       ))}
     </>
-  ), [activeGroup, virtualItems, inventoryItems, isCartProcessing]);
+  ), [activeGroup, virtualItems, inventoryItems, isItemAdding]);
 
   return (
     <Body>
