@@ -1,0 +1,74 @@
+stages:
+  - yarn
+  - build
+  - deploy
+
+Install dependencies:
+  stage: yarn
+  image: node:10.17.0
+  script:
+    - yarn install
+  tags:
+    - devops
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+      - .yarn
+
+Bundle:
+  stage: build
+  image: node:10.17.0
+  script:
+    - yarn install
+    - yarn run build
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+      - .yarn
+    policy: pull
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+      - build
+    untracked: true
+    when: on_success
+    expire_in: 1 day
+  tags:
+    - devops
+
+.deploy_common: &deploy_common
+  stage: deploy
+  image: registry.srv.local:5043/ubuntu-sshclient:latest
+  tags:
+    - sshclient
+  only:
+    - /^v-.*/
+  except:
+    - branches
+  when:  manual
+  variables: &deploy_common_variables
+    GIT_STRATEGY: none
+  before_script:
+    - /usr/local/bin/helper before
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME-$CI_JOB_NAME"
+    paths:
+      - servers.txt
+      - stdout*
+      - stderr*
+    when:       always
+    expire_in:  1d
+
+deploy to static manual:
+  <<: *deploy_common
+  dependencies:
+    - Bundle
+  variables:
+    <<:             *deploy_common_variables
+  only:
+    - /^stage-.*/
+  when: manual
+  script:
+    - /usr/local/bin/helper deploy to-static static
