@@ -72,7 +72,7 @@ const VCCart = () => {
               disabled={isVCCartProcessing}
               onClick={buyByVirtualCurrencyButtonAction}
             >
-              {isVCCartProcessing ? <CircularProgress size={24} color="secondary"/> : 'Buy'}
+              {isVCCartProcessing ? <CircularProgress size={24} /> : 'Buy'}
             </Button>
           </CartFooter>
         </CartContent>
