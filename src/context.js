@@ -16,6 +16,7 @@ class ProductProvider extends React.PureComponent {
   state = {
     projectId: this.props.projectId,
     logToken: Cookie(),
+    user: null,
     isSideMenuShown: false,
 
     userBalanceVirtualCurrency: [],

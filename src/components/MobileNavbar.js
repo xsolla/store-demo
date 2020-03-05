@@ -64,7 +64,7 @@ const MobileNavbar = () => {
             <LogoutIcon size="inherit" />
           </IconButton>
           )}
-          <UserMail>{user.email}</UserMail>
+          {isLogged && <UserMail>{user.email}</UserMail>}
           <IconButton onClick={closeMenu}>
             <ChevronLeftIcon />
           </IconButton>

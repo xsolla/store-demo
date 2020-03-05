@@ -39,7 +39,7 @@ const App = () => {
     <Body>
       <Navbar isSpecificProject={isSpecificProject} />
       <Hidden lgUp>
-        <MobileNavbar />
+        {!isSpecificProject && <MobileNavbar />}
       </Hidden>
       <Cart />
       <VCCart />
