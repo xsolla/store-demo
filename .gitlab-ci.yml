@@ -6,7 +6,9 @@ stages:
 before_script:
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
   - eval $(ssh-agent -s)
-  - ssh-add <(echo "$CI_SSH_PRIVATE_KEY")
+  - ssh-add <(echo "$CI_BUILD_SSH_KEY")
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
 
 Install dependencies:
   stage: yarn
