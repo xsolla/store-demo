@@ -15,7 +15,7 @@ export const loadVirtualCurrencies = async projectID => {
 }
 
 export const rewardItems = async data => {
-  const url = 'https://livedemo.xsolla.com/store-demo/api/index.php';
+  const url = 'https://livedemo.xsolla.com/store-demo-api/index.php';
   const response = await axios.post(url, data);
 
   return response.data;
