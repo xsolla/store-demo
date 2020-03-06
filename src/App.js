@@ -4,32 +4,28 @@ import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
 import styled from 'styled-components';
 import Hidden from '@material-ui/core/Hidden';
 
-import { InventoryList } from './features/inventory/InventoryList';
-import { PhysicalList } from './features/physical/PhysicalList';
-import { ManageInventory } from './features/manage/ManageInventory';
-import { VirtualList } from './features/virtual/VirtualList';
-import { ServerPurchase } from './features/serverPurchase/ServerPurchase';
-import { EntitlementList } from './features/entitlement/EntitlementList';
-import { Cart } from './features/cart/Cart';
-import { VCCart } from './features/cart/VCCart';
-import { VCList } from './features/virtualCurrenciesList/VCList';
+import { InventoryList } from './features/inventory/components/InventoryList';
+import { PhysicalList } from './features/physicalGoods/components/PhysicalList';
+import { ManageInventory } from './features/manage/components/ManageInventory';
+import { VirtualList } from './features/virtualGoods/components/VirtualList';
+import { EntitlementList } from './features/entitlement/components/EntitlementList';
+import { Cart } from './features/cart/components/Cart';
+import { ServerPurchase } from './features/cart/components/ServerPurchase';
+import { VCCart } from './features/vcCart/components/VCCart';
+import { VCList } from './features/virtualCurrencies/components/VCList';
 import { Navbar } from './components/Navbar';
 import { MobileNavbar } from './components/MobileNavbar';
 import { routes } from './utils/routes';
 import { ProductContext } from './context';
 
 const App = () => {
-  const { updateVirtualCurrencyBalance, clearCart, projectId } = React.useContext(ProductContext);
+  const { updateVirtualCurrencyBalance } = React.useContext(ProductContext);
 
   const isSpecificProject = useRouteMatch({
     path: routes.specificProject,
     strict: true,
     sensitive: true
   });
-
-  React.useEffect(() => {
-    clearCart();
-  }, [projectId]);
 
   React.useEffect(() => {
     updateVirtualCurrencyBalance();

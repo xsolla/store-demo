@@ -19,7 +19,7 @@ import { routes, getMenuItems } from '../utils/routes';
 import { device } from '../styles/devices';
 import { Currency } from '../components/Currency';
 import { ProductContext } from '../context';
-import { eraseCookie } from './Cookie';
+import { eraseCookie } from '../utils/cookie';
 import XLogin from './XLogin.js';
 
 const Navbar = ({ isSpecificProject }) => {
@@ -39,13 +39,13 @@ const Navbar = ({ isSpecificProject }) => {
   const handleMenuClose = () => setMenuAnchor(null);
   const handleMenuOpen = event => setMenuAnchor(event.currentTarget);
 
-  const toggleSideMenu = () => setSideMenuVisibility(!isSideMenuShown);
+  const toggleSideMenu = React.useCallback(() => setSideMenuVisibility(!isSideMenuShown), []);
 
-  const logOutHandler = () => {
+  const logOutHandler = React.useCallback(() => {
     eraseCookie("xsolla_login_token", null);
     eraseCookie("xsolla_last_click_id", null);
     window.location.reload();
-  };
+  }, []);
 
   const isLogged = logToken && user;
 
@@ -53,7 +53,7 @@ const Navbar = ({ isSpecificProject }) => {
     routes.items,
     routes.currencies,
     ...projectId === 44056 ? [routes.physical] : [],
-  ]), [routes, projectId]);
+  ]), [projectId]);
 
   const isLocationExistsInTabs = React.useMemo(
     () => generalMenuItems.some(x => x.route === pathname),
@@ -65,7 +65,7 @@ const Navbar = ({ isSpecificProject }) => {
     routes.entitlement,
     routes.manage,
     routes.purchase,
-  ]), [routes]);
+  ]), []);
 
   return React.useMemo(() => (
     <Header>
@@ -174,13 +174,21 @@ const Navbar = ({ isSpecificProject }) => {
       </Button>
     </Header>
   ), [
-    pathname, 
-    isLogged, 
-    userBalanceVirtualCurrency, 
-    userMenuItems, 
-    projectId, 
-    menuAnchor, 
-    isSpecificProject
+    showCart,
+    pathname,
+    isLogged,
+    logToken,
+    projectId,
+    user,
+    menuAnchor,
+    logOutHandler,
+    userMenuItems,
+    toggleSideMenu,
+    generalMenuItems,
+    isSpecificProject,
+    isUserBalanceFetching,
+    isLocationExistsInTabs,
+    userBalanceVirtualCurrency,
   ]);
 }
 

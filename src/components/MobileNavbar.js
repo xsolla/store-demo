@@ -12,7 +12,7 @@ import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
 
 import { ProductContext } from '../context';
 import { routes, getMenuItems } from '../utils/routes';
-import { eraseCookie } from './Cookie';
+import { eraseCookie } from '../utils/cookie';
 
 const MobileNavbar = () => {
   const {

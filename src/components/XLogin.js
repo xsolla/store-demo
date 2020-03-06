@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { ProductConsumer } from "../context";
-import Cookie, { parseJwt } from "./Cookie";
+import Cookie, { parseJwt } from '../utils/cookie';
 
 export default class XLogin extends Component {
   constructor(props) {
@@ -22,7 +22,6 @@ export default class XLogin extends Component {
     this.setState({ logToken: tkn, shown: false });
     this.user = parseJwt(tkn);
     this.setStateFrom("user", this.user);
-    this.createCart();
   };
 
   render() {

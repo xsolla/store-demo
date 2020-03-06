@@ -3,16 +3,16 @@ import styled from 'styled-components';
 import MUITabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
-const GroupSwitcher = ({
+const GroupSwitcher = React.memo(({
   groups,
   activeGroup,
   onGroupChange,
 }) => {
-  const handleGroupChange = (_, groupID) => onGroupChange(groupID);
+  const handleGroupChange = React.useCallback((_, groupID) => onGroupChange(groupID), [onGroupChange]);
 
   return (
     <Tabs
-      value={activeGroup}
+      value={activeGroup || false}
       onChange={handleGroupChange}
       variant="scrollable"
       textColor="primary"
@@ -27,7 +27,7 @@ const GroupSwitcher = ({
       ))}
     </Tabs>
   );
-}
+});
 
 const Tabs = styled(MUITabs)`
   padding: 30px 0;
