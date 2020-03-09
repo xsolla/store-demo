@@ -16,18 +16,21 @@ class PhysicalGoodApi {
   };
 }
 
-const convertPhysicalGoods = items => items.map(x => ({
-  sku: x.sku,
-  name: x.name,
-  type: x.type,
-  description: x.description,
-  imageUrl: x.image_url,
-  isFree: x.is_free,
-  price: x.price ? {
-    amount: Number(x.price.amount),
-    priceWithoutDiscount: Number(x.price.amount_without_discount),
-    currency: x.price.currency
-  } : null,
-}));
+const convertPhysicalGoods = items =>
+  items.map(x => ({
+    sku: x.sku,
+    name: x.name,
+    type: x.type,
+    description: x.description,
+    imageUrl: x.image_url,
+    isFree: x.is_free,
+    price: x.price
+      ? {
+          amount: Number(x.price.amount),
+          priceWithoutDiscount: Number(x.price.amount_without_discount),
+          currency: x.price.currency,
+        }
+      : null,
+  }));
 
 export { PhysicalGoodApi };

@@ -8,15 +8,20 @@ import { useInventory } from './features/inventory/store';
 import { useEntitlement } from './features/entitlement/store';
 import { useCart } from './features/cart/store';
 import { useVCCart } from './features/vcCart/store';
-import { useManageInventory } from './features/manage/store'
+import { useManageInventory } from './features/manage/store';
 
 const StateContext = React.createContext();
 const ActionsContext = React.createContext();
 
-const useStore = (mapState = () => ({}), mapActions = () => ({})) => ({
-  ...mapState(React.useContext(StateContext)),
-  ...mapActions(React.useContext(ActionsContext))
-});
+const useStore = (mapState = () => ({}), mapActions = () => ({})) => {
+  const state = mapState(React.useContext(StateContext));
+  const actions = mapActions(React.useContext(ActionsContext));
+
+  return {
+    ...state,
+    ...actions,
+  };
+};
 
 const StoreProvider = ({ children, api }) => {
   const { enqueueSnackbar } = useSnackbar();
@@ -25,35 +30,40 @@ const StoreProvider = ({ children, api }) => {
   const [physicalGoodsState, physicalGoodsActions] = usePhysicalGoods(api, enqueueSnackbar);
   const [entitlementState, entitlementActions] = useEntitlement(api, enqueueSnackbar);
   const [virtualGoodsState, virtualGoodsActions] = useVirtualGoods(api, enqueueSnackbar);
-  const [virtualCurrenciesState, virtualCurrenciesActions] = useVirtualCurrencies(api, enqueueSnackbar);
+  const [virtualCurrenciesState, virtualCurrenciesActions] = useVirtualCurrencies(
+    api,
+    enqueueSnackbar
+  );
   const [inventoryState, inventoryActions] = useInventory(api, enqueueSnackbar);
   const [manageInventoryState, manageInventoryActions] = useManageInventory(api, enqueueSnackbar);
 
   return (
-    <StateContext.Provider value={{
-      cart: cartState,
-      vcCart: vcCartState,
-      physicalGoods: physicalGoodsState,
-      entitlement: entitlementState,
-      virtualGoods: virtualGoodsState,
-      virtualCurrencies: virtualCurrenciesState,
-      inventory: inventoryState,
-      manageInventory: manageInventoryState
-    }}>
-      <ActionsContext.Provider value={{
-        cart: cartActions,
-        vcCart: vcCartActions,
-        physicalGoods: physicalGoodsActions,
-        entitlement: entitlementActions,
-        virtualGoods: virtualGoodsActions,
-        virtualCurrencies: virtualCurrenciesActions,
-        inventory: inventoryActions,
-        manageInventory: manageInventoryActions
+    <StateContext.Provider
+      value={{
+        cart: cartState,
+        vcCart: vcCartState,
+        physicalGoods: physicalGoodsState,
+        entitlement: entitlementState,
+        virtualGoods: virtualGoodsState,
+        virtualCurrencies: virtualCurrenciesState,
+        inventory: inventoryState,
+        manageInventory: manageInventoryState,
       }}>
+      <ActionsContext.Provider
+        value={{
+          cart: cartActions,
+          vcCart: vcCartActions,
+          physicalGoods: physicalGoodsActions,
+          entitlement: entitlementActions,
+          virtualGoods: virtualGoodsActions,
+          virtualCurrencies: virtualCurrenciesActions,
+          inventory: inventoryActions,
+          manageInventory: manageInventoryActions,
+        }}>
         {children}
       </ActionsContext.Provider>
     </StateContext.Provider>
   );
-}
+};
 
 export { StoreProvider, useStore };

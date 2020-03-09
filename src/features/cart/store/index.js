@@ -19,7 +19,7 @@ const initialState = {
   isItemAdding: false,
   isItemRemoving: false,
   isPaying: false,
-}
+};
 
 const SHOW_CART = 'CART_SHOW';
 const HIDE_CART = 'CART_HIDE';
@@ -52,7 +52,7 @@ const PURCHASE = 'PURCHASE';
 const PURCHASE_SUCCESS = 'PURCHASE_SUCCESS';
 const PURCHASE_FAIL = 'PURCHASE_FAIL';
 
-const compareItems = (a, b) => a.sku > b.sku ? 1 : -1;
+const compareItems = (a, b) => (a.sku > b.sku ? 1 : -1);
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -76,9 +76,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         id: action.payload.id,
-        items: action.payload.items
-          .filter(item => Boolean(item.price))
-          .sort(compareItems),
+        items: action.payload.items.filter(item => Boolean(item.price)).sort(compareItems),
         price: action.payload.price || initialState.price,
         isLoading: false,
       };
@@ -92,7 +90,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         isItemAdding: true,
-      }
+      };
     case ADD_TO_CART_SUCCESS:
       return {
         ...state,
@@ -100,15 +98,16 @@ const reducer = (state, action) => {
         price: {
           ...state.price,
           amount: state.price.amount + action.payload.price.amount,
-          amountWithoutDiscount: state.price.amountWithoutDiscount + action.payload.price.amountWithoutDiscount,
+          amountWithoutDiscount:
+            state.price.amountWithoutDiscount + action.payload.price.amountWithoutDiscount,
         },
         isItemAdding: false,
-      }
+      };
     case ADD_TO_CART_FAIL:
       return {
         ...state,
         isItemAdding: false,
-      }
+      };
 
     case CHANGE_QUANTITY: {
       const updatedItemIndex = state.items.findIndex(item => item.sku === action.payload.item.sku);
@@ -123,11 +122,11 @@ const reducer = (state, action) => {
             ...state.items.slice(updatedItemIndex + 1),
           ].sort(compareItems),
           isQuantityChanging: true,
-        }
+        };
       } else {
         return state;
       }
-    };
+    }
     case CHANGE_QUANTITY_SUCCESS:
       return {
         ...state,
@@ -142,9 +141,7 @@ const reducer = (state, action) => {
     case REMOVE_ITEM: {
       return {
         ...state,
-        items: state.items
-          .filter(item => item.sku !== action.payload.sku)
-          .sort(compareItems),
+        items: state.items.filter(item => item.sku !== action.payload.sku).sort(compareItems),
         isItemRemoving: true,
       };
     }
@@ -216,7 +213,7 @@ const reducer = (state, action) => {
     default:
       return state;
   }
-}
+};
 
 export const useCart = (api, notify) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
@@ -233,65 +230,74 @@ export const useCart = (api, notify) => {
       if (!error.__CANCEL__) {
         const errorMsg = error.response ? error.response.data.errorMessage : error.message;
         notify(errorMsg, { variant: 'error' });
-      };
+      }
       dispatch({ type: GET_CART_FAIL });
     }
   }, [api.cartApi, notify]);
 
-  const addItem = React.useCallback(async item => {
-    const items = state.items;
-    const isItemExist = items.some(elem => elem.sku === item.sku);
-    if (!isItemExist) {
-      try {
-        dispatch({ type: ADD_TO_CART });
-        await api.cartApi.changeItemQuantity(item.sku, 1);
-        dispatch({ type: ADD_TO_CART_SUCCESS, payload: item });
-        getCart();
+  const addItem = React.useCallback(
+    async item => {
+      const items = state.items;
+      const isItemExist = items.some(elem => elem.sku === item.sku);
+      if (!isItemExist) {
+        try {
+          dispatch({ type: ADD_TO_CART });
+          await api.cartApi.changeItemQuantity(item.sku, 1);
+          dispatch({ type: ADD_TO_CART_SUCCESS, payload: item });
+          getCart();
+          show();
+        } catch (error) {
+          if (!error.__CANCEL__) {
+            getCart();
+            const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+            notify(errorMsg, { variant: 'error' });
+          }
+          dispatch({ type: ADD_TO_CART_FAIL });
+        }
+      } else {
         show();
+      }
+    },
+    [api.cartApi, getCart, notify, show, state.items]
+  );
+
+  const changeItemQuantity = React.useCallback(
+    async (item, quantity) => {
+      try {
+        dispatch({ type: CHANGE_QUANTITY, payload: { item, quantity } });
+        await api.cartApi.changeItemQuantity(item.sku, quantity);
+        getCart();
+        dispatch({ type: CHANGE_QUANTITY_SUCCESS });
       } catch (error) {
         if (!error.__CANCEL__) {
           getCart();
           const errorMsg = error.response ? error.response.data.errorMessage : error.message;
           notify(errorMsg, { variant: 'error' });
-        };
-        dispatch({ type: ADD_TO_CART_FAIL });
+        }
+        dispatch({ type: CHANGE_QUANTITY_FAIL });
       }
-    } else {
-      show();
-    }
-  }, [api.cartApi, getCart, notify, show, state.items]);
+    },
+    [api.cartApi, getCart, notify]
+  );
 
-  const changeItemQuantity = React.useCallback(async (item, quantity) => {
-    try {
-      dispatch({ type: CHANGE_QUANTITY, payload: { item, quantity } });
-      await api.cartApi.changeItemQuantity(item.sku, quantity);
-      getCart();
-      dispatch({ type: CHANGE_QUANTITY_SUCCESS });
-    } catch (error) {
-      if (!error.__CANCEL__) {
+  const removeItem = React.useCallback(
+    async item => {
+      try {
+        dispatch({ type: REMOVE_ITEM, payload: item });
+        await api.cartApi.removeItemFromCart(item.sku);
         getCart();
-        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
-        notify(errorMsg, { variant: 'error' });
-      };
-      dispatch({ type: CHANGE_QUANTITY_FAIL });
-    }
-  }, [api.cartApi, getCart, notify]);
-
-  const removeItem = React.useCallback(async item => {
-    try {
-      dispatch({ type: REMOVE_ITEM, payload: item });
-      await api.cartApi.removeItemFromCart(item.sku);
-      getCart();
-      dispatch({ type: REMOVE_ITEM_SUCCESS });
-    } catch (error) {
-      if (!error.__CANCEL__) {
-        getCart();
-        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
-        notify(errorMsg, { variant: 'error' });
-      };
-      dispatch({ type: REMOVE_ITEM_FAIL });
-    }
-  }, [api.cartApi, getCart, notify]);
+        dispatch({ type: REMOVE_ITEM_SUCCESS });
+      } catch (error) {
+        if (!error.__CANCEL__) {
+          getCart();
+          const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+          notify(errorMsg, { variant: 'error' });
+        }
+        dispatch({ type: REMOVE_ITEM_FAIL });
+      }
+    },
+    [api.cartApi, getCart, notify]
+  );
 
   const clearCart = React.useCallback(async () => {
     try {
@@ -335,7 +341,7 @@ export const useCart = (api, notify) => {
           amount: price.amount,
           currency: price.currency,
           external_purchase_id: generateUUID(),
-          external_purchase_date: (new Date()).toISOString()
+          external_purchase_date: new Date().toISOString(),
         },
         items: items.map(({ sku, quantity }) => ({ sku, quantity })),
       };
@@ -351,18 +357,32 @@ export const useCart = (api, notify) => {
     }
   }, [api.cartApi, clearCart, notify, state.items, state.price]);
 
-  return React.useMemo(() => [
-    state,
-    {
-      show,
-      hide,
-      getCart,
+  return React.useMemo(
+    () => [
+      state,
+      {
+        show,
+        hide,
+        getCart,
+        addItem,
+        changeItemQuantity,
+        removeItem,
+        clearCart,
+        payForGoods,
+        purchase,
+      },
+    ],
+    [
       addItem,
       changeItemQuantity,
-      removeItem,
       clearCart,
+      getCart,
+      hide,
       payForGoods,
-      purchase
-    }
-  ], [addItem, changeItemQuantity, clearCart, getCart, hide, payForGoods, purchase, removeItem, show, state]);
-}
+      purchase,
+      removeItem,
+      show,
+      state,
+    ]
+  );
+};

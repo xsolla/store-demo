@@ -42,155 +42,138 @@ const Navbar = ({ isSpecificProject }) => {
   const toggleSideMenu = React.useCallback(() => setSideMenuVisibility(!isSideMenuShown), []);
 
   const logOutHandler = React.useCallback(() => {
-    eraseCookie("xsolla_login_token", null);
-    eraseCookie("xsolla_last_click_id", null);
+    eraseCookie('xsolla_login_token', null);
+    eraseCookie('xsolla_last_click_id', null);
     window.location.reload();
   }, []);
 
   const isLogged = logToken && user;
 
-  const generalMenuItems = React.useMemo(() => getMenuItems([
-    routes.items,
-    routes.currencies,
-    ...projectId === 44056 ? [routes.physical] : [],
-  ]), [projectId]);
+  const generalMenuItems = React.useMemo(
+    () =>
+      getMenuItems([
+        routes.items,
+        routes.currencies,
+        ...(projectId === 44056 ? [routes.physical] : []),
+      ]),
+    [projectId]
+  );
 
   const isLocationExistsInTabs = React.useMemo(
     () => generalMenuItems.some(x => x.route === pathname),
     [generalMenuItems, pathname]
   );
 
-  const userMenuItems = React.useMemo(() => getMenuItems([
-    routes.inventory,
-    routes.entitlement,
-    routes.manage,
-    routes.purchase,
-  ]), []);
+  const userMenuItems = React.useMemo(
+    () => getMenuItems([routes.inventory, routes.entitlement, routes.manage, routes.purchase]),
+    []
+  );
 
-  return React.useMemo(() => (
-    <Header>
-      {!isSpecificProject && (
-        <>
-          <Hidden mdDown>
-            <Tabs
-              value={isLocationExistsInTabs ? pathname : false}
-              textColor="primary"
-              indicatorColor="primary"
-              component="nav"
-            >
-              {generalMenuItems.map(x => (
-                <Tab
-                  key={x.route}
-                  component={NavLink}
-                  label={x.label}
-                  value={x.route}
-                  to={x.route}
-                />
+  return React.useMemo(
+    () => (
+      <Header>
+        {!isSpecificProject && (
+          <>
+            <Hidden mdDown>
+              <Tabs
+                value={isLocationExistsInTabs ? pathname : false}
+                textColor='primary'
+                indicatorColor='primary'
+                component='nav'>
+                {generalMenuItems.map(x => (
+                  <Tab
+                    key={x.route}
+                    component={NavLink}
+                    label={x.label}
+                    value={x.route}
+                    to={x.route}
+                  />
+                ))}
+              </Tabs>
+            </Hidden>
+
+            <Hidden lgUp>
+              <IconButton color='primary' onClick={toggleSideMenu}>
+                <MenuIcon />
+              </IconButton>
+            </Hidden>
+
+            {isLogged && (
+              <LoginPanel>
+                {isUserBalanceFetching ? (
+                  <Loader size={24} color='primary' />
+                ) : (
+                  userBalanceVirtualCurrency.map(vc => (
+                    <VCCurrency key={vc.sku}>
+                      <Currency image={vc.image_url} value={vc.amount} />
+                    </VCCurrency>
+                  ))
+                )}
+
+                <Hidden mdDown>
+                  <UserMail
+                    endIcon={Boolean(menuAnchor) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    onClick={handleMenuOpen}>
+                    {user.email}
+                  </UserMail>
+                </Hidden>
+              </LoginPanel>
+            )}
+
+            <XLogin />
+
+            {!logToken && (
+              <LoginButton variant='outlined' color='secondary' size='small'>
+                Log In
+              </LoginButton>
+            )}
+            {isLogged && projectId !== 44056 && (
+              <LogoutButton variant='outlined' size='small' onClick={logOutHandler}>
+                <LogoutIcon size='inherit' />
+              </LogoutButton>
+            )}
+
+            <Menu
+              anchorEl={menuAnchor}
+              getContentAnchorEl={null}
+              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              open={Boolean(menuAnchor)}
+              onClose={handleMenuClose}>
+              {userMenuItems.map(x => (
+                <Link key={x.route} onClick={handleMenuClose} activeClassName='active' to={x.route}>
+                  {x.label}
+                </Link>
               ))}
-            </Tabs>
-          </Hidden>
+            </Menu>
+          </>
+        )}
 
-          <Hidden lgUp>
-            <IconButton color="primary" onClick={toggleSideMenu}>
-              <MenuIcon />
-            </IconButton>
-          </Hidden>
-
-          {isLogged && (
-            <LoginPanel>
-              {isUserBalanceFetching
-                ? <Loader size={24} color="primary"/>
-                : userBalanceVirtualCurrency.map(vc => (
-                  <VCCurrency key={vc.sku}>
-                    <Currency image={vc.image_url} value={vc.amount} />
-                  </VCCurrency>
-                ))
-              }
-
-              <Hidden mdDown>
-                <UserMail
-                  endIcon={Boolean(menuAnchor) ? <ExpandLessIcon /> : <ExpandMoreIcon/>}
-                  onClick={handleMenuOpen}
-                >
-                  {user.email}
-                </UserMail>
-              </Hidden>
-            </LoginPanel>
-          )}
-
-          <XLogin />
-
-          {!logToken && (
-            <LoginButton
-              variant="outlined"
-              color="secondary"
-              size="small"
-            >
-              Log In
-            </LoginButton>
-          )}
-          {isLogged && projectId !== 44056 && (
-          <LogoutButton
-              variant="outlined"
-              size="small"
-              onClick={logOutHandler}
-            >
-              <LogoutIcon size="inherit" />
-            </LogoutButton>
-          )}
-
-          <Menu
-            anchorEl={menuAnchor}
-            getContentAnchorEl={null}
-            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            open={Boolean(menuAnchor)}
-            onClose={handleMenuClose}
-          >
-            {userMenuItems.map(x => (
-              <Link
-                key={x.route}
-                onClick={handleMenuClose}
-                activeClassName="active"
-                to={x.route}
-              >
-                {x.label}
-              </Link>
-            ))}
-          </Menu>
-        </>
-      )}
-
-      <Button
-        variant="contained"
-        color="primary"
-        size="small"
-        onClick={showCart}
-      >
-        <CartIcon size="inherit" />
-        <Hidden xsDown>
-          cart
-        </Hidden>
-      </Button>
-    </Header>
-  ), [
-    showCart,
-    pathname,
-    isLogged,
-    logToken,
-    projectId,
-    user,
-    menuAnchor,
-    logOutHandler,
-    userMenuItems,
-    toggleSideMenu,
-    generalMenuItems,
-    isSpecificProject,
-    isUserBalanceFetching,
-    isLocationExistsInTabs,
-    userBalanceVirtualCurrency,
-  ]);
-}
+        <Button variant='contained' color='primary' size='small' onClick={showCart}>
+          <CartIcon size='inherit' />
+          <Hidden xsDown>cart</Hidden>
+        </Button>
+      </Header>
+    ),
+    [
+      showCart,
+      pathname,
+      isLogged,
+      logToken,
+      projectId,
+      user,
+      menuAnchor,
+      logOutHandler,
+      userMenuItems,
+      toggleSideMenu,
+      generalMenuItems,
+      isSpecificProject,
+      isUserBalanceFetching,
+      isLocationExistsInTabs,
+      userBalanceVirtualCurrency,
+    ]
+  );
+};
 
 const Menu = styled(MUIMenu)`
   .MuiMenu-list {
@@ -200,7 +183,7 @@ const Menu = styled(MUIMenu)`
 
 const Tabs = styled(MUITabs)`
   &.MuiTabs-root {
-    height: 100%
+    height: 100%;
   }
 `;
 

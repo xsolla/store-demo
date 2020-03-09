@@ -33,58 +33,63 @@ const EntitlementList = () => {
   const handleCodeChange = React.useCallback(event => setCode(event.target.value), []);
   const handleSkuChange = React.useCallback(event => setSku(event.target.value), []);
 
-  const handleSubmit = React.useCallback(event => {
-    event.preventDefault();
-    redeem(code, sku);
-  }, [redeem, code, sku]);
+  const handleSubmit = React.useCallback(
+    event => {
+      event.preventDefault();
+      redeem(code, sku);
+    },
+    [redeem, code, sku]
+  );
 
   React.useEffect(() => {
     loadEntitlement();
   }, []);
 
-  const entitlementList = React.useMemo(() => entitlementItems.length > 0
-    ? entitlementItems.map((item, key) => (
-        <ProductCard
-          key={item.sku}
-          order={key}
-          name={item.name}
-          description={item.description}
-          image={item.imageUrl}
-        />
-      ))
-    : (
-    <div>
-      Oops, you have no games yet!
-    </div>
-  ), [entitlementItems]);
+  const entitlementList = React.useMemo(
+    () =>
+      entitlementItems.length > 0 ? (
+        entitlementItems.map((item, key) => (
+          <ProductCard
+            key={item.sku}
+            order={key}
+            name={item.name}
+            description={item.description}
+            image={item.imageUrl}
+          />
+        ))
+      ) : (
+        <div>Oops, you have no games yet!</div>
+      ),
+    [entitlementItems]
+  );
 
   return (
     <Body>
       <Form onSubmit={handleSubmit}>
         <TextField
-          color="primary"
-          placeholder="Enter your code"
+          color='primary'
+          placeholder='Enter your code'
           onChange={handleCodeChange}
           value={code}
         />
         <TextField
-          color="primary"
-          placeholder="Enter sku of your game"
+          color='primary'
+          placeholder='Enter sku of your game'
           onChange={handleSkuChange}
           value={sku}
         />
         <FormFooter>
-          <Button color="secondary" type="submit" variant="contained">
-            {isItemRedeeming ? <CircularProgress size={24} color="primary" /> : 'Redeem Code'}
+          <Button color='secondary' type='submit' variant='contained'>
+            {isItemRedeeming ? <CircularProgress size={24} color='primary' /> : 'Redeem Code'}
           </Button>
         </FormFooter>
       </Form>
       <div>
-        {isEntitlementFetching ? <CircularProgress size={24} color="primary" /> : entitlementList}
+        {isEntitlementFetching ? <CircularProgress size={24} color='primary' /> : entitlementList}
       </div>
     </Body>
   );
-}
+};
 
 const Body = styled.div`
   display: flex;

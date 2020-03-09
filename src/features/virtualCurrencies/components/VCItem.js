@@ -4,21 +4,19 @@ import ShoppingCart from '@material-ui/icons/ShoppingCart';
 import { ProductCard } from '../../../components/ProductCard';
 import { Currency } from '../../../components/Currency';
 
-export const VCItem = React.memo(({
-  product,
-  order,
-  isLoading,
-  addToCart,
-}) => {
-
+export const VCItem = React.memo(({ product, order, isLoading, addToCart }) => {
   const handleItemAdd = React.useCallback(() => addToCart(product), []);
   const actionButtonContent = React.useMemo(() => <ShoppingCart />, []);
 
-  const price = React.useMemo(() => (
-    <Currency
-      currency={product.price.currency}
-      value={Math.round(product.price.amount * 100) / 100} />
-  ), [product]);
+  const price = React.useMemo(
+    () => (
+      <Currency
+        currency={product.price.currency}
+        value={Math.round(product.price.amount * 100) / 100}
+      />
+    ),
+    [product]
+  );
 
   return (
     <ProductCard
@@ -31,5 +29,5 @@ export const VCItem = React.memo(({
       actionButtonContent={actionButtonContent}
       onAction={handleItemAdd}
     />
-  )
+  );
 });

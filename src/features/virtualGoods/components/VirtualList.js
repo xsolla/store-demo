@@ -21,7 +21,7 @@ const mapActions = actions => ({
   addItemToVCCart: actions.vcCart.addItem,
 });
 
-const VirtualList = () => {
+const VirtualList = React.memo(() => {
   const {
     groups,
     cartId,
@@ -37,17 +37,21 @@ const VirtualList = () => {
   const [activeGroup, setActiveGroup] = React.useState(null);
   const [activeItemID, setActiveItemID] = React.useState(null);
 
-  const isItemInInventory = React.useMemo(sku => inventoryItems.some(x => sku === x.sku), [inventoryItems]);
+  const isItemInInventory = React.useMemo(sku => inventoryItems.some(x => sku === x.sku), [
+    inventoryItems,
+  ]);
 
-  const itemGroups = React.useMemo(
-    () => groups.map(x => ({ id: x.groupId, label: x.groupName })),
-    [groups]
+  const itemGroups = React.useMemo(() => groups.map(x => ({ id: x.groupId, label: x.groupName })), [
+    groups,
+  ]);
+
+  const handleItemAdding = React.useCallback(
+    item => {
+      addItemToCart(item);
+      setActiveItemID(item.sku);
+    },
+    [addItemToCart]
   );
-
-  const handleItemAdding = React.useCallback(item => {
-    addItemToCart(item);
-    setActiveItemID(item.sku);
-  }, [addItemToCart]);
 
   React.useEffect(() => {
     setActiveGroup(groups[0] ? groups[0].groupId : null);
@@ -66,45 +70,52 @@ const VirtualList = () => {
     }
   }, [cartId, loadInventory]);
 
-  const content = React.useMemo(() => groups.length > 0 && (
-    <>
-      <GroupSwitcher
-        groups={itemGroups}
-        activeGroup={activeGroup}
-        onGroupChange={setActiveGroup}
-      />
-      {groups.map(g => activeGroup === g.groupId && (
-        <React.Fragment key={g.groupId}>
-          <Title>
-            {g.groupName}
-          </Title>
-          <Group>
-            {g.items.map((item, index) => (
-              <VirtualItem
-                order={index}
-                key={item.sku}
-                product={item}
-                isPurchased={item.isConsumable === null && isItemInInventory(item.sku)}
-                addToCart={handleItemAdding}
-                isLoading={isItemAdding && activeItemID === item.sku}
-                buyByVC={addItemToVCCart}
-              />
-            ))}
-          </Group>
-        </React.Fragment>
-      ))}
-    </>
-  ), [activeGroup, activeItemID, isItemAdding, groups, handleItemAdding, isItemInInventory, itemGroups, addItemToVCCart]);
-
-  return (
-    <Body>
-      {isLoading
-        ? <Preloader />
-        : content
-      }
-    </Body>
+  const content = React.useMemo(
+    () =>
+      groups.length > 0 && (
+        <>
+          <GroupSwitcher
+            groups={itemGroups}
+            activeGroup={activeGroup}
+            onGroupChange={setActiveGroup}
+          />
+          {groups.map(
+            g =>
+              activeGroup === g.groupId && (
+                <React.Fragment key={g.groupId}>
+                  <Title>{g.groupName}</Title>
+                  <Group>
+                    {g.items.map((item, index) => (
+                      <VirtualItem
+                        order={index}
+                        key={item.sku}
+                        product={item}
+                        isPurchased={item.isConsumable === null && isItemInInventory(item.sku)}
+                        addToCart={handleItemAdding}
+                        isLoading={isItemAdding && activeItemID === item.sku}
+                        buyByVC={addItemToVCCart}
+                      />
+                    ))}
+                  </Group>
+                </React.Fragment>
+              )
+          )}
+        </>
+      ),
+    [
+      activeGroup,
+      activeItemID,
+      isItemAdding,
+      groups,
+      handleItemAdding,
+      isItemInInventory,
+      itemGroups,
+      addItemToVCCart,
+    ]
   );
-}
+
+  return <Body>{isLoading ? <Preloader /> : content}</Body>;
+});
 
 const Body = styled.div`
   background-color: transparent;

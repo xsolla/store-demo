@@ -3,7 +3,7 @@ import React from 'react';
 const initialState = {
   isBuying: false,
   item: null,
-}
+};
 
 const ADD_TO_CART = 'ADD_TO_CART';
 const CLEAR_CART = 'CLEAR_CART';
@@ -25,28 +25,28 @@ const reducer = (state, action) => {
         ...state,
         item: null,
       };
-      
+
     case BUT_BY_VC:
       return {
         ...state,
         isBuying: true,
-      }
+      };
     case BUT_BY_VC_SUCCESS:
       return {
         ...state,
         item: null,
         isBuying: false,
-      }
+      };
     case BUT_BY_VC_FAIL:
       return {
         ...state,
         isBuying: false,
-      }
+      };
 
     default:
       return state;
   }
-}
+};
 
 export const useVCCart = (api, notify) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
@@ -65,15 +65,18 @@ export const useVCCart = (api, notify) => {
       const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: BUT_BY_VC_FAIL });
-    };
+    }
   }, [api.cartApi, notify, state.item]);
 
-  return React.useMemo(() => [
-    state,
-    {
-      addItem,
-      clearCart,
-      buyByVirtualCurrencies,
-    }
-  ], [state, addItem, clearCart, buyByVirtualCurrencies]);
-}
+  return React.useMemo(
+    () => [
+      state,
+      {
+        addItem,
+        clearCart,
+        buyByVirtualCurrencies,
+      },
+    ],
+    [state, addItem, clearCart, buyByVirtualCurrencies]
+  );
+};

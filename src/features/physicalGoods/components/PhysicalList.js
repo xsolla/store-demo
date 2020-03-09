@@ -16,7 +16,7 @@ const mapActions = actions => ({
   loadPhysicalGoods: actions.physicalGoods.load,
 });
 
-const PhysicalList = () => {
+const PhysicalList = React.memo(() => {
   const {
     physicalGoods,
     isItemAdding,
@@ -26,10 +26,13 @@ const PhysicalList = () => {
   } = useStore(mapState, mapActions);
   const [activeItemID, setActiveItemID] = React.useState(null);
 
-  const handleItemAdding = React.useCallback(item => {
-    addToCart(item);
-    setActiveItemID(item.sku);
-  }, [addToCart]);
+  const handleItemAdding = React.useCallback(
+    item => {
+      addToCart(item);
+      setActiveItemID(item.sku);
+    },
+    [addToCart]
+  );
 
   React.useEffect(() => {
     if (physicalGoods.length === 0) {
@@ -37,29 +40,26 @@ const PhysicalList = () => {
     }
   }, []);
 
-  const content = React.useMemo(() => physicalGoods.length > 0 && (
-    <Content>
-      {physicalGoods.map((item, index) => (
-        <PhysicalItem
-          order={index}
-          key={item.sku}
-          item={item}
-          isLoading={isItemAdding && activeItemID === item.sku}
-          addToCart={handleItemAdding}
-        />
-      ))}
-    </Content>
-  ), [physicalGoods, isItemAdding, activeItemID, handleItemAdding]);
-
-  return (
-    <Body>
-      {arePhysicalGoodsFetching
-        ? <Preloader/>
-        : content
-      }
-    </Body>
+  const content = React.useMemo(
+    () =>
+      physicalGoods.length > 0 && (
+        <Content>
+          {physicalGoods.map((item, index) => (
+            <PhysicalItem
+              order={index}
+              key={item.sku}
+              item={item}
+              isLoading={isItemAdding && activeItemID === item.sku}
+              addToCart={handleItemAdding}
+            />
+          ))}
+        </Content>
+      ),
+    [physicalGoods, isItemAdding, activeItemID, handleItemAdding]
   );
-}
+
+  return <Body>{arePhysicalGoodsFetching ? <Preloader /> : content}</Body>;
+});
 
 const Body = styled.div`
   height: 100%;

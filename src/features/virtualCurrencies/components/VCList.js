@@ -16,7 +16,7 @@ const mapActions = actions => ({
   loadVirtualCurrencies: actions.virtualCurrencies.load,
 });
 
-const VCList = () => {
+const VCList = React.memo(() => {
   const {
     addToCart,
     isItemAdding,
@@ -27,10 +27,13 @@ const VCList = () => {
 
   const [activeItemID, setActiveItemID] = React.useState(null);
 
-  const handleItemAdding = React.useCallback(item => {
-    addToCart(item);
-    setActiveItemID(item.sku);
-  }, [addToCart]);
+  const handleItemAdding = React.useCallback(
+    item => {
+      addToCart(item);
+      setActiveItemID(item.sku);
+    },
+    [addToCart]
+  );
 
   React.useEffect(() => {
     if (virtualCurrencies.length === 0) {
@@ -38,29 +41,26 @@ const VCList = () => {
     }
   }, []);
 
-  const content = React.useMemo(() => virtualCurrencies.length > 0 && (
-    <Content>
-      {virtualCurrencies.map((currency, index) => (
-        <VCItem
-          order={index}
-          key={currency.sku}
-          product={currency}
-          isLoading={isItemAdding && currency.sku === activeItemID}
-          addToCart={handleItemAdding}
-        />
-      ))}
-    </Content>
-  ), [virtualCurrencies, isItemAdding, activeItemID, handleItemAdding]);
-
-  return (
-    <Body>
-      {isFetching
-        ? <Preloader/>
-        : content
-      }
-    </Body>
+  const content = React.useMemo(
+    () =>
+      virtualCurrencies.length > 0 && (
+        <Content>
+          {virtualCurrencies.map((currency, index) => (
+            <VCItem
+              order={index}
+              key={currency.sku}
+              product={currency}
+              isLoading={isItemAdding && currency.sku === activeItemID}
+              addToCart={handleItemAdding}
+            />
+          ))}
+        </Content>
+      ),
+    [virtualCurrencies, isItemAdding, activeItemID, handleItemAdding]
   );
-}
+
+  return <Body>{isFetching ? <Preloader /> : content}</Body>;
+});
 
 const Body = styled.div`
   background-color: transparent;

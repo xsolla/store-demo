@@ -15,21 +15,17 @@ import { routes, getMenuItems } from '../utils/routes';
 import { eraseCookie } from '../utils/cookie';
 
 const MobileNavbar = () => {
-  const {
-    isSideMenuShown,
-    user,
-    logToken,
-    projectId,
-    setSideMenuVisibility,
-  } = React.useContext(ProductContext);
+  const { isSideMenuShown, user, logToken, projectId, setSideMenuVisibility } = React.useContext(
+    ProductContext
+  );
   const location = useLocation();
 
   const closeMenu = () => setSideMenuVisibility(false);
   const openMenu = () => setSideMenuVisibility(true);
 
   const logOutHandler = () => {
-    eraseCookie("xsolla_login_token", null);
-    eraseCookie("xsolla_last_click_id", null);
+    eraseCookie('xsolla_login_token', null);
+    eraseCookie('xsolla_last_click_id', null);
     window.location.reload();
   };
 
@@ -37,32 +33,29 @@ const MobileNavbar = () => {
 
   const isLogged = logToken && user;
 
-  const generalMenuItems = React.useMemo(() => getMenuItems([
-    routes.items,
-    routes.currencies,
-    ...projectId === 44056 ? [routes.physical] : [],
-  ]), [projectId]);
+  const generalMenuItems = React.useMemo(
+    () =>
+      getMenuItems([
+        routes.items,
+        routes.currencies,
+        ...(projectId === 44056 ? [routes.physical] : []),
+      ]),
+    [projectId]
+  );
 
-  const userMenuItems = React.useMemo(() => getMenuItems([
-    routes.inventory,
-    routes.entitlement,
-    routes.manage,
-    routes.purchase,
-  ]), []);
+  const userMenuItems = React.useMemo(
+    () => getMenuItems([routes.inventory, routes.entitlement, routes.manage, routes.purchase]),
+    []
+  );
 
   return (
-    <Drawer
-      open={isSideMenuShown}
-      anchor="left"
-      onOpen={openMenu}
-      onClose={closeMenu}
-    >
+    <Drawer open={isSideMenuShown} anchor='left' onOpen={openMenu} onClose={closeMenu}>
       <Content>
         <Header>
-        {isLogged && projectId !== 44056 && (
-          <IconButton onClick={logOutHandler}>
-            <LogoutIcon size="inherit" />
-          </IconButton>
+          {isLogged && projectId !== 44056 && (
+            <IconButton onClick={logOutHandler}>
+              <LogoutIcon size='inherit' />
+            </IconButton>
           )}
           {isLogged && <UserMail>{user.email}</UserMail>}
           <IconButton onClick={closeMenu}>
@@ -72,30 +65,18 @@ const MobileNavbar = () => {
         <Tabs
           value={location.pathname}
           onChange={closeMenu}
-          component="nav"
-          variant="scrollable"
-          color="primary"
-          indicatorColor="primary"
-          orientation="vertical"
-        
-        >
-        {generalMenuItems.map(x => (
-          <Tab
-            component={NavLink}
-            label={x.label}
-            value={x.route}
-            to={x.route}
-          />
-        ))}
-        <MenuDivider />
-        {userMenuItems.map(x => (
-          <Tab
-            component={NavLink}
-            label={x.label}
-            value={x.route}
-            to={x.route}
-          />
-        ))}
+          component='nav'
+          variant='scrollable'
+          color='primary'
+          indicatorColor='primary'
+          orientation='vertical'>
+          {generalMenuItems.map(x => (
+            <Tab component={NavLink} label={x.label} value={x.route} to={x.route} />
+          ))}
+          <MenuDivider />
+          {userMenuItems.map(x => (
+            <Tab component={NavLink} label={x.label} value={x.route} to={x.route} />
+          ))}
         </Tabs>
       </Content>
     </Drawer>
@@ -112,7 +93,10 @@ const Content = styled.div`
 
 const MenuDivider = styled(MUIDivider)`
   &.MuiDivider-root {
-    background-color: ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
+    background-color: ${({ theme }) =>
+      Colorer(theme.palette.text.primary)
+        .alpha(0.1)
+        .string()};
     margin: 5px 0;
   }
 `;
@@ -141,7 +125,11 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   height: 49px;
-  border-bottom: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
+  border-bottom: 1px solid
+    ${({ theme }) =>
+      Colorer(theme.palette.text.primary)
+        .alpha(0.1)
+        .string()};
 `;
 
 const UserMail = styled.div`

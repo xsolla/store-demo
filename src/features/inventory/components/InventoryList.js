@@ -17,7 +17,7 @@ const mapActions = actions => ({
   loadInventory: actions.inventory.load,
 });
 
-const InventoryList = () => {
+const InventoryList = React.memo(() => {
   const {
     cartId,
     inventoryItems,
@@ -28,10 +28,13 @@ const InventoryList = () => {
   } = useStore(mapState, mapActions);
   const [activeItemID, setActiveItemID] = React.useState(null);
 
-  const handleConsumeItem = React.useCallback(item => {
-    setActiveItemID(item.sku);
-    consumeItem(item);
-  }, [consumeItem]);
+  const handleConsumeItem = React.useCallback(
+    item => {
+      setActiveItemID(item.sku);
+      consumeItem(item);
+    },
+    [consumeItem]
+  );
 
   React.useEffect(() => {
     loadInventory();
@@ -41,31 +44,28 @@ const InventoryList = () => {
     loadInventory();
   }, [cartId]);
 
-  const content = React.useMemo(() => inventoryItems.length > 0 ? (
-    <Content>
-      {inventoryItems.map((item, index) => (
-        <InventoryItem
-          order={index}
-          key={item.sku}
-          item={item}
-          isLoading={isItemConsuming && activeItemID === item.sku}
-          onConsume={handleConsumeItem}
-        />
-      ))}
-    </Content>
-  ) : (
-    <EmptyText>Oops, you have nothing bought yet!</EmptyText>
-  ), [inventoryItems, isItemConsuming, activeItemID, handleConsumeItem]);
-
-  return (
-    <Body>
-      {isInventoryFetching
-        ? <Preloader/>
-        : content
-      }
-    </Body>
+  const content = React.useMemo(
+    () =>
+      inventoryItems.length > 0 ? (
+        <Content>
+          {inventoryItems.map((item, index) => (
+            <InventoryItem
+              order={index}
+              key={item.sku}
+              item={item}
+              isLoading={isItemConsuming && activeItemID === item.sku}
+              onConsume={handleConsumeItem}
+            />
+          ))}
+        </Content>
+      ) : (
+        <EmptyText>Oops, you have nothing bought yet!</EmptyText>
+      ),
+    [inventoryItems, isItemConsuming, activeItemID, handleConsumeItem]
   );
-}
+
+  return <Body>{isInventoryFetching ? <Preloader /> : content}</Body>;
+});
 
 const Body = styled.div`
   padding: 30px 0;

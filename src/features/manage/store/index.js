@@ -34,8 +34,8 @@ const initialState = {
       id: 'currencies',
       label: 'Currencies',
     },
-  ]
-}
+  ],
+};
 
 const LOAD_VIRTUAL_ITEMS = 'LOAD_VIRTUAL_ITEMS';
 const LOAD_VIRTUAL_ITEMS_SUCCESS = 'LOAD_VIRTUAL_ITEMS_SUCCESS';
@@ -59,71 +59,71 @@ const reducer = (state, action) => {
       return {
         ...state,
         areVirtualItemsLoading: true,
-      }
+      };
     case LOAD_VIRTUAL_ITEMS_SUCCESS:
       return {
         ...state,
         virtualItems: action.payload,
-        areVirtualItemsLoading: false
-      }
+        areVirtualItemsLoading: false,
+      };
     case LOAD_VIRTUAL_ITEMS_FAIL:
       return {
         ...state,
-        areVirtualItemsLoading: false
-      }
+        areVirtualItemsLoading: false,
+      };
 
     case LOAD_VIRTUAL_CURRENCIES:
       return {
         ...state,
         areVirtualCurrenciesLoading: true,
-      }
+      };
     case LOAD_VIRTUAL_CURRENCIES_SUCCESS:
       return {
         ...state,
         virtualCurrencies: action.payload,
-        areVirtualCurrenciesLoading: false
-      }
+        areVirtualCurrenciesLoading: false,
+      };
     case LOAD_VIRTUAL_CURRENCIES_FAIL:
       return {
         ...state,
-        areVirtualCurrenciesLoading: false
-      }
+        areVirtualCurrenciesLoading: false,
+      };
 
     case REWARD_ITEMS:
       return {
         ...state,
         isRewarding: true,
-      }
+      };
     case REWARD_ITEMS_SUCCESS:
       return {
         ...state,
-        isRewarding: false
-      }
+        isRewarding: false,
+      };
     case REWARD_ITEMS_FAIL:
       return {
         ...state,
-        isRewarding: false
-      }
+        isRewarding: false,
+      };
 
     case REVOKE_ITEMS:
       return {
         ...state,
         isRevoking: true,
-      }
+      };
     case REVOKE_ITEMS_SUCCESS:
       return {
         ...state,
-        isRevoking: false
-      }
+        isRevoking: false,
+      };
     case REVOKE_ITEMS_FAIL:
       return {
         ...state,
-        isRevoking: false
-      }
-  
+        isRevoking: false,
+      };
+
     default:
       return state;
-  };
+  }
 };
 
 export const useManageInventory = (api, notify) => {
@@ -153,41 +153,56 @@ export const useManageInventory = (api, notify) => {
     }
   }, [api.inventoryApi, notify]);
 
-  const rewardItems = React.useCallback(async (user, item, count) => {
-    dispatch({ type: REWARD_ITEMS });
-    try {
-      const data = { type: 'reward', user, item, count };
-      const rewardData = await api.inventoryApi.rewardItems(data);
-      notify(`User: '${rewardData.userId}' got '${rewardData.itemId}' in quantity ${rewardData.quantity}`, { variant: 'info' });
-      dispatch({ type: REWARD_ITEMS_SUCCESS });
-    } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
-      notify(errorMsg, { variant: 'error' });
-      dispatch({ type: REWARD_ITEMS_FAIL });
-    }
-  }, [api.inventoryApi, notify]);
+  const rewardItems = React.useCallback(
+    async (user, item, count) => {
+      dispatch({ type: REWARD_ITEMS });
+      try {
+        const data = { type: 'reward', user, item, count };
+        const rewardData = await api.inventoryApi.rewardItems(data);
+        notify(
+          `User: '${rewardData.userId}' got '${rewardData.itemId}' in quantity ${rewardData.quantity}`,
+          { variant: 'info' }
+        );
+        dispatch({ type: REWARD_ITEMS_SUCCESS });
+      } catch (error) {
+        const errorMsg = error.response ? error.response.errorMessage : error.message;
+        notify(errorMsg, { variant: 'error' });
+        dispatch({ type: REWARD_ITEMS_FAIL });
+      }
+    },
+    [api.inventoryApi, notify]
+  );
 
-  const revokeItems = React.useCallback(async (user, item, count) => {
-    dispatch({ type: REVOKE_ITEMS });
-    try {
-      const data = { type: 'revoke', user, item, count };
-      const revokeData = await api.inventoryApi.rewardItems(data);
-      notify(`User: '${revokeData.userId}' has lost '${revokeData.itemId}' in quantity ${revokeData.quantity}`, { variant: 'info' });
-      dispatch({ type: REVOKE_ITEMS_SUCCESS });
-    } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
-      notify(errorMsg, { variant: 'error' });
-      dispatch({ type: REVOKE_ITEMS_FAIL });
-    }
-  }, [api.inventoryApi, notify]);
+  const revokeItems = React.useCallback(
+    async (user, item, count) => {
+      dispatch({ type: REVOKE_ITEMS });
+      try {
+        const data = { type: 'revoke', user, item, count };
+        const revokeData = await api.inventoryApi.rewardItems(data);
+        notify(
+          `User: '${revokeData.userId}' has lost '${revokeData.itemId}' in quantity ${revokeData.quantity}`,
+          { variant: 'info' }
+        );
+        dispatch({ type: REVOKE_ITEMS_SUCCESS });
+      } catch (error) {
+        const errorMsg = error.response ? error.response.errorMessage : error.message;
+        notify(errorMsg, { variant: 'error' });
+        dispatch({ type: REVOKE_ITEMS_FAIL });
+      }
+    },
+    [api.inventoryApi, notify]
+  );
 
-  return React.useMemo(() => [
-    state,
-    {
-      rewardItems,
-      revokeItems,
-      loadVirtualItems,
-      loadVirtualCurrencies,
-    }
-  ], [state, loadVirtualItems, loadVirtualCurrencies, rewardItems, revokeItems]);
-}
+  return React.useMemo(
+    () => [
+      state,
+      {
+        rewardItems,
+        revokeItems,
+        loadVirtualItems,
+        loadVirtualCurrencies,
+      },
+    ],
+    [state, loadVirtualItems, loadVirtualCurrencies, rewardItems, revokeItems]
+  );
+};

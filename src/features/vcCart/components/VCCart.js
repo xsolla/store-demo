@@ -15,50 +15,46 @@ import { VCCartItem } from './VCCartItem';
 
 const mapState = state => ({
   item: state.vcCart.item,
-  isBuying: state.vcCart.isBuying
+  isBuying: state.vcCart.isBuying,
 });
 
 const mapActions = actions => ({
   clearCart: actions.vcCart.clearCart,
-  buyByVirtualCurrencies: actions.vcCart.buyByVirtualCurrencies
+  buyByVirtualCurrencies: actions.vcCart.buyByVirtualCurrencies,
 });
 
-const VCCart = () => {
+const VCCart = React.memo(() => {
   const { item, clearCart, isBuying, buyByVirtualCurrencies } = useStore(mapState, mapActions);
 
-  return (
-    <Modal
-      open={Boolean(item)}
-      onClose={clearCart}
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{ timeout: 250 }}
-    >
-      <Grow in={Boolean(item)} timeout={250}>
-        <CartContent>
-          <CartHeader>
-            <h4>Confirm</h4>
-            <IconButton color="inherit" onClick={clearCart}>
-              <IconClose />
-            </IconButton>
-          </CartHeader>
-          <CartList>
-            {item && <VCCartItem item={item} />}
-          </CartList>
-          <CartFooter>
-            <Button
-              variant="contained"
-              disabled={isBuying}
-              onClick={buyByVirtualCurrencies}
-            >
-              {isBuying ? <CircularProgress size={24} color="primary"/> : 'Buy'}
-            </Button>
-          </CartFooter>
-        </CartContent>
-      </Grow>
-    </Modal>
+  return React.useMemo(
+    () => (
+      <Modal
+        open={Boolean(item)}
+        onClose={clearCart}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{ timeout: 250 }}>
+        <Grow in={Boolean(item)} timeout={250}>
+          <CartContent>
+            <CartHeader>
+              <h4>Confirm</h4>
+              <IconButton color='inherit' onClick={clearCart}>
+                <IconClose />
+              </IconButton>
+            </CartHeader>
+            <CartList>{item && <VCCartItem item={item} />}</CartList>
+            <CartFooter>
+              <Button variant='contained' disabled={isBuying} onClick={buyByVirtualCurrencies}>
+                {isBuying ? <CircularProgress size={24} color='primary' /> : 'Buy'}
+              </Button>
+            </CartFooter>
+          </CartContent>
+        </Grow>
+      </Modal>
+    ),
+    [buyByVirtualCurrencies, clearCart, isBuying, item]
   );
-}
+});
 
 const Modal = styled(MUIModal)`
   display: flex;
@@ -91,7 +87,11 @@ const CartHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
+  border-bottom: 1px solid
+    ${({ theme }) =>
+      Colorer(theme.palette.text.primary)
+        .alpha(0.1)
+        .string()};
   z-index: 10;
   padding: 24px 0 8px 0;
 `;
@@ -108,7 +108,11 @@ const CartList = styled.div`
 const CartFooter = styled.div`
   display: flex;
   justify-content: flex-end;
-  border-top: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
+  border-top: 1px solid
+    ${({ theme }) =>
+      Colorer(theme.palette.text.primary)
+        .alpha(0.1)
+        .string()};
   padding: 24px 0 24px 0;
 `;
 

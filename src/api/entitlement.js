@@ -10,7 +10,7 @@ class EntitlementApi {
   loadEntitlement = async () => {
     const url = '/v2/projects/entitlement';
     const response = await this.actions.get(url);
-  
+
     return convertEntitlements(response.data);
   };
 
@@ -21,15 +21,15 @@ class EntitlementApi {
       project_id: this.projectId,
       digital_content_sku: sku,
       language: 'en',
-      key
+      key,
     };
-    
+
     await this.actions.post(url, data);
   };
 }
 
-const convertEntitlements = items => items
-  .map(x => ({
+const convertEntitlements = items =>
+  items.map(x => ({
     sku: x.digital_content_sku,
     name: x.name,
     imageUrl: x.image_url,

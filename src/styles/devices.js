@@ -6,8 +6,8 @@ const size = {
   laptop: '1024px',
   laptopL: '1440px',
   desktop: '1920px',
-  retina: '2560px'
-}
+  retina: '2560px',
+};
 
 export const device = {
   mobileS: `(max-width: ${size.mobileS})`,
@@ -17,5 +17,5 @@ export const device = {
   laptop: `(max-width: ${size.laptop})`,
   laptopL: `(max-width: ${size.laptopL})`,
   desktop: `(max-width: ${size.desktop})`,
-  retina: `(max-width: ${size.retina})`
+  retina: `(max-width: ${size.retina})`,
 };

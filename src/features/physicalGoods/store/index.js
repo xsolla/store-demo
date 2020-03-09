@@ -3,7 +3,7 @@ import React from 'react';
 const initialState = {
   items: [],
   isFetching: false,
-}
+};
 
 const LOAD_PHYSICAL_GOODS = 'LOAD_PHYSICAL_GOODS';
 const LOAD_PHYSICAL_GOODS_SUCCESS = 'LOAD_PHYSICAL_GOODS_SUCCESS';
@@ -15,21 +15,21 @@ const reducer = (state, action) => {
       return {
         ...state,
         isFetching: true,
-      }
+      };
     case LOAD_PHYSICAL_GOODS_SUCCESS:
       return {
         ...state,
         items: action.payload,
-        isFetching: false
-      }
+        isFetching: false,
+      };
     case LOAD_PHYSICAL_GOODS_FAIL:
       return {
         ...state,
-        isFetching: false
-      }
+        isFetching: false,
+      };
     default:
       return state;
-  };
+  }
 };
 
 export const usePhysicalGoods = (api, notify) => {
@@ -47,10 +47,13 @@ export const usePhysicalGoods = (api, notify) => {
     }
   }, [api.physicalGoodApi, notify]);
 
-  return React.useMemo(() => [
-    state,
-    {
-      load,
-    }
-  ], [load, state]);
-}
+  return React.useMemo(
+    () => [
+      state,
+      {
+        load,
+      },
+    ],
+    [load, state]
+  );
+};

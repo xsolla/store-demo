@@ -36,7 +36,7 @@ class ProductProvider extends React.PureComponent {
         this.setState({ isUserBalanceFetching: false });
         const errorMsg = error.response ? error.response.data.errorMessage : error.message;
         enqueueSnackbar(errorMsg, { variant: 'error' });
-      })
+      });
   };
 
   render() {
@@ -47,8 +47,7 @@ class ProductProvider extends React.PureComponent {
           setStateFrom: this.setStateFrom,
           updateVirtualCurrencyBalance: this.updateVirtualCurrencyBalance,
           setSideMenuVisibility: this.setSideMenuVisibility,
-        }}
-      >
+        }}>
         {this.props.children}
       </ProductContext.Provider>
     );

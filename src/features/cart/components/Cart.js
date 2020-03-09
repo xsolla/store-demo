@@ -34,7 +34,7 @@ const mapActions = actions => ({
   payForGoods: actions.cart.payForGoods,
 });
 
-const Cart = () => {
+const Cart = React.memo(() => {
   const {
     cartItems,
     price,
@@ -48,7 +48,6 @@ const Cart = () => {
     payForGoods,
   } = useStore(mapState, mapActions);
   const history = useHistory();
-
   const isLoading = isCartLoading || isItemRemoving;
 
   const cartSubtotal = React.useMemo(() => {
@@ -67,76 +66,86 @@ const Cart = () => {
     getCart();
   }, []);
 
-  return (
-    <Modal
-      open={isCartShown}
-      onClose={hideCart}
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{ timeout: 250 }}
-    >
-      <Grow in={isCartShown} timeout={250}>
-        <CartContent>
-          <CartHeader>
-            <h4>Cart</h4>
-            <IconButton color="inherit" onClick={hideCart}>
-              <IconClose />
-            </IconButton>
-          </CartHeader>
-          <CartList>
-            {cartItems.length > 0
-              ? cartItems.map(item => (
-                <CartItem
-                  key={item.sku}
-                  item={item}
-                  removeItem={removeItem}
-                  changeItemQuantity={changeItemQuantity}
-                />
-              ))
-              : <p>Empty cart</p>
-            }
-          </CartList>
-          <Loader>
-            {isLoading && <Progress />}
-          </Loader>
-          <CartFooter>
-            {cartItems.length > 0 && (
-              <Subtotal>
-                Subtotal:
-                <Price>
-                  {
-                    getFormattedCurrency(
-                      cartSubtotal,
-                      price.currency || cartItems[0].price.currency
-                    ).formattedCurrency
-                  }
-                </Price>
-              </Subtotal>
-            )}
-            <CartActions>
-              <Button
-                variant="contained"
-                color="secondary"
-                disabled={cartItems.length === 0}
-                onClick={buyAnotherPlatform}
-              >
-                Buy on PS4
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                disabled={cartItems.length === 0}
-                onClick={payForGoods}
-              >
-                Buy on Xsolla
-              </Button>
-            </CartActions>
-          </CartFooter>
-        </CartContent>
-      </Grow>
-    </Modal>
+  return React.useMemo(
+    () => (
+      <Modal
+        open={isCartShown}
+        onClose={hideCart}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{ timeout: 250 }}>
+        <Grow in={isCartShown} timeout={250}>
+          <CartContent>
+            <CartHeader>
+              <h4>Cart</h4>
+              <IconButton color='inherit' onClick={hideCart}>
+                <IconClose />
+              </IconButton>
+            </CartHeader>
+            <CartList>
+              {cartItems.length > 0 ? (
+                cartItems.map(item => (
+                  <CartItem
+                    key={item.sku}
+                    item={item}
+                    removeItem={removeItem}
+                    changeItemQuantity={changeItemQuantity}
+                  />
+                ))
+              ) : (
+                <p>Empty cart</p>
+              )}
+            </CartList>
+            <Loader>{isLoading && <Progress />}</Loader>
+            <CartFooter>
+              {cartItems.length > 0 && (
+                <Subtotal>
+                  Subtotal:
+                  <Price>
+                    {
+                      getFormattedCurrency(
+                        cartSubtotal,
+                        price.currency || cartItems[0].price.currency
+                      ).formattedCurrency
+                    }
+                  </Price>
+                </Subtotal>
+              )}
+              <CartActions>
+                <Button
+                  variant='contained'
+                  color='secondary'
+                  disabled={cartItems.length === 0}
+                  onClick={buyAnotherPlatform}>
+                  Buy on PS4
+                </Button>
+                <Button
+                  variant='contained'
+                  color='secondary'
+                  disabled={cartItems.length === 0}
+                  onClick={payForGoods}>
+                  Buy on Xsolla
+                </Button>
+              </CartActions>
+            </CartFooter>
+          </CartContent>
+        </Grow>
+      </Modal>
+    ),
+    [
+      buyAnotherPlatform,
+      cartItems,
+      cartSubtotal,
+      changeItemQuantity,
+      hideCart,
+      isCartShown,
+      isLoading,
+      payForGoods,
+      price.currency,
+      removeItem,
+    ]
   );
-}
+});
 
 const Modal = styled(MUIModal)`
   display: flex;
@@ -170,7 +179,11 @@ const CartHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   color: ${({ theme }) => theme.palette.text.primary};
-  border-bottom: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
+  border-bottom: 1px solid
+    ${({ theme }) =>
+      Colorer(theme.palette.text.primary)
+        .alpha(0.1)
+        .string()};
   z-index: 10;
   padding: 24px 0 8px 0;
 `;
@@ -184,7 +197,7 @@ const Progress = styled(LinearProgress)`
     position: absolute;
     width: 100%;
   }
-`
+`;
 
 const CartList = styled.div`
   display: grid;
@@ -200,7 +213,11 @@ const CartFooter = styled.div`
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
-  border-top: 1px solid ${({ theme }) => Colorer(theme.palette.text.primary).alpha(0.1).string()};
+  border-top: 1px solid
+    ${({ theme }) =>
+      Colorer(theme.palette.text.primary)
+        .alpha(0.1)
+        .string()};
   padding: 24px 0 24px 0;
 `;
 

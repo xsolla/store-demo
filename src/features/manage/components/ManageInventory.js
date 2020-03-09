@@ -17,7 +17,9 @@ const mapState = state => ({
   virtualCurrencies: state.manageInventory.virtualCurrencies,
   isRewarding: state.manageInventory.isRewarding,
   isRevoking: state.manageInventory.isRevoking,
-  isLoading: state.manageInventory.areVirtualCurrenciesLoading || state.manageInventory.areVirtualItemsLoading,
+  isLoading:
+    state.manageInventory.areVirtualCurrenciesLoading ||
+    state.manageInventory.areVirtualItemsLoading,
 });
 
 const mapActions = actions => ({
@@ -27,7 +29,7 @@ const mapActions = actions => ({
   loadVirtualCurrencies: actions.manageInventory.loadVirtualCurrencies,
 });
 
-const ManageInventory = () => {
+const ManageInventory = React.memo(() => {
   const {
     users,
     groups,
@@ -62,19 +64,22 @@ const ManageInventory = () => {
     [virtualCurrencies]
   );
 
-  const groupsContent = React.useMemo(() => ({
-    items: {
-      name: 'Item',
-      items: virtualItems,
-      options: virtualItemsOptions,
-    },
-    currencies: {
-      name: 'Currency',
-      items: virtualCurrencies,
-      options: currenciesOptions,
-    },
-  }), [currenciesOptions, virtualItemsOptions, virtualCurrencies, virtualItems]);
-  
+  const groupsContent = React.useMemo(
+    () => ({
+      items: {
+        name: 'Item',
+        items: virtualItems,
+        options: virtualItemsOptions,
+      },
+      currencies: {
+        name: 'Currency',
+        items: virtualCurrencies,
+        options: currenciesOptions,
+      },
+    }),
+    [currenciesOptions, virtualItemsOptions, virtualCurrencies, virtualItems]
+  );
+
   const handleRewardItem = React.useCallback(() => {
     rewardItems(userID, selectedItem, quantity);
   }, [quantity, rewardItems, selectedItem, userID]);
@@ -86,7 +91,10 @@ const ManageInventory = () => {
   const handleFormSubmit = React.useCallback(event => event.preventDefault(), []);
   const handleUserSelect = React.useCallback(event => setUserID(event.target.value), []);
   const handleItemSelect = React.useCallback(event => setSelectedItem(event.target.value), []);
-  const handleQuantityChange = React.useCallback(event => setQuantity(event.target.value >= 1 ? event.target.value : 1), []);
+  const handleQuantityChange = React.useCallback(
+    event => setQuantity(event.target.value >= 1 ? event.target.value : 1),
+    []
+  );
 
   React.useEffect(() => {
     setUserID(users[0] ? users[0].id : null);
@@ -110,20 +118,20 @@ const ManageInventory = () => {
   React.useEffect(() => {
     loadVirtualCurrencies();
   }, []);
-    
-  return (
-    <Body>
-      {isLoading
-        ? <Preloader />
-        : (
+
+  return React.useMemo(
+    () => (
+      <Body>
+        {isLoading ? (
+          <Preloader />
+        ) : (
           <Form onSubmit={handleFormSubmit}>
             <TextField
               select
-              label="User"
+              label='User'
               value={userID}
-              color="primary"
-              onChange={handleUserSelect}
-            >
+              color='primary'
+              onChange={handleUserSelect}>
               {userOptions}
             </TextField>
             <GroupSwitcher
@@ -137,44 +145,53 @@ const ManageInventory = () => {
                   select
                   label={groupsContent[activeGroup].name}
                   value={selectedItem}
-                  color="primary"
-                  onChange={handleItemSelect}
-                >
+                  color='primary'
+                  onChange={handleItemSelect}>
                   {groupsContent[activeGroup].options}
                 </TextField>
               )}
               <TextField
-                type="number"
-                label="Quantity"
+                type='number'
+                label='Quantity'
                 value={quantity}
-                color="primary"
+                color='primary'
                 onChange={handleQuantityChange}
               />
             </Items>
             <FormFooter>
               <FormActions>
-                <RewardButton
-                  variant="contained"
-                  disabled={isRewarding}
-                  onClick={handleRewardItem}
-                >
-                  {isRewarding ? <CircularProgress size={24} color="primary" /> : 'Reward'}
+                <RewardButton variant='contained' disabled={isRewarding} onClick={handleRewardItem}>
+                  {isRewarding ? <CircularProgress size={24} color='primary' /> : 'Reward'}
                 </RewardButton>
-                <Button
-                  variant="contained"
-                  disabled={isRevoking}
-                  onClick={handleRevokeItem}
-                >
-                  {isRevoking ? <CircularProgress size={24} color="primary" /> : 'Revoke'}
+                <Button variant='contained' disabled={isRevoking} onClick={handleRevokeItem}>
+                  {isRevoking ? <CircularProgress size={24} color='primary' /> : 'Revoke'}
                 </Button>
               </FormActions>
             </FormFooter>
           </Form>
-        )
-      }
-    </Body>
+        )}
+      </Body>
+    ),
+    [
+      activeGroup,
+      groups,
+      groupsContent,
+      handleFormSubmit,
+      handleItemSelect,
+      handleQuantityChange,
+      handleRevokeItem,
+      handleRewardItem,
+      handleUserSelect,
+      isLoading,
+      isRevoking,
+      isRewarding,
+      quantity,
+      selectedItem,
+      userID,
+      userOptions,
+    ]
   );
-};
+});
 
 const Body = styled.div`
   display: flex;

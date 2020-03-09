@@ -3,7 +3,7 @@ import React from 'react';
 const initialState = {
   items: [],
   isFetching: false,
-}
+};
 
 const LOAD_VIRTUAL_CURRENCIES = 'LOAD_VIRTUAL_CURRENCIES';
 const LOAD_VIRTUAL_CURRENCIES_SUCCESS = 'LOAD_VIRTUAL_CURRENCIES_SUCCESS';
@@ -15,21 +15,21 @@ const reducer = (state, action) => {
       return {
         ...state,
         isFetching: true,
-      }
+      };
     case LOAD_VIRTUAL_CURRENCIES_SUCCESS:
       return {
         ...state,
         items: action.payload,
-        isFetching: false
-      }
+        isFetching: false,
+      };
     case LOAD_VIRTUAL_CURRENCIES_FAIL:
       return {
         ...state,
-        isFetching: false
-      }
+        isFetching: false,
+      };
     default:
       return state;
-  };
+  }
 };
 
 export const useVirtualCurrencies = (api, notify) => {
@@ -47,11 +47,13 @@ export const useVirtualCurrencies = (api, notify) => {
     }
   }, [api.virtualCurrenciesApi, notify]);
 
-
-  return React.useMemo(() => [
-    state,
-    {
-      load,
-    }
-  ], [load, state]);
-}
+  return React.useMemo(
+    () => [
+      state,
+      {
+        load,
+      },
+    ],
+    [load, state]
+  );
+};

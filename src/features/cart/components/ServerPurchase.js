@@ -5,7 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import MUIDivider from '@material-ui/core/Divider';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import { Preloader} from '../../../components/Preloader';
+import { Preloader } from '../../../components/Preloader';
 import { useStore } from '../../../store';
 import { CartItem } from '../../cart/components/CartItem';
 import { getFormattedCurrency } from '../../../utils/formatCurrency';
@@ -25,7 +25,7 @@ const mapActions = actions => ({
   changeItemQuantity: actions.cart.changeItemQuantity,
 });
 
-const ServerPurchase = () => {
+const ServerPurchase = React.memo(() => {
   const {
     price,
     cartItems,
@@ -37,78 +37,68 @@ const ServerPurchase = () => {
     changeItemQuantity,
   } = useStore(mapState, mapActions);
 
-  const calculateSubtotal = items => {
-    const subtotal = items.reduce((acc, x) => acc + x.price.amount * x.quantity, 0);
-    return Math.round(subtotal * 100) / 100;
-  };
+  const subtotal = React.useMemo(
+    () =>
+      Math.round(cartItems.reduce((acc, x) => acc + x.price.amount * x.quantity, 0) * 100) / 100,
+    [cartItems]
+  );
 
   const cartContent = React.useMemo(
-    () => cartItems.length > 0
-      ? (
+    () =>
+      cartItems.length > 0 ? (
         <CartItems>
           {cartItems.map(x => (
             <React.Fragment key={x.sku}>
-              <CartItem
-                item={x}
-                removeItem={removeItem}
-                changeItemQuantity={changeItemQuantity}
-              />
-              <Divider/>
+              <CartItem item={x} removeItem={removeItem} changeItemQuantity={changeItemQuantity} />
+              <Divider />
             </React.Fragment>
           ))}
         </CartItems>
       ) : (
-        <EmptyText>
-          Oops, you have nothing bought yet!
-        </EmptyText>
+        <EmptyText>Oops, you have nothing bought yet!</EmptyText>
       ),
     [cartItems, removeItem, changeItemQuantity]
   );
 
-  const footerContent = React.useMemo(() => cartItems.length > 0 && (
-    <>
-      <Loader>
-        {isCartLoading && <Progress />}
-      </Loader>
-      <CartFooter>
-        <Subtotal>
-          Subtotal:
-          <Price>
-            {
-              getFormattedCurrency(
-                calculateSubtotal(cartItems),
-                price.currency || cartItems[0].price.currency
-              ).formattedCurrency
-            }
-          </Price>
-        </Subtotal>
-        <CartActions>
-          <Button
-            variant="contained"
-            disabled={isPurchasing}
-            onClick={purchase}
-          >
-            {isPurchasing ? <CircularProgress size={24} color="primary" /> : 'Grant purchase'}
-          </Button>
-        </CartActions>
-      </CartFooter>
-    </>
-  ), [cartItems, isCartLoading, price.currency, isPurchasing]);
+  const footerContent = React.useMemo(
+    () =>
+      cartItems.length > 0 && (
+        <>
+          <Loader>{isCartLoading && <Progress />}</Loader>
+          <CartFooter>
+            <Subtotal>
+              Subtotal:
+              <Price>
+                {
+                  getFormattedCurrency(subtotal, price.currency || cartItems[0].price.currency)
+                    .formattedCurrency
+                }
+              </Price>
+            </Subtotal>
+            <CartActions>
+              <Button variant='contained' disabled={isPurchasing} onClick={purchase}>
+                {isPurchasing ? <CircularProgress size={24} color='primary' /> : 'Grant purchase'}
+              </Button>
+            </CartActions>
+          </CartFooter>
+        </>
+      ),
+    [cartItems, isCartLoading, price.currency, isPurchasing, purchase]
+  );
 
   return (
     <Body>
-      {isCartClearing
-        ? <Preloader />
-        : (
-          <Content>
-            {cartContent}
-            {footerContent}
-          </Content>
-        )
-      }
+      {isCartClearing ? (
+        <Preloader />
+      ) : (
+        <Content>
+          {cartContent}
+          {footerContent}
+        </Content>
+      )}
     </Body>
   );
-};
+});
 
 const Body = styled.div`
   display: flex;
@@ -157,7 +147,7 @@ const CartActions = styled.div`
 
 const Subtotal = styled.div`
   display: flex;
-  font-weight: bold; 
+  font-weight: bold;
   color: ${({ theme }) => theme.palette.text.primary};
   margin-right: 10px;
 
@@ -191,6 +181,6 @@ const Progress = styled(LinearProgress)`
     position: absolute;
     width: 100%;
   }
-`
+`;
 
 export { ServerPurchase };

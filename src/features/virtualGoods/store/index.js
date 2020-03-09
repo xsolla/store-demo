@@ -3,7 +3,7 @@ import React from 'react';
 const initialState = {
   groups: [],
   isFetching: false,
-}
+};
 
 const LOAD_VIRTUAL_GOODS = 'LOAD_VIRTUAL_GOODS';
 const LOAD_VIRTUAL_GOODS_SUCCESS = 'LOAD_VIRTUAL_GOODS_SUCCESS';
@@ -15,21 +15,21 @@ const reducer = (state, action) => {
       return {
         ...state,
         isFetching: true,
-      }
+      };
     case LOAD_VIRTUAL_GOODS_SUCCESS:
       return {
         ...state,
         groups: action.payload,
-        isFetching: false
-      }
+        isFetching: false,
+      };
     case LOAD_VIRTUAL_GOODS_FAIL:
       return {
         ...state,
-        isFetching: false
-      }
+        isFetching: false,
+      };
     default:
       return state;
-  };
+  }
 };
 
 export const useVirtualGoods = (api, notify) => {
@@ -47,10 +47,13 @@ export const useVirtualGoods = (api, notify) => {
     }
   }, [api.virtualGoodsApi, notify]);
 
-  return React.useMemo(() => [
-    state,
-    {
-      load,
-    }
-  ], [load, state]);
-}
+  return React.useMemo(
+    () => [
+      state,
+      {
+        load,
+      },
+    ],
+    [load, state]
+  );
+};
