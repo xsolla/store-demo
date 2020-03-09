@@ -23,8 +23,10 @@
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "REACT_APP_DEMO_PROJECT_ID=44056 react-scripts start",
+    "build": "REACT_APP_DEMO_PROJECT_ID=44056 react-scripts build",
+    "build-only-physical": "STORE_MODE=physical react-scripts build",
+    "build-only-virtual": "STORE_MODE=virtual react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

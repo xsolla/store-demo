@@ -10,34 +10,60 @@ import { ManageInventory } from './features/manage/components/ManageInventory';
 import { VirtualList } from './features/virtualGoods/components/VirtualList';
 import { EntitlementList } from './features/entitlement/components/EntitlementList';
 import { Cart } from './features/cart/components/Cart';
+import { Login } from './features/user/components/Login';
+import { UserBalances } from './features/user/components/Balances';
 import { ServerPurchase } from './features/cart/components/ServerPurchase';
 import { VCCart } from './features/vcCart/components/VCCart';
 import { VCList } from './features/virtualCurrencies/components/VCList';
 import { Navbar } from './components/Navbar';
 import { MobileNavbar } from './components/MobileNavbar';
 import { routes } from './utils/routes';
-import { ProductContext } from './context';
+import { useStore } from './store';
 
-const App = () => {
-  const { updateVirtualCurrencyBalance } = React.useContext(ProductContext);
+const mapState = state => ({
+  user: state.user.userInfo,
+  isPublic: state.isSpecificProject,
+  isDemo: state.isDemo,
+});
 
-  const isSpecificProject = useRouteMatch({
-    path: routes.specificProject,
-    strict: true,
-    sensitive: true,
-  });
+const mapActions = actions => ({
+  showCart: actions.cart.show,
+});
 
-  React.useEffect(() => {
-    updateVirtualCurrencyBalance();
-  }, []);
+const App = React.memo(() => {
+  const [isSideMenuOpen, setMenuVisibility] = React.useState(false);
+  const openMenu = React.useCallback(() => setMenuVisibility(true), []);
+  const closeMenu = React.useCallback(() => setMenuVisibility(false), []);
+
+  const { user, isPublic, isDemo, showCart } = useStore(mapState, mapActions);
+  const renderUserBalances = React.useCallback(() => <UserBalances />, []);
 
   return React.useMemo(
     () => (
       <Body>
-        <Navbar isSpecificProject={isSpecificProject} />
-        <Hidden lgUp>{!isSpecificProject && <MobileNavbar />}</Hidden>
+        <Navbar
+          isPublic={isPublic}
+          isLogoutShown={isDemo}
+          isLogged={Boolean(user)}
+          userEmail={user ? user.email : ''}
+          onMenuOpen={openMenu}
+          onCartOpen={showCart}
+          renderUserBalances={renderUserBalances}
+        />
+        {!isPublic && (
+          <Hidden lgUp>
+            <MobileNavbar
+              isLogged={Boolean(user)}
+              userEmail={user ? user.email : ''}
+              isOpen={isSideMenuOpen}
+              onOpen={openMenu}
+              onClose={closeMenu}
+            />
+          </Hidden>
+        )}
         <Cart />
         <VCCart />
+        <Login />
         <Content>
           <Switch>
             <Route path={routes.items} exact component={VirtualList} />
@@ -53,9 +79,9 @@ const App = () => {
         </Content>
       </Body>
     ),
-    [isSpecificProject]
+    [isPublic, isDemo, user, openMenu, showCart, renderUserBalances, isSideMenuOpen, closeMenu]
   );
-};
+});
 
 const Body = styled.div`
   display: flex;
@@ -63,9 +89,7 @@ const Body = styled.div`
   height: 100%;
   font-family: ${({ theme }) => theme.typography.fontFamily};
   background: ${({ theme }) =>
-    `url(${theme.palette.background.imageUrl}) ${Colorer(theme.palette.background.default).alpha(
-      0.8
-    )}`};
+    `url(${theme.palette.background.imageUrl}) ${Colorer(theme.palette.background.default).alpha(0.8)}`};
   background-attachment: fixed;
   background-size: cover;
   background-blend-mode: darken;

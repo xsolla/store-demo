@@ -1,10 +1,6 @@
 const eatCookie = () => {
   const getCookie = o => {
-    for (
-      var e = o + '=', n = decodeURIComponent(document.cookie).split(';'), t = 0;
-      t < n.length;
-      t++
-    ) {
+    for (var e = o + '=', n = decodeURIComponent(document.cookie).split(';'), t = 0; t < n.length; t++) {
       for (var i = n[t]; ' ' === i.charAt(0); ) i = i.substring(1);
       if (0 === i.indexOf(e)) return i.substring(e.length, i.length);
     }
@@ -25,7 +21,6 @@ const eatCookie = () => {
   }
 
   let o;
-  //console.log("let = ");
   if (window.location.search) {
     o = getQueryParams(window.location.search).token;
   }
@@ -36,15 +31,14 @@ const eatCookie = () => {
     o = getCookie('xsolla_login_token');
   }
   if (o && o !== 'undefined') {
-    //console.log("o = ", o);
     return o;
   } else {
     return null;
   }
 };
 
-export default function Cookie() {
-  return 44056 === window.xProjectId
+export default function Cookie(projectId) {
+  return Number(process.env.REACT_APP_DEMO_PROJECT_ID) === projectId
     ? 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE5NjIyMzQwNDgsImlzcyI6Imh0dHBzOi8vbG9naW4ueHNvbGxhLmNvbSIsI' +
         'mlhdCI6MTU2MjE0NzY0OCwidXNlcm5hbWUiOiJ4c29sbGEiLCJ4c29sbGFfbG9naW5fYWNjZXNzX2tleSI6IjA2SWF2ZHpDeEVHbm5aMTlp' +
         'LUc5TmMxVWFfTWFZOXhTR3ZEVEY4OFE3RnMiLCJzdWIiOiJkMzQyZGFkMi05ZDU5LTExZTktYTM4NC00MjAxMGFhODAwM2YiLCJlbWFpbCI' +

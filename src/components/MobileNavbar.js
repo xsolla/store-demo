@@ -10,18 +10,11 @@ import Tabs from '@material-ui/core/Tabs';
 import MUITab from '@material-ui/core/Tab';
 import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
 
-import { ProductContext } from '../context';
-import { routes, getMenuItems } from '../utils/routes';
+import { routes, getRoutes } from '../utils/routes';
 import { eraseCookie } from '../utils/cookie';
 
-const MobileNavbar = () => {
-  const { isSideMenuShown, user, logToken, projectId, setSideMenuVisibility } = React.useContext(
-    ProductContext
-  );
-  const location = useLocation();
-
-  const closeMenu = () => setSideMenuVisibility(false);
-  const openMenu = () => setSideMenuVisibility(true);
+const MobileNavbar = React.memo(({ userEmail, isOpen, isLogged, onOpen, onClose }) => {
+  const { pathname } = useLocation();
 
   const logOutHandler = () => {
     eraseCookie('xsolla_login_token', null);
@@ -29,59 +22,70 @@ const MobileNavbar = () => {
     window.location.reload();
   };
 
-  React.useEffect(() => closeMenu, []);
-
-  const isLogged = logToken && user;
+  React.useEffect(() => onClose, []);
 
   const generalMenuItems = React.useMemo(
-    () =>
-      getMenuItems([
-        routes.items,
-        routes.currencies,
-        ...(projectId === 44056 ? [routes.physical] : []),
-      ]),
-    [projectId]
-  );
-
-  const userMenuItems = React.useMemo(
-    () => getMenuItems([routes.inventory, routes.entitlement, routes.manage, routes.purchase]),
+    () => getRoutes([routes.items, routes.currencies, routes.physical]),
     []
   );
 
-  return (
-    <Drawer open={isSideMenuShown} anchor='left' onOpen={openMenu} onClose={closeMenu}>
-      <Content>
-        <Header>
-          {isLogged && projectId !== 44056 && (
-            <IconButton onClick={logOutHandler}>
-              <LogoutIcon size='inherit' />
-            </IconButton>
-          )}
-          {isLogged && <UserMail>{user.email}</UserMail>}
-          <IconButton onClick={closeMenu}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </Header>
-        <Tabs
-          value={location.pathname}
-          onChange={closeMenu}
-          component='nav'
-          variant='scrollable'
-          color='primary'
-          indicatorColor='primary'
-          orientation='vertical'>
-          {generalMenuItems.map(x => (
-            <Tab component={NavLink} label={x.label} value={x.route} to={x.route} />
-          ))}
-          <MenuDivider />
-          {userMenuItems.map(x => (
-            <Tab component={NavLink} label={x.label} value={x.route} to={x.route} />
-          ))}
-        </Tabs>
-      </Content>
-    </Drawer>
+  const userMenuItems = React.useMemo(
+    () => getRoutes([routes.inventory, routes.entitlement, routes.manage, routes.purchase]),
+    []
   );
-};
+
+  const isLocationExistsInTabs = React.useMemo(() => generalMenuItems.some(x => x.route === pathname), [
+    generalMenuItems,
+    pathname,
+  ]);
+
+  return React.useMemo(
+    () => (
+      <Drawer open={isOpen} anchor="left" onOpen={onOpen} onClose={onClose}>
+        <Content>
+          <Header>
+            {isLogged && (
+              <IconButton onClick={logOutHandler}>
+                <LogoutIcon size="inherit" />
+              </IconButton>
+            )}
+            {isLogged && <UserMail>{userEmail}</UserMail>}
+            <IconButton onClick={onClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </Header>
+          <Tabs
+            value={isLocationExistsInTabs ? pathname : false}
+            onChange={onClose}
+            component="nav"
+            variant="scrollable"
+            color="primary"
+            indicatorColor="primary"
+            orientation="vertical">
+            {generalMenuItems.map(x => (
+              <Tab key={x.route} component={NavLink} label={x.label} value={x.route} to={x.route} />
+            ))}
+            <MenuDivider />
+            {userMenuItems.map(x => (
+              <Tab key={x.route} component={NavLink} label={x.label} value={x.route} to={x.route} />
+            ))}
+          </Tabs>
+        </Content>
+      </Drawer>
+    ),
+    [
+      generalMenuItems,
+      isLocationExistsInTabs,
+      isLogged,
+      isOpen,
+      onClose,
+      onOpen,
+      pathname,
+      userEmail,
+      userMenuItems,
+    ]
+  );
+});
 
 const Content = styled.div`
   display: flex;

@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <!-- SB2 -->
-    <link rel="stylesheet" crossorigin="anonymous" href='https://assets.website-files.com/5aa70c9a526eee5ec6f75daf/css/xsolla-sitebuilder.04d51c945.css' />
+    <link
+      rel="stylesheet"
+      crossorigin="anonymous"
+      href="https://assets.website-files.com/5aa70c9a526eee5ec6f75daf/css/xsolla-sitebuilder.04d51c945.css"
+    />
 
     <!-- SB3 -->
     <!-- <link rel="stylesheet" href="https://uploads-ssl.webflow.com/5c6e5a06e965e2a10f16946f/css/sb-react.webflow.88e8d7b1c.css /> -->
@@ -17,52 +21,5 @@
     <div id="root"></div>
     <script src="https://cdn.xsolla.net/xsolla-login-widget/sdk/1.3.2/xl.min.js"></script>
     <script src="https://static.xsolla.com/embed/paystation/1.1.0/widget.min.js"></script>
-    <script type="text/javascript">
-
-      function eraseCookie (o) {
-        return (
-          document.cookie = o + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;"
-        )
-      }
-      var urlParams = new URLSearchParams((new URL(window.location.href.replace('#/', ''))).search);
-
-      var xProjectId;
-      if (urlParams && urlParams.get('project_id')) {
-        xProjectId = parseInt(urlParams.get('project_id'));
-        localStorage.setItem('xsolla_react_store_project', xProjectId);
-      } else {
-        xProjectId = localStorage.getItem('xsolla_react_store_project') || '44056';
-        xProjectId = parseInt(xProjectId);
-      }
-
-      var xLoginId;
-      if (urlParams && urlParams.get('login_id')) {
-        xLoginId = urlParams.get('login_id');
-        localStorage.setItem('xsolla_react_store_login', xLoginId);
-      } else {
-        xLoginId = localStorage.getItem('xsolla_react_store_login') || 'e6dfaac6-78a8-11e9-9244-42010aa80004';
-      }
-
-      var mainURL = 'https://xsolla.github.io/store-demo/';
-
-      XL.init({
-        projectId: xLoginId,
-        loginUrl: mainURL,
-        locale: 'en_US',
-        onlyWidgets: true,
-        fields: 'email',
-        theme: 'https://cdn3.xsolla.com/files/uploaded/15924/bfe7e2a5a75fb6f53d04de645ec7c542.css'
-      });
-      const element_id = 'xl_auth';
-      const options = {
-        'width': 600,
-        'height': 550
-      };
-
-      function XloginInit (){
-        XL.AuthWidget(element_id, options);
-      }
-    </script>
-
   </body>
 </html>

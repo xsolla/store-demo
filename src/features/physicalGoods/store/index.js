@@ -19,7 +19,7 @@ const reducer = (state, action) => {
     case LOAD_PHYSICAL_GOODS_SUCCESS:
       return {
         ...state,
-        items: action.payload,
+        items: action.payload.filter(x => Boolean(x.price)),
         isFetching: false,
       };
     case LOAD_PHYSICAL_GOODS_FAIL:
