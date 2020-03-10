@@ -1,10 +1,9 @@
 import { init } from 'store-js-sdk/src/init';
 
 class EntitlementApi {
-  constructor(actions, projectId, loginToken) {
+  constructor(actions, projectId) {
     this.actions = actions;
     this.projectId = projectId;
-    this.loginToken = loginToken;
   }
 
   loadEntitlement = async () => {

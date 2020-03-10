@@ -29,6 +29,7 @@ const mapState = state => ({
 const mapActions = actions => ({
   hideCart: actions.cart.hide,
   getCart: actions.cart.getCart,
+  clearCart: actions.cart.clearCart,
   removeItem: actions.cart.removeItem,
   changeItemQuantity: actions.cart.changeItemQuantity,
   purchase: actions.cart.purchase,
@@ -44,7 +45,7 @@ const Cart = React.memo(() => {
     isItemRemoving,
     isPublic,
     changeItemQuantity,
-    getCart,
+    clearCart,
     hideCart,
     removeItem,
     payForGoods,
@@ -65,7 +66,7 @@ const Cart = React.memo(() => {
   }, [hideCart, history]);
 
   React.useEffect(() => {
-    getCart();
+    clearCart();
   }, []);
 
   return React.useMemo(

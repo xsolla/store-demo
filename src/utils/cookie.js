@@ -1,6 +1,4 @@
-import { DEMO_PROJECT_ID, DEMO_TOKEN } from './constants';
-
-const eatCookie = () => {
+export const eatCookie = () => {
   const getCookie = o => {
     for (var e = o + '=', n = decodeURIComponent(document.cookie).split(';'), t = 0; t < n.length; t++) {
       for (var i = n[t]; ' ' === i.charAt(0); ) i = i.substring(1);
@@ -38,10 +36,6 @@ const eatCookie = () => {
     return null;
   }
 };
-
-export default function Cookie(projectId) {
-  return DEMO_PROJECT_ID === projectId ? DEMO_TOKEN : eatCookie();
-}
 
 export function eraseCookie(o) {
   return (document.cookie = o + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;');

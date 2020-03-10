@@ -2,15 +2,14 @@ import { PhysicalGood } from 'store-js-sdk/src/physical-goods/physical-goods';
 import { init } from 'store-js-sdk/src/init';
 
 class PhysicalGoodApi {
-  constructor(actions, projectId, loginToken) {
+  constructor(actions, projectId) {
     this.actions = actions;
     this.projectId = projectId;
-    this.loginToken = loginToken;
   }
 
   loadPhysicalGoods = async () => {
     init({ projectId: this.projectId, version: 'v2' });
-    const physicalGood = new PhysicalGood(this.loginToken);
+    const physicalGood = new PhysicalGood();
     const response = await physicalGood.getPhysicalGoodList();
     return convertPhysicalGoods(response.data.items);
   };

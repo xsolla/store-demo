@@ -31,13 +31,14 @@ const Provider = ({ children }) => {
 
   const api = React.useMemo(
     () =>
-      new Api(
-        'https://store.xsolla.com/api',
+      new Api({
+        baseURL: 'https://store.xsolla.com/api',
         projectId,
-        storeMode === 'public',
-        window.XPayStationWidget,
-        window.XL
-      ),
+        isDemo: storeMode === 'demo',
+        isPublic: storeMode === 'public',
+        paymentWidget: window.XPayStationWidget,
+        loginWidget: window.XL,
+      }),
     []
   );
 

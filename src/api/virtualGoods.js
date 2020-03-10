@@ -1,8 +1,7 @@
 class VirtualGoodsApi {
-  constructor(actions, projectId, loginToken) {
+  constructor(actions, projectId) {
     this.actions = actions;
     this.projectId = projectId;
-    this.loginToken = loginToken;
   }
 
   loadVirtualItems = async () => {
