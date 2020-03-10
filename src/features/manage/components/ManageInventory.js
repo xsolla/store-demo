@@ -18,8 +18,7 @@ const mapState = state => ({
   isRewarding: state.manageInventory.isRewarding,
   isRevoking: state.manageInventory.isRevoking,
   isLoading:
-    state.manageInventory.areVirtualCurrenciesLoading ||
-    state.manageInventory.areVirtualItemsLoading,
+    state.manageInventory.areVirtualCurrenciesLoading || state.manageInventory.areVirtualItemsLoading,
 });
 
 const mapActions = actions => ({
@@ -49,10 +48,9 @@ const ManageInventory = React.memo(() => {
   const [selectedItem, setSelectedItem] = React.useState('');
   const [quantity, setQuantity] = React.useState(1);
 
-  const userOptions = React.useMemo(
-    () => users.map(x => <MenuItem value={x.id}>{x.name}</MenuItem>),
-    [users]
-  );
+  const userOptions = React.useMemo(() => users.map(x => <MenuItem value={x.id}>{x.name}</MenuItem>), [
+    users,
+  ]);
 
   const virtualItemsOptions = React.useMemo(
     () => virtualItems.map(x => <MenuItem value={x.sku}>{x.name}</MenuItem>),
@@ -92,7 +90,7 @@ const ManageInventory = React.memo(() => {
   const handleUserSelect = React.useCallback(event => setUserID(event.target.value), []);
   const handleItemSelect = React.useCallback(event => setSelectedItem(event.target.value), []);
   const handleQuantityChange = React.useCallback(
-    event => setQuantity(event.target.value >= 1 ? event.target.value : 1),
+    event => setQuantity(Number(event.target.value) >= 1 ? Number(event.target.value) : 1),
     []
   );
 
@@ -126,45 +124,36 @@ const ManageInventory = React.memo(() => {
           <Preloader />
         ) : (
           <Form onSubmit={handleFormSubmit}>
-            <TextField
-              select
-              label='User'
-              value={userID}
-              color='primary'
-              onChange={handleUserSelect}>
+            <TextField select label="User" value={userID} color="primary" onChange={handleUserSelect}>
               {userOptions}
             </TextField>
-            <GroupSwitcher
-              groups={groups}
-              activeGroup={activeGroup}
-              onGroupChange={setActiveGroup}
-            />
+            <GroupSwitcher groups={groups} activeGroup={activeGroup} onGroupChange={setActiveGroup} />
             <Items>
               {groupsContent[activeGroup] && (
                 <TextField
                   select
                   label={groupsContent[activeGroup].name}
                   value={selectedItem}
-                  color='primary'
+                  color="primary"
                   onChange={handleItemSelect}>
                   {groupsContent[activeGroup].options}
                 </TextField>
               )}
               <TextField
-                type='number'
-                label='Quantity'
+                type="number"
+                label="Quantity"
                 value={quantity}
-                color='primary'
+                color="primary"
                 onChange={handleQuantityChange}
               />
             </Items>
             <FormFooter>
               <FormActions>
-                <RewardButton variant='contained' disabled={isRewarding} onClick={handleRewardItem}>
-                  {isRewarding ? <CircularProgress size={24} color='primary' /> : 'Reward'}
+                <RewardButton variant="contained" disabled={isRewarding} onClick={handleRewardItem}>
+                  {isRewarding ? <CircularProgress size={24} color="primary" /> : 'Reward'}
                 </RewardButton>
-                <Button variant='contained' disabled={isRevoking} onClick={handleRevokeItem}>
-                  {isRevoking ? <CircularProgress size={24} color='primary' /> : 'Revoke'}
+                <Button variant="contained" disabled={isRevoking} onClick={handleRevokeItem}>
+                  {isRevoking ? <CircularProgress size={24} color="primary" /> : 'Revoke'}
                 </Button>
               </FormActions>
             </FormFooter>
