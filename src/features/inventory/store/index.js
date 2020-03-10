@@ -79,7 +79,7 @@ export const useInventory = (api, notify) => {
       const items = await api.inventoryApi.loadInventory();
       dispatch({ type: LOAD_INVENTORY_ITEMS_SUCCESS, payload: items });
     } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: LOAD_INVENTORY_ITEMS_FAIL });
     }
@@ -92,7 +92,7 @@ export const useInventory = (api, notify) => {
         await api.inventoryApi.consumeItem(item.sku, item.instanceId);
         dispatch({ type: CONSUME_ITEM_SUCCESS, payload: item.sku });
       } catch (error) {
-        const errorMsg = error.response ? error.response.errorMessage : error.message;
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
         notify(errorMsg, { variant: 'error' });
         dispatch({ type: CONSUME_ITEM_FAIL });
       }

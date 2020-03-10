@@ -41,7 +41,7 @@ export const usePhysicalGoods = (api, notify) => {
       const goods = await api.physicalGoodApi.loadPhysicalGoods();
       dispatch({ type: LOAD_PHYSICAL_GOODS_SUCCESS, payload: goods });
     } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: LOAD_PHYSICAL_GOODS_FAIL });
     }

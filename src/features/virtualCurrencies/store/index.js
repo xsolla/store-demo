@@ -41,7 +41,7 @@ export const useVirtualCurrencies = (api, notify) => {
       const items = await api.virtualCurrenciesApi.loadVirtualCurrencies();
       dispatch({ type: LOAD_VIRTUAL_CURRENCIES_SUCCESS, payload: items });
     } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: LOAD_VIRTUAL_CURRENCIES_FAIL });
     }

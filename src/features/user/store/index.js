@@ -83,7 +83,7 @@ export const useUser = (api, notify) => {
       const userInfo = await api.userApi.getUser();
       dispatch({ type: LOGIN_SUCCESS, payload: userInfo });
     } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: LOGIN_FAIL });
     }
@@ -95,7 +95,7 @@ export const useUser = (api, notify) => {
       await api.userApi.logout();
       dispatch({ type: LOGOUT_SUCCESS });
     } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: LOGOUT_FAIL });
     }
@@ -107,7 +107,7 @@ export const useUser = (api, notify) => {
       const balances = await api.userApi.loadBalances();
       dispatch({ type: LOAD_USER_BALANCE_SUCCESS, payload: balances });
     } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: LOAD_USER_BALANCE_FAIL });
     }

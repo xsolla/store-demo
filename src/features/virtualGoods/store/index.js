@@ -41,7 +41,7 @@ export const useVirtualGoods = (api, notify) => {
       const groups = await api.virtualGoodsApi.loadVirtualItems();
       dispatch({ type: LOAD_VIRTUAL_GOODS_SUCCESS, payload: groups });
     } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: LOAD_VIRTUAL_GOODS_FAIL });
     }

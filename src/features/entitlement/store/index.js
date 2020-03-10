@@ -62,7 +62,7 @@ export const useEntitlement = (api, notify) => {
       const items = await api.entitlementApi.loadEntitlement();
       dispatch({ type: LOAD_ENTITLEMENT_SUCCESS, payload: items });
     } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: LOAD_ENTITLEMENT_FAIL });
     }
@@ -76,7 +76,7 @@ export const useEntitlement = (api, notify) => {
         load();
         dispatch({ type: REDEEM_SUCCESS });
       } catch (error) {
-        const errorMsg = error.response ? error.response.errorMessage : error.message;
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
         notify(errorMsg, { variant: 'error' });
         dispatch({ type: REDEEM_FAIL });
       }

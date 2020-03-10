@@ -135,7 +135,7 @@ export const useManageInventory = (api, notify) => {
       const items = await api.inventoryApi.loadVirtualItems();
       dispatch({ type: LOAD_VIRTUAL_ITEMS_SUCCESS, payload: items });
     } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: LOAD_VIRTUAL_ITEMS_FAIL });
     }
@@ -147,7 +147,7 @@ export const useManageInventory = (api, notify) => {
       const items = await api.inventoryApi.loadVirtualCurrencies();
       dispatch({ type: LOAD_VIRTUAL_CURRENCIES_SUCCESS, payload: items });
     } catch (error) {
-      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: LOAD_VIRTUAL_CURRENCIES_FAIL });
     }
@@ -159,13 +159,12 @@ export const useManageInventory = (api, notify) => {
       try {
         const data = { type: 'reward', user, item, count };
         const rewardData = await api.inventoryApi.rewardItems(data);
-        notify(
-          `User: '${rewardData.userId}' got '${rewardData.itemId}' in quantity ${rewardData.quantity}`,
-          { variant: 'info' }
-        );
+        notify(`User: '${rewardData.userId}' got '${rewardData.itemId}' in quantity ${rewardData.quantity}`, {
+          variant: 'info',
+        });
         dispatch({ type: REWARD_ITEMS_SUCCESS });
       } catch (error) {
-        const errorMsg = error.response ? error.response.errorMessage : error.message;
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
         notify(errorMsg, { variant: 'error' });
         dispatch({ type: REWARD_ITEMS_FAIL });
       }
@@ -185,7 +184,7 @@ export const useManageInventory = (api, notify) => {
         );
         dispatch({ type: REVOKE_ITEMS_SUCCESS });
       } catch (error) {
-        const errorMsg = error.response ? error.response.errorMessage : error.message;
+        const errorMsg = error.response ? error.response.data.errorMessage : error.message;
         notify(errorMsg, { variant: 'error' });
         dispatch({ type: REVOKE_ITEMS_FAIL });
       }
