@@ -27,7 +27,7 @@ const useStore = (mapState, mapActions) => {
   };
 };
 
-const StoreProvider = ({ isSpecificProject, isDemo, children, api }) => {
+const StoreProvider = ({ isPublic, isDemo, children, api }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [cartState, cartActions] = useCart(api, enqueueSnackbar);
   const [vcCartState, vcCartActions] = useVCCart(api, enqueueSnackbar);
@@ -39,11 +39,18 @@ const StoreProvider = ({ isSpecificProject, isDemo, children, api }) => {
   const [userState, userActions] = useUser(api, enqueueSnackbar);
   const [manageInventoryState, manageInventoryActions] = useManageInventory(api, enqueueSnackbar);
 
+  const config = React.useMemo(
+    () => ({
+      isPublic,
+      isDemo,
+    }),
+    [isDemo, isPublic]
+  );
+
   return (
     <StateContext.Provider
       value={{
-        isSpecificProject,
-        isDemo,
+        config,
         cart: cartState,
         user: userState,
         vcCart: vcCartState,

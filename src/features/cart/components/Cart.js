@@ -17,6 +17,7 @@ import { routes } from '../../../utils/routes';
 import { CartItem } from './CartItem';
 
 const mapState = state => ({
+  isPublic: state.config.isPublic,
   cartItems: state.cart.items,
   price: state.cart.price,
   isCartShown: state.cart.isShown,
@@ -41,6 +42,7 @@ const Cart = React.memo(() => {
     isCartShown,
     isCartLoading,
     isItemRemoving,
+    isPublic,
     changeItemQuantity,
     getCart,
     hideCart,
@@ -78,7 +80,7 @@ const Cart = React.memo(() => {
           <CartContent>
             <CartHeader>
               <h4>Cart</h4>
-              <IconButton color='inherit' onClick={hideCart}>
+              <IconButton color="inherit" onClick={hideCart}>
                 <IconClose />
               </IconButton>
             </CartHeader>
@@ -103,25 +105,25 @@ const Cart = React.memo(() => {
                   Subtotal:
                   <Price>
                     {
-                      getFormattedCurrency(
-                        cartSubtotal,
-                        price.currency || cartItems[0].price.currency
-                      ).formattedCurrency
+                      getFormattedCurrency(cartSubtotal, price.currency || cartItems[0].price.currency)
+                        .formattedCurrency
                     }
                   </Price>
                 </Subtotal>
               )}
               <CartActions>
+                {!isPublic && (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    disabled={cartItems.length === 0}
+                    onClick={buyAnotherPlatform}>
+                    Buy on PS4
+                  </Button>
+                )}
                 <Button
-                  variant='contained'
-                  color='secondary'
-                  disabled={cartItems.length === 0}
-                  onClick={buyAnotherPlatform}>
-                  Buy on PS4
-                </Button>
-                <Button
-                  variant='contained'
-                  color='secondary'
+                  variant="contained"
+                  color="secondary"
                   disabled={cartItems.length === 0}
                   onClick={payForGoods}>
                   Buy on Xsolla
@@ -140,6 +142,7 @@ const Cart = React.memo(() => {
       hideCart,
       isCartShown,
       isLoading,
+      isPublic,
       payForGoods,
       price.currency,
       removeItem,
@@ -223,7 +226,7 @@ const CartFooter = styled.div`
 
 const CartActions = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-auto-flow: column;
   grid-column-gap: 7px;
 `;
 

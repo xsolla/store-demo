@@ -1,6 +1,6 @@
 import React from 'react';
 import Colorer from 'color';
-import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import styled from 'styled-components';
 import Hidden from '@material-ui/core/Hidden';
 
@@ -22,8 +22,8 @@ import { useStore } from './store';
 
 const mapState = state => ({
   user: state.user.userInfo,
-  isPublic: state.isSpecificProject,
-  isDemo: state.isDemo,
+  isPublic: state.config.isPublic,
+  isDemo: state.config.isDemo,
 });
 
 const mapActions = actions => ({

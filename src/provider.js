@@ -48,7 +48,7 @@ const Provider = ({ children }) => {
       preventDuplicate={isMobile}>
       <MuiThemeProvider theme={mainTheme}>
         <ThemeProvider theme={mainTheme}>
-          <StoreProvider isSpecificProject={isSpecificProject} isDemo={isDemo} api={api}>
+          <StoreProvider isPublic={isSpecificProject} isDemo={isDemo} api={api}>
             {children}
           </StoreProvider>
         </ThemeProvider>
