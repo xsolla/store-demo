@@ -38,8 +38,7 @@ const ServerPurchase = React.memo(() => {
   } = useStore(mapState, mapActions);
 
   const subtotal = React.useMemo(
-    () =>
-      Math.round(cartItems.reduce((acc, x) => acc + x.price.amount * x.quantity, 0) * 100) / 100,
+    () => Math.round(cartItems.reduce((acc, x) => acc + x.price.amount * x.quantity, 0) * 100) / 100,
     [cartItems]
   );
 
@@ -76,14 +75,14 @@ const ServerPurchase = React.memo(() => {
               </Price>
             </Subtotal>
             <CartActions>
-              <Button variant='contained' disabled={isPurchasing} onClick={purchase}>
-                {isPurchasing ? <CircularProgress size={24} color='primary' /> : 'Grant purchase'}
+              <Button variant="contained" disabled={isPurchasing} onClick={purchase}>
+                {isPurchasing ? <CircularProgress size={24} color="primary" /> : 'Grant purchase'}
               </Button>
             </CartActions>
           </CartFooter>
         </>
       ),
-    [cartItems, isCartLoading, price.currency, isPurchasing, purchase]
+    [cartItems, isCartLoading, subtotal, price.currency, isPurchasing, purchase]
   );
 
   return (

@@ -48,7 +48,7 @@ const reducer = (state, action) => {
   }
 };
 
-export const useVCCart = (api, notify) => {
+export const useVCCart = (api, notify, callAfterPayment) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   const addItem = React.useCallback(item => dispatch({ type: ADD_TO_CART, payload: item }), []);
@@ -60,13 +60,14 @@ export const useVCCart = (api, notify) => {
       dispatch({ type: BUT_BY_VC });
       await api.cartApi.quickPurchaseByVirtualCurrency(item.sku, item.virtualPrice.sku);
       notify(`Purchased: ${item.name}`, { variant: 'success' });
+      callAfterPayment();
       dispatch({ type: BUT_BY_VC_SUCCESS });
     } catch (error) {
       const errorMsg = error.response ? error.response.data.errorMessage : error.message;
       notify(errorMsg, { variant: 'error' });
       dispatch({ type: BUT_BY_VC_FAIL });
     }
-  }, [api.cartApi, notify, state.item]);
+  }, [api.cartApi, callAfterPayment, notify, state.item]);
 
   return React.useMemo(
     () => [

@@ -37,13 +37,11 @@ const VirtualList = React.memo(() => {
   const [activeGroup, setActiveGroup] = React.useState(null);
   const [activeItemID, setActiveItemID] = React.useState(null);
 
-  const isItemInInventory = React.useMemo(sku => inventoryItems.some(x => sku === x.sku), [
+  const isItemInInventory = React.useCallback(sku => inventoryItems.some(x => sku === x.sku), [
     inventoryItems,
   ]);
 
-  const itemGroups = React.useMemo(() => groups.map(x => ({ id: x.groupId, label: x.groupName })), [
-    groups,
-  ]);
+  const itemGroups = React.useMemo(() => groups.map(x => ({ id: x.groupId, label: x.groupName })), [groups]);
 
   const handleItemAdding = React.useCallback(
     item => {
@@ -65,20 +63,14 @@ const VirtualList = React.memo(() => {
   }, [groups.length, loadVirtualGoods]);
 
   React.useEffect(() => {
-    if (cartId) {
-      loadInventory();
-    }
+    loadInventory();
   }, [cartId, loadInventory]);
 
   const content = React.useMemo(
     () =>
       groups.length > 0 && (
         <>
-          <GroupSwitcher
-            groups={itemGroups}
-            activeGroup={activeGroup}
-            onGroupChange={setActiveGroup}
-          />
+          <GroupSwitcher groups={itemGroups} activeGroup={activeGroup} onGroupChange={setActiveGroup} />
           {groups.map(
             g =>
               activeGroup === g.groupId && (
@@ -90,7 +82,7 @@ const VirtualList = React.memo(() => {
                         order={index}
                         key={item.sku}
                         product={item}
-                        isPurchased={item.isConsumable === null && isItemInInventory(item.sku)}
+                        isPurchased={!item.isConsumable && isItemInInventory(item.sku)}
                         addToCart={handleItemAdding}
                         isLoading={isItemAdding && activeItemID === item.sku}
                         buyByVC={addItemToVCCart}

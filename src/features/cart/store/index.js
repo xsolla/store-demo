@@ -215,7 +215,7 @@ const reducer = (state, action) => {
   }
 };
 
-export const useCart = (api, notify) => {
+export const useCart = (api, notify, callAfterPayment) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   const show = React.useCallback(() => dispatch({ type: SHOW_CART }), []);
@@ -317,6 +317,7 @@ export const useCart = (api, notify) => {
       hide();
       await api.cartApi.payForGoods();
       clearCart();
+      callAfterPayment();
       dispatch({ type: PAY_FOR_GOODS_SUCCESS });
     } catch (error) {
       if (error.cancelled) {
@@ -327,7 +328,7 @@ export const useCart = (api, notify) => {
       }
       dispatch({ type: PAY_FOR_GOODS_FAIL });
     }
-  }, [api.cartApi, clearCart, hide, notify]);
+  }, [api.cartApi, callAfterPayment, clearCart, hide, notify]);
 
   const purchase = React.useCallback(async () => {
     try {
@@ -348,6 +349,7 @@ export const useCart = (api, notify) => {
       dispatch({ type: PURCHASE });
       await api.cartApi.purchaseItems(data);
       clearCart();
+      callAfterPayment();
       notify(`Items are purchased`, { variant: 'success' });
       dispatch({ type: PURCHASE_SUCCESS });
     } catch (error) {
@@ -372,17 +374,6 @@ export const useCart = (api, notify) => {
         purchase,
       },
     ],
-    [
-      addItem,
-      changeItemQuantity,
-      clearCart,
-      getCart,
-      hide,
-      payForGoods,
-      purchase,
-      removeItem,
-      show,
-      state,
-    ]
+    [addItem, changeItemQuantity, clearCart, getCart, hide, payForGoods, purchase, removeItem, show, state]
   );
 };

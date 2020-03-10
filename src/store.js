@@ -29,15 +29,19 @@ const useStore = (mapState, mapActions) => {
 
 const StoreProvider = ({ storeMode, children, api }) => {
   const { enqueueSnackbar } = useSnackbar();
-  const [cartState, cartActions] = useCart(api, enqueueSnackbar);
-  const [vcCartState, vcCartActions] = useVCCart(api, enqueueSnackbar);
+  const [userState, userActions] = useUser(api, enqueueSnackbar);
+  const [cartState, cartActions] = useCart(api, enqueueSnackbar, userActions.loadBalances);
+  const [vcCartState, vcCartActions] = useVCCart(api, enqueueSnackbar, userActions.loadBalances);
   const [physicalGoodsState, physicalGoodsActions] = usePhysicalGoods(api, enqueueSnackbar);
   const [entitlementState, entitlementActions] = useEntitlement(api, enqueueSnackbar);
   const [virtualGoodsState, virtualGoodsActions] = useVirtualGoods(api, enqueueSnackbar);
   const [virtualCurrenciesState, virtualCurrenciesActions] = useVirtualCurrencies(api, enqueueSnackbar);
   const [inventoryState, inventoryActions] = useInventory(api, enqueueSnackbar);
-  const [userState, userActions] = useUser(api, enqueueSnackbar);
-  const [manageInventoryState, manageInventoryActions] = useManageInventory(api, enqueueSnackbar);
+  const [manageInventoryState, manageInventoryActions] = useManageInventory(
+    api,
+    enqueueSnackbar,
+    userActions.loadBalances
+  );
 
   const config = React.useMemo(
     () => ({

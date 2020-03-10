@@ -126,7 +126,7 @@ const reducer = (state, action) => {
   }
 };
 
-export const useManageInventory = (api, notify) => {
+export const useManageInventory = (api, notify, callAfterRewarding) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   const loadVirtualItems = React.useCallback(async () => {
@@ -159,9 +159,13 @@ export const useManageInventory = (api, notify) => {
       try {
         const data = { type: 'reward', user, item, count };
         const rewardData = await api.inventoryApi.rewardItems(data);
-        notify(`User: '${rewardData.userId}' got '${rewardData.itemId}' in quantity ${rewardData.quantity}`, {
-          variant: 'info',
-        });
+        notify(
+          `User "${rewardData.userId}" has got "${rewardData.itemId}" in quantity ${rewardData.quantity}`,
+          {
+            variant: 'info',
+          }
+        );
+        callAfterRewarding();
         dispatch({ type: REWARD_ITEMS_SUCCESS });
       } catch (error) {
         const errorMsg = error.response ? error.response.data.errorMessage : error.message;
@@ -169,7 +173,7 @@ export const useManageInventory = (api, notify) => {
         dispatch({ type: REWARD_ITEMS_FAIL });
       }
     },
-    [api.inventoryApi, notify]
+    [api.inventoryApi, callAfterRewarding, notify]
   );
 
   const revokeItems = React.useCallback(
@@ -179,9 +183,10 @@ export const useManageInventory = (api, notify) => {
         const data = { type: 'revoke', user, item, count };
         const revokeData = await api.inventoryApi.rewardItems(data);
         notify(
-          `User: '${revokeData.userId}' has lost '${revokeData.itemId}' in quantity ${revokeData.quantity}`,
+          `User "${revokeData.userId}" has lost "${revokeData.itemId}" in quantity ${revokeData.quantity}`,
           { variant: 'info' }
         );
+        callAfterRewarding();
         dispatch({ type: REVOKE_ITEMS_SUCCESS });
       } catch (error) {
         const errorMsg = error.response ? error.response.data.errorMessage : error.message;
@@ -189,7 +194,7 @@ export const useManageInventory = (api, notify) => {
         dispatch({ type: REVOKE_ITEMS_FAIL });
       }
     },
-    [api.inventoryApi, notify]
+    [api.inventoryApi, callAfterRewarding, notify]
   );
 
   return React.useMemo(
