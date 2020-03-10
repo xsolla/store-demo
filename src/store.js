@@ -27,7 +27,7 @@ const useStore = (mapState, mapActions) => {
   };
 };
 
-const StoreProvider = ({ isPublic, isDemo, children, api }) => {
+const StoreProvider = ({ storeMode, children, api }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [cartState, cartActions] = useCart(api, enqueueSnackbar);
   const [vcCartState, vcCartActions] = useVCCart(api, enqueueSnackbar);
@@ -41,10 +41,9 @@ const StoreProvider = ({ isPublic, isDemo, children, api }) => {
 
   const config = React.useMemo(
     () => ({
-      isPublic,
-      isDemo,
+      storeMode,
     }),
-    [isDemo, isPublic]
+    [storeMode]
   );
 
   return (

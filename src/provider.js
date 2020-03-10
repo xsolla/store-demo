@@ -10,6 +10,7 @@ import { StoreProvider } from './store';
 import { mainTheme } from './styles/theme';
 import { device } from './styles/devices';
 import { routes } from './utils/routes';
+import { getStoreMode } from './utils/getStoreMode';
 import config from './appConfig.json';
 
 const notificationPosition = {
@@ -26,14 +27,14 @@ const Provider = ({ children }) => {
   });
 
   const projectId = match ? match.params.projectId : config.projectId;
-  const isSpecificProject = Boolean(match);
-  const isDemo = Number(process.env.REACT_APP_DEMO_PROJECT_ID) === config.projectId;
+  const storeMode = getStoreMode(projectId, config.projectId);
+
   const api = React.useMemo(
     () =>
       new Api(
         'https://store.xsolla.com/api',
         projectId,
-        isSpecificProject,
+        storeMode === 'public',
         window.XPayStationWidget,
         window.XL
       ),
@@ -48,7 +49,7 @@ const Provider = ({ children }) => {
       preventDuplicate={isMobile}>
       <MuiThemeProvider theme={mainTheme}>
         <ThemeProvider theme={mainTheme}>
-          <StoreProvider isPublic={isSpecificProject} isDemo={isDemo} api={api}>
+          <StoreProvider storeMode={storeMode} api={api}>
             {children}
           </StoreProvider>
         </ThemeProvider>

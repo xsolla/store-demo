@@ -17,7 +17,7 @@ import { routes } from '../../../utils/routes';
 import { CartItem } from './CartItem';
 
 const mapState = state => ({
-  isPublic: state.config.isPublic,
+  isPublic: state.config.storeMode === 'public',
   cartItems: state.cart.items,
   price: state.cart.price,
   isCartShown: state.cart.isShown,

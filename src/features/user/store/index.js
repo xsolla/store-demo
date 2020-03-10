@@ -6,6 +6,7 @@ const initialState = {
   balances: [],
   areBalancesLoading: false,
   isAuthenticating: false,
+  isLogouting: false,
 };
 
 const LOAD_USER_BALANCE = 'LOAD_USER_BALANCE';
@@ -15,6 +16,10 @@ const LOAD_USER_BALANCE_FAIL = 'LOAD_USER_BALANCE_FAIL';
 const LOGIN = 'LOGIN';
 const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 const LOGIN_FAIL = 'LOGIN_FAIL';
+
+const LOGOUT = 'LOGOUT';
+const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
+const LOGOUT_FAIL = 'LOGOUT_FAIL';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -33,6 +38,19 @@ const reducer = (state, action) => {
       return {
         ...state,
         isAuthenticating: false,
+      };
+
+    case LOGOUT:
+      return {
+        ...state,
+        isLogouting: true,
+      };
+    case LOGOUT_SUCCESS:
+      return initialState;
+    case LOGOUT_FAIL:
+      return {
+        ...state,
+        isLogouting: false,
       };
 
     case LOAD_USER_BALANCE:
@@ -71,6 +89,18 @@ export const useUser = (api, notify) => {
     }
   }, [api.userApi, notify]);
 
+  const logout = React.useCallback(async () => {
+    dispatch({ type: LOGOUT });
+    try {
+      await api.userApi.logout();
+      dispatch({ type: LOGOUT_SUCCESS });
+    } catch (error) {
+      const errorMsg = error.response ? error.response.errorMessage : error.message;
+      notify(errorMsg, { variant: 'error' });
+      dispatch({ type: LOGOUT_FAIL });
+    }
+  }, [api.userApi, notify]);
+
   const loadBalances = React.useCallback(async () => {
     dispatch({ type: LOAD_USER_BALANCE });
     try {
@@ -89,8 +119,9 @@ export const useUser = (api, notify) => {
       {
         getUser,
         loadBalances,
+        logout,
       },
     ],
-    [loadBalances, getUser, state]
+    [state, getUser, loadBalances, logout]
   );
 };

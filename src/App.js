@@ -22,8 +22,8 @@ import { useStore } from './store';
 
 const mapState = state => ({
   user: state.user.userInfo,
-  isPublic: state.config.isPublic,
-  isDemo: state.config.isDemo,
+  isPublic: state.config.storeMode === 'public',
+  isDemo: state.config.storeMode === 'demo',
 });
 
 const mapActions = actions => ({
