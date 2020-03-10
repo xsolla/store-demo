@@ -19,13 +19,10 @@ const mapActions = actions => ({
 });
 
 const EntitlementList = () => {
-  const {
-    entitlementItems,
-    isEntitlementFetching,
-    isItemRedeeming,
-    redeem,
-    loadEntitlement,
-  } = useStore(mapState, mapActions);
+  const { entitlementItems, isEntitlementFetching, isItemRedeeming, redeem, loadEntitlement } = useStore(
+    mapState,
+    mapActions
+  );
 
   const [sku, setSku] = React.useState('');
   const [code, setCode] = React.useState('');
@@ -66,27 +63,20 @@ const EntitlementList = () => {
   return (
     <Body>
       <Form onSubmit={handleSubmit}>
+        <TextField color="primary" placeholder="Enter your code" onChange={handleCodeChange} value={code} />
         <TextField
-          color='primary'
-          placeholder='Enter your code'
-          onChange={handleCodeChange}
-          value={code}
-        />
-        <TextField
-          color='primary'
-          placeholder='Enter sku of your game'
+          color="primary"
+          placeholder="Enter sku of your game"
           onChange={handleSkuChange}
           value={sku}
         />
         <FormFooter>
-          <Button color='secondary' type='submit' variant='contained'>
-            {isItemRedeeming ? <CircularProgress size={24} color='primary' /> : 'Redeem Code'}
+          <Button disabled={isItemRedeeming} color="secondary" type="submit" variant="contained">
+            {isItemRedeeming ? <CircularProgress size={24} color="primary" /> : 'Redeem Code'}
           </Button>
         </FormFooter>
       </Form>
-      <div>
-        {isEntitlementFetching ? <CircularProgress size={24} color='primary' /> : entitlementList}
-      </div>
+      <div>{isEntitlementFetching ? <CircularProgress size={24} color="primary" /> : entitlementList}</div>
     </Body>
   );
 };

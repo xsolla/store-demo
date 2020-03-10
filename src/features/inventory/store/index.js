@@ -91,6 +91,7 @@ export const useInventory = (api, notify) => {
       try {
         await api.inventoryApi.consumeItem(item.sku, item.instanceId);
         dispatch({ type: CONSUME_ITEM_SUCCESS, payload: item.sku });
+        notify(`"${item.name}" is consumed`, { variant: 'info' });
       } catch (error) {
         const errorMsg = error.response ? error.response.data.errorMessage : error.message;
         notify(errorMsg, { variant: 'error' });
