@@ -121,6 +121,7 @@ const Navbar = React.memo(
         renderUserBalances,
         menuAnchor,
         userEmail,
+        isLogoutHide,
         logOutHandler,
         userMenuItems,
         onCartOpen,
@@ -183,29 +184,24 @@ const LogoutButton = styled(Button)`
 `;
 
 const LoginPanel = styled.div`
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
+  grid-column-gap: 1rem;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: end;
   flex-grow: 1;
+  margin: 0 1rem;
 
   @media ${device.mobileL} {
     justify-content: center;
   }
 `;
 
-const LoginButton = styled(Button)`
-  &.MuiButton-root {
-    margin-right: 10px;
-    font-size: 0.8rem;
-  }
-`;
-
 const UserMail = styled(Button)`
   && {
-    font-family: 'Roboto';
+    font-family: 'Roboto' sans-serif;
     text-transform: uppercase;
     color: ${({ theme }) => theme.palette.primary.main};
-    margin: 0 1rem;
   }
 `;
 
