@@ -1,13 +1,13 @@
 {
   "main.css": "/store-demo/static/css/main.2d046163.chunk.css",
-  "main.js": "/store-demo/static/js/main.6ce406c2.chunk.js",
-  "main.js.map": "/store-demo/static/js/main.6ce406c2.chunk.js.map",
+  "main.js": "/store-demo/static/js/main.4bbf46e2.chunk.js",
+  "main.js.map": "/store-demo/static/js/main.4bbf46e2.chunk.js.map",
   "static/js/1.c21ca038.chunk.js": "/store-demo/static/js/1.c21ca038.chunk.js",
   "static/js/1.c21ca038.chunk.js.map": "/store-demo/static/js/1.c21ca038.chunk.js.map",
   "runtime~main.js": "/store-demo/static/js/runtime~main.2f7d61d0.js",
   "runtime~main.js.map": "/store-demo/static/js/runtime~main.2f7d61d0.js.map",
   "static/css/main.2d046163.chunk.css.map": "/store-demo/static/css/main.2d046163.chunk.css.map",
   "index.html": "/store-demo/index.html",
-  "precache-manifest.9cb1a39590f8aee8b727e744de1199b1.js": "/store-demo/precache-manifest.9cb1a39590f8aee8b727e744de1199b1.js",
+  "precache-manifest.a86c4373b9db7a1c416d1077c822f486.js": "/store-demo/precache-manifest.a86c4373b9db7a1c416d1077c822f486.js",
   "service-worker.js": "/store-demo/service-worker.js"
 }
