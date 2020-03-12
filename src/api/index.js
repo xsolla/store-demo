@@ -14,7 +14,7 @@ class Api {
   constructor({ baseURL, projectId, isDemo, isPublic = false, paymentWidget, loginWidget }) {
     const token = isDemo ? DEMO_TOKEN : eatCookie();
     const headers = !isPublic && token ? { Authorization: `Bearer ${token}` } : undefined;
-    const config = { baseURL, headers };
+    const config = { baseURL, headers, withCredentials: true };
     const actions = axios.create(config);
 
     this.userApi = new UserApi(actions, projectId, token, loginWidget);
