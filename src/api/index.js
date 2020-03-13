@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { v4 } from 'uuid';
 
 import { eatCookie } from '../utils/cookie';
 import { DEMO_TOKEN } from '../utils/constants';
@@ -13,7 +14,8 @@ import { EntitlementApi } from './entitlement';
 class Api {
   constructor({ baseURL, projectId, isDemo, isPublic = false, paymentWidget, loginWidget }) {
     const token = isDemo ? DEMO_TOKEN : eatCookie();
-    const headers = !isPublic && token ? { Authorization: `Bearer ${token}` } : undefined;
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    headers['x-unathorized-id'] = v4();
     const config = { baseURL, headers };
     const actions = axios.create(config);
 
