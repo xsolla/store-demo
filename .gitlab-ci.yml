@@ -37,11 +37,9 @@ build app:
     paths:
       - node_modules/
       - .yarn
-    policy: pull
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME"
     paths:
       - build
-    untracked: true
     when: on_success
     expire_in: 1 day
