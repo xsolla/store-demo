@@ -15,18 +15,6 @@ before_script:
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
 
-# Install dependencies:
-#   stage: build
-#   image: node:10.17.0
-#   script:
-#     - yarn install
-#   tags:
-#     - devops
-#   cache:
-#     key: "$CI_COMMIT_REF_SLUG"
-#     paths:
-#       - node_modules/
-#       - .yarn
 
 build app:
   stage: build
@@ -49,3 +37,16 @@ build app:
       - build
     when: on_success
     expire_in: 1 day
+
+deploy prod:
+  stage: deploy
+  dependencies:
+    - build app
+  extends: .deploy prod
+  when: manual
+  script:
+    - /usr/local/bin/helper deploy build
+
+
+stop prod:
+    extends: .stop prod
