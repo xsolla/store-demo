@@ -14,8 +14,12 @@ import { EntitlementApi } from './entitlement';
 class Api {
   constructor({ baseURL, projectId, isDemo, isPublic = false, paymentWidget, loginWidget }) {
     const token = isDemo ? DEMO_TOKEN : eatCookie();
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    headers['x-unathorized-id'] = v4();
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      headers['x-unauthorized-id'] = v4();
+    }
     const config = { baseURL, headers };
     const actions = axios.create(config);
 
