@@ -22,6 +22,8 @@ build app:
   script:
     - yarn install
     - yarn run build
+    - chmod +x ./post-build.sh
+    - ./post-build.sh
   tags:
     - devops
   only:
