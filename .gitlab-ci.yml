@@ -45,7 +45,7 @@ deploy prod:
   dependencies:
     - build app
   extends: .deploy prod
-  when: manual
+  when: on_success
   script:
     - /usr/local/bin/helper deploy build
 
