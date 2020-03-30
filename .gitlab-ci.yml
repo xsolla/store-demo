@@ -1,7 +1,7 @@
 stages:
   - build
   - deploy
-  # - linking
+  - linking
 
 include:
   - project: 'sysadm-docker/ubuntu-sshclient'
@@ -50,3 +50,7 @@ deploy prod:
 
 stop prod:
     extends: .stop prod
+
+current prod:
+    extends: .current prod
+    when: manual
