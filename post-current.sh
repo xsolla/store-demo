@@ -1,7 +1,6 @@
 #!/bin/bash
 
 TARGET_DIR="/usr/local/www/static.xsolla.com/htdocs/store-demo"
+APP_PATH="$WORKDIR/$VERSION"
 
-echo $VERSION
-
-ln -svfn "$VERSION" "$TARGET_DIR"
+ln -svfn "$APP_PATH" "$TARGET_DIR"
