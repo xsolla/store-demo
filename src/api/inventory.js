@@ -23,7 +23,7 @@ class InventoryApi {
   };
 
   rewardItems = async data => {
-    const url = 'https://livedemo.xsolla.com/store-demo/api/index.php';
+    const url = 'https://livedemo.xsolla.com/store-demo-api/index.php';
     const response = await this.actions.post(url, data);
 
     return convertRewardData(response.data);

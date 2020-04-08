@@ -1,0 +1,58 @@
+stages:
+  - build
+  - deploy
+  - linking
+
+include:
+  - project: 'sysadm-docker/ubuntu-sshclient'
+    ref:     'master'
+    file:    'gitlab-ci-template.yml'
+
+before_script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "$CI_BUILD_SSH_KEY")
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
+
+build app:
+  stage: build
+  image: node:10.17.0
+  script:
+    - yarn install
+    - yarn run build
+    - chmod +x ./post-build.sh
+    - ./post-build.sh
+  tags:
+    - devops
+  only:
+    - /^v-.*$/
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - node_modules/
+      - .yarn
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+      - build
+    when: on_success
+    expire_in: 1 day
+
+deploy prod:
+  stage: deploy
+  dependencies:
+    - build app
+  extends: .deploy prod
+  when: on_success
+  script:
+    - /usr/local/bin/helper deploy build
+
+
+stop prod:
+    extends: .stop prod
+
+current prod:
+    extends: .current prod
+    when: manual

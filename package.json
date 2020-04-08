@@ -25,7 +25,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "CI=false react-scripts build",
     "build:physical": "REACT_APP_STORE_MODE=physical react-scripts build",
     "build:virtual": "REACT_APP_STORE_MODE=virtual react-scripts build",
     "test": "react-scripts test",
@@ -43,5 +43,5 @@
   "engines": {
     "node": ">=10.16.3"
   },
-  "homepage": "https://xsolla.github.io/store-demo"
+  "homepage": "."
 }
