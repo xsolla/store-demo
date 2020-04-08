@@ -78,7 +78,7 @@ class CartApi {
         sandbox: true,
         access_token: response.data.token,
         lightbox: {
-          height: 640,
+          height: 675,
           spinner: 'round',
           width: '740px',
           spinnerColor: '#fff',
