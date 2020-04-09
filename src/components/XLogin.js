@@ -1,7 +1,6 @@
-import React, { Component } from "react";
-import styled from "styled-components";
-import { ProductConsumer } from "../context";
-import Cookie, { parseJwt } from "./Cookie";
+import React, { Component } from 'react';
+import styled from 'styled-components';
+import Cookie, { parseJwt } from '../utils/cookie';
 
 export default class XLogin extends Component {
   constructor(props) {
@@ -9,7 +8,7 @@ export default class XLogin extends Component {
     this.state = {
       shown: true,
       logToken: null,
-      psToken: null
+      psToken: null,
     };
   }
 
@@ -21,60 +20,48 @@ export default class XLogin extends Component {
   authorizedFlow = tkn => {
     this.setState({ logToken: tkn, shown: false });
     this.user = parseJwt(tkn);
-    this.setStateFrom("user", this.user);
-    this.createCart();
+    this.setStateFrom('user', this.user);
   };
 
   render() {
     return (
-      <ProductConsumer>
-          {valueFromContext => {
-            this.setStateFrom = valueFromContext.setStateFrom;
-            this.createCart = valueFromContext.createCart;
+      <div>
+        <CssXpop style={{ display: this.state.shown ? 'flex' : 'none' }}>
+          <CssXpopB>
+            {/* <CssLoginInfo>
+            Current project: <b>{valueFromContext.projectId}</b>
+          </CssLoginInfo> */}
 
-            return (
-              <div>
-                <CssXpop
-                  style={{ display: this.state.shown ? "flex" : "none" }}
-                >
-                  <CssXpopB>
-                    <CssLoginInfo>
-                      Current project: <b>{window.xProjectId}</b>
-                    </CssLoginInfo>
+            <CssLoginPop>
+              <div id='xl_auth'></div>
+            </CssLoginPop>
 
-                    <CssLoginPop>
-                      <div id="xl_auth"></div>
-                    </CssLoginPop>
-
-                    <CssLoginInfo>
-                      {myProjects.map((onePr, i) => {
-                        let pr = onePr["project_id"];
-                        let login = onePr["login_id"];
-                        let url = `https://xsolla.github.io/store-demo/#/`;
-                        let urlFull = `${url}?project_id=${pr}&login_id=${login}`;
-                        return (
-                          <div key={pr + i} style={{ marginBottom: "1em" }}>
-                            <div style={{ fontSize: "0.4em" }}>
-                              <a href={urlFull}>
-                                {pr}: {onePr.projectName}
-                              </a>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      <p>
-                        Open any Xsolla Store using GET parameters <br />
-                        <b>project_id</b> and <b>login_id</b> (login must point
-                        back to https://xsolla.github.io/store-demo/#/)
-                      </p>
-                    </CssLoginInfo>
-                  </CssXpopB>
-                  <CssXpopZ />
-                </CssXpop>
-              </div>
-            );
-          }}
-        </ProductConsumer>
+            <CssLoginInfo>
+              {myProjects.map((onePr, i) => {
+                let pr = onePr['project_id'];
+                let login = onePr['login_id'];
+                let url = `https://xsolla.github.io/store-demo/#/`;
+                let urlFull = `${url}?project_id=${pr}&login_id=${login}`;
+                return (
+                  <div key={pr + i} style={{ marginBottom: '1em' }}>
+                    <div style={{ fontSize: '0.4em' }}>
+                      <a href={urlFull}>
+                        {pr}: {onePr.projectName}
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+              <p>
+                Open any Xsolla Store using GET parameters <br />
+                <b>project_id</b> and <b>login_id</b> (login must point back to
+                https://xsolla.github.io/store-demo/#/)
+              </p>
+            </CssLoginInfo>
+          </CssXpopB>
+          <CssXpopZ />
+        </CssXpop>
+      </div>
     );
   }
 
@@ -151,8 +138,8 @@ const CssLoginPop = styled.div`
 
 const myProjects = [
   {
-    projectName: "Xsolla Store Demo",
+    projectName: 'Xsolla Store Demo',
     project_id: 47278,
-    login_id: "fb2d7c69-bf25-11e9-9244-42010aa80004"
-  }
+    login_id: 'fb2d7c69-bf25-11e9-9244-42010aa80004',
+  },
 ];

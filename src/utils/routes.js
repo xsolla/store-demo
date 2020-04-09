@@ -6,12 +6,13 @@ const routes = {
   entitlement: '/entitlement',
   manage: '/manage',
   purchase: '/purchase',
-}
+  specificProject: '/projects/:projectId',
+};
 
 const navItems = [
   {
     route: routes.items,
-    label: 'Items'
+    label: 'Items',
   },
   {
     route: routes.currencies,
@@ -39,8 +40,9 @@ const navItems = [
   },
 ];
 
-export const getMenuItems = items => navItems
-  .filter(x => items.includes(x.route))
-  .sort((a, b) => items.indexOf(a.route) - items.indexOf(b.route));
+export const getRoutes = items =>
+  navItems
+    .filter(x => items.includes(x.route))
+    .sort((a, b) => items.indexOf(a.route) - items.indexOf(b.route));
 
 export { routes, navItems };
