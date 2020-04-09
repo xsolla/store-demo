@@ -1,12 +1,12 @@
 import React from 'react';
-import { NavLink, withRouter } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import MUIMenu from '@material-ui/core/Menu';
 import Hidden from '@material-ui/core/Hidden';
 import MUITabs from '@material-ui/core/Tabs';
 import MUITab from '@material-ui/core/Tab';
-import MUIIconButton from '@material-ui/core/IconButton';
+import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
 import CartIcon from '@material-ui/icons/ShoppingCart';
@@ -14,170 +14,138 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
 
-import { routes, getMenuItems } from '../utils/routes';
+import { routes, getRoutes } from '../utils/routes';
 import { device } from '../styles/devices';
-import { Currency } from '../components/Currency';
-import { ProductContext } from '../context';
-import { eraseCookie } from './Cookie';
-import XLogin from './XLogin.js';
+import { eraseCookie } from '../utils/cookie';
 
-const NavbarComponent = ({ location }) => {
-  const {
-    logToken,
-    user,
-    userBalanceVirtualCurrency,
-    projectId,
-    showCart,
-    setSideMenuVisibility,
-    isSideMenuShown,
-  } = React.useContext(ProductContext);
+const Navbar = React.memo(
+  ({ isPublic, isLogged, isLogoutHide, userEmail, onMenuOpen, onCartOpen, renderUserBalances }) => {
+    const { pathname } = useLocation();
 
-  const [menuAnchor, setMenuAnchor] = React.useState(null);
-  const handleMenuClose = () => setMenuAnchor(null);
-  const handleMenuOpen = event => setMenuAnchor(event.currentTarget);
+    const [menuAnchor, setMenuAnchor] = React.useState(null);
+    const handleMenuClose = () => setMenuAnchor(null);
+    const handleMenuOpen = event => setMenuAnchor(event.currentTarget);
 
-  const toggleSideMenu = () => setSideMenuVisibility(!isSideMenuShown);
+    const logOutHandler = React.useCallback(() => {
+      eraseCookie('xsolla_login_token', null);
+      eraseCookie('xsolla_last_click_id', null);
+      window.location.reload();
+    }, []);
 
-  const logOutHandler = () => {
-    eraseCookie("xsolla_login_token", null);
-    eraseCookie("xsolla_last_click_id", null);
-    window.location.reload();
-  };
+    const generalMenuItems = React.useMemo(
+      () => getRoutes([routes.items, routes.currencies, routes.physical]),
+      []
+    );
 
-  const isLogged = logToken && user;
+    const userMenuItems = React.useMemo(
+      () => getRoutes([routes.inventory, routes.entitlement, routes.manage, routes.purchase]),
+      []
+    );
 
-  const generalMenuItems = React.useMemo(() => getMenuItems([
-    routes.items,
-    routes.currencies,
-    ...projectId === 44056 ? [routes.physical] : [],
-  ]), [routes, projectId]);
+    const isLocationExistsInTabs = React.useMemo(() => generalMenuItems.some(x => x.route === pathname), [
+      generalMenuItems,
+      pathname,
+    ]);
 
-  const isLocationExistsInTabs = React.useMemo(
-    () => generalMenuItems.some(x => x.route === location.pathname),
-    [generalMenuItems, location.pathname]
-  );
+    return React.useMemo(
+      () => (
+        <Header>
+          {!isPublic && (
+            <>
+              <Hidden mdDown>
+                <Tabs
+                  value={isLocationExistsInTabs ? pathname : false}
+                  textColor="primary"
+                  indicatorColor="primary"
+                  component="nav">
+                  {generalMenuItems.map(x => (
+                    <Tab key={x.route} component={NavLink} label={x.label} value={x.route} to={x.route} />
+                  ))}
+                </Tabs>
+              </Hidden>
 
-  const userMenuItems = React.useMemo(() => getMenuItems([
-    routes.inventory,
-    routes.entitlement,
-    routes.manage,
-    routes.purchase,
-  ]), [routes]);
+              <Hidden lgUp>
+                <IconButton color="primary" onClick={onMenuOpen}>
+                  <MenuIcon />
+                </IconButton>
+              </Hidden>
 
-  return (
-    <Header>
-      <Hidden mdDown>
-        <Tabs value={isLocationExistsInTabs ? location.pathname : false} component="nav">
-          {generalMenuItems.map(x => (
-            <Tab
-              key={x.route}
-              component={NavLink}
-              label={x.label}
-              value={x.route}
-              to={x.route}
-            />
-          ))}
-        </Tabs>
-      </Hidden>
+              {isLogged && (
+                <LoginPanel>
+                  {renderUserBalances()}
+                  <Hidden mdDown>
+                    <UserMail
+                      endIcon={Boolean(menuAnchor) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                      onClick={handleMenuOpen}>
+                      {userEmail}
+                    </UserMail>
+                  </Hidden>
+                </LoginPanel>
+              )}
 
-      <Hidden lgUp>
-        <MenuButton onClick={toggleSideMenu}>
-          <MenuIcon />
-        </MenuButton>
-      </Hidden>
+              {isLogoutHide && isLogged && (
+                <LogoutButton color="primary" variant="text" size="small" onClick={logOutHandler}>
+                  <LogoutIcon size="inherit" />
+                </LogoutButton>
+              )}
 
-      {isLogged && (
-        <LoginPanel>
-          {userBalanceVirtualCurrency.map(vc => (
-            <VCCurrency key={vc.sku}>
-              <Currency image={vc.image_url} value={vc.amount} />
-            </VCCurrency>
-          ))}
+              <Menu
+                anchorEl={menuAnchor}
+                getContentAnchorEl={null}
+                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                open={Boolean(menuAnchor)}
+                onClose={handleMenuClose}>
+                {userMenuItems.map(x => (
+                  <Link key={x.route} onClick={handleMenuClose} activeClassName="active" to={x.route}>
+                    {x.label}
+                  </Link>
+                ))}
+              </Menu>
+            </>
+          )}
 
-          <Hidden mdDown>
-            <UserMail
-              endIcon={Boolean(menuAnchor) ? <ExpandLessIcon /> : <ExpandMoreIcon/>}
-              onClick={handleMenuOpen}
-            >
-              {user.email}
-            </UserMail>
-          </Hidden>
-        </LoginPanel>
-      )}
-
-      <XLogin />
-
-      {!logToken && (
-        <LoginButton
-          variant="outlined"
-          color="secondary"
-          size="small"
-        >
-          Log In
-        </LoginButton>
-      )}
-      {isLogged && projectId !== 44056 && (
-       <LogoutButton
-          variant="outlined"
-          color="secondary"
-          size="small"
-          onClick={logOutHandler}
-        >
-          <LogoutIcon size="inherit" />
-        </LogoutButton>
-      )}
-
-      <Button
-        variant="contained"
-        color="secondary"
-        size="small"
-        onClick={showCart}
-      >
-        <CartIcon size="inherit" />
-        <Hidden xsDown>
-          cart
-        </Hidden>
-      </Button>
-
-      <Menu
-        anchorEl={menuAnchor}
-        getContentAnchorEl={null}
-        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        open={Boolean(menuAnchor)}
-        onClose={handleMenuClose}
-      >
-        {userMenuItems.map(x => (
-          <Link
-            key={x.route}
-            onClick={handleMenuClose}
-            activeClassName="active"
-            to={x.route}
-          >
-            {x.label}
-          </Link>
-        ))}
-      </Menu>
-    </Header>
-  );
-}
+          <Button variant="contained" color="primary" size="small" onClick={onCartOpen}>
+            <CartIcon size="inherit" />
+            <Hidden xsDown>cart</Hidden>
+          </Button>
+        </Header>
+      ),
+      [
+        isPublic,
+        isLocationExistsInTabs,
+        pathname,
+        generalMenuItems,
+        onMenuOpen,
+        isLogged,
+        renderUserBalances,
+        menuAnchor,
+        userEmail,
+        isLogoutHide,
+        logOutHandler,
+        userMenuItems,
+        onCartOpen,
+      ]
+    );
+  }
+);
 
 const Menu = styled(MUIMenu)`
   .MuiMenu-list {
-    background-color: ${props => props.theme.colorBg};
+    background-color: ${({ theme }) => theme.palette.background.default};
   }
 `;
 
 const Tabs = styled(MUITabs)`
   &.MuiTabs-root {
-    height: 100%
+    height: 100%;
+    flex-grow: 1;
   }
 `;
 
 const Tab = styled(MUITab)`
   &.MuiTab-root {
     text-transform: uppercase;
-    font-family: ${props => props.theme.fontFamily};
     font-size: 1.4rem;
     font-weight: 700;
     line-height: 1.4rem;
@@ -192,7 +160,6 @@ const Link = styled(NavLink)`
   align-items: center;
   text-transform: uppercase;
   text-decoration: none;
-  font-family: ${props => props.theme.fontFamily};
   font-size: 1.2rem;
   font-weight: 700;
   line-height: 1.2rem;
@@ -210,57 +177,42 @@ const Link = styled(NavLink)`
   }
 `;
 
-const MenuButton = styled(MUIIconButton)`
-  &.MuiIconButton-root {
-    color: ${props => props.theme.colorAccentText};
-  }
-`;
-
 const LogoutButton = styled(Button)`
   &.MuiButton-root {
     margin-right: 10px;
   }
 `;
 
-const VCCurrency = styled.div`
-  margin-right: 10px;
-`;
-
 const LoginPanel = styled.div`
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
+  grid-column-gap: 1rem;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: end;
   flex-grow: 1;
+  margin: 0 1rem;
 
   @media ${device.mobileL} {
     justify-content: center;
   }
 `;
 
-const LoginButton = styled(Button)`
-  &.MuiButton-root {
-    margin-right: 10px;
-    font-size: 0.8rem;
-  }
-`;
-
 const UserMail = styled(Button)`
   && {
-    font-family: 'Roboto';
+    font-family: 'Roboto' sans-serif;
     text-transform: uppercase;
-    color: ${props => props.theme.colorAccent};
-    margin: 0 1rem;
+    color: ${({ theme }) => theme.palette.primary.main};
   }
 `;
 
 const Header = styled.header`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   height: 50px;
   padding: 0 15px;
   font-family: 'Helvetica Neue', 'Roboto', Arial, Helvetica, sans-serif;
-  color: ${props => props.theme.colorAccentText};
-  background-color: ${props => props.theme.colorBg};
+  background-color: ${({ theme }) => theme.palette.background.default};
 `;
 
-export const Navbar = withRouter(NavbarComponent);
+export { Navbar };

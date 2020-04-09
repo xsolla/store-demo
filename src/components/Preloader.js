@@ -1,10 +1,10 @@
-import React from "react";
-import styled from "styled-components";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import React from 'react';
+import styled from 'styled-components';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-const Preloader = () => (
+const Preloader = ({ size }) => (
   <CssPreloader>
-    <CircularProgress color="secondary" />
+    <CircularProgress size={size} color='primary' />
   </CssPreloader>
 );
 
