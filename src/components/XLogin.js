@@ -20,7 +20,6 @@ export default class XLogin extends Component {
   authorizedFlow = tkn => {
     this.setState({ logToken: tkn, shown: false });
     this.user = parseJwt(tkn);
-    this.setStateFrom('user', this.user);
   };
 
   render() {
@@ -28,24 +27,18 @@ export default class XLogin extends Component {
       <div>
         <CssXpop style={{ display: this.state.shown ? 'flex' : 'none' }}>
           <CssXpopB>
-            {/* <CssLoginInfo>
-            Current project: <b>{valueFromContext.projectId}</b>
-          </CssLoginInfo> */}
-
             <CssLoginPop>
-              <div id='xl_auth'></div>
+              <div id='xl_auth' />
             </CssLoginPop>
 
             <CssLoginInfo>
               {myProjects.map((onePr, i) => {
                 let pr = onePr['project_id'];
-                let login = onePr['login_id'];
-                let url = `https://xsolla.github.io/store-demo/#/`;
-                let urlFull = `${url}?project_id=${pr}&login_id=${login}`;
+                let url = window.location.origin;
                 return (
                   <div key={pr + i} style={{ marginBottom: '1em' }}>
                     <div style={{ fontSize: '0.4em' }}>
-                      <a href={urlFull}>
+                      <a href={url}>
                         {pr}: {onePr.projectName}
                       </a>
                     </div>
@@ -55,7 +48,7 @@ export default class XLogin extends Component {
               <p>
                 Open any Xsolla Store using GET parameters <br />
                 <b>project_id</b> and <b>login_id</b> (login must point back to
-                https://xsolla.github.io/store-demo/#/)
+                {window.location.origin})
               </p>
             </CssLoginInfo>
           </CssXpopB>

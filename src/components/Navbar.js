@@ -13,10 +13,12 @@ import CartIcon from '@material-ui/icons/ShoppingCart';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
+import { useRouteMatch } from 'react-router-dom';
 
 import { routes, getRoutes } from '../utils/routes';
 import { device } from '../styles/devices';
 import { eraseCookie } from '../utils/cookie';
+import XLogin from "./XLogin";
 
 const Navbar = React.memo(
   ({ isPublic, isLogged, isLogoutHide, userEmail, onMenuOpen, onCartOpen, renderUserBalances }) => {
@@ -47,9 +49,18 @@ const Navbar = React.memo(
       pathname,
     ]);
 
-    return React.useMemo(
+      const match = useRouteMatch({
+          path: routes.specificProject,
+          strict: true,
+          sensitive: true,
+      });
+
+      const hasHashInUrl = window.location.hash === "" || window.location.hash === "#/";
+
+      return React.useMemo(
       () => (
         <Header>
+          {(!match && !hasHashInUrl) && <XLogin />}
           {!isPublic && (
             <>
               <Hidden mdDown>

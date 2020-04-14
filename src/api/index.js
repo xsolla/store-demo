@@ -12,7 +12,7 @@ import { InventoryApi } from './inventory';
 import { EntitlementApi } from './entitlement';
 
 class Api {
-  constructor({ baseURL, projectId, isDemo, isPublic = false, paymentWidget, loginWidget }) {
+  constructor({ baseURL, projectId, isDemo, isPublic = false, paymentWidget }) {
     const token = isDemo ? DEMO_TOKEN : eatCookie();
     const headers = {};
     if (token) {
@@ -23,7 +23,7 @@ class Api {
     const config = { baseURL, headers };
     const actions = axios.create(config);
 
-    this.userApi = new UserApi(actions, projectId, token, loginWidget);
+    this.userApi = new UserApi(actions, projectId, token);
     this.cartApi = new CartApi(actions, projectId, paymentWidget);
     this.inventoryApi = new InventoryApi(actions, projectId, token);
     this.physicalGoodApi = new PhysicalGoodApi(actions, projectId);

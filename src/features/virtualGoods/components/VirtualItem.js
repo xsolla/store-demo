@@ -29,12 +29,14 @@ export const VirtualItem = React.memo(
         );
       }
 
-      return (
-        <Currency
-          currency={product.price.currency}
-          value={Math.round(product.price.amount * 100) / 100}
-        />
-      );
+      if (product.price) {
+          return (
+              <Currency
+                  currency={product.price.currency}
+                  value={Math.round(product.price.amount * 100) / 100}
+              />
+          );
+      }
     }, [product, isPurchased]);
 
     return (
