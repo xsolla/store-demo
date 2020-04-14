@@ -46,13 +46,22 @@ deploy prod:
     - build app
   extends: .deploy prod
   when: on_success
+  environment:
+    name: $CI_COMMIT_REF_NAME
+    url: https://livedemo.xsolla.com/store-demo-$CI_COMMIT_REF_NAME/
   script:
     - /usr/local/bin/helper deploy build
 
 
 stop prod:
     extends: .stop prod
+    environment:
+      name:   $CI_COMMIT_REF_NAME
+      action: stop
 
 current prod:
     extends: .current prod
+    environment:
+      name: current
+      url: https://livedemo.xsolla.com/store-demo/
     when: manual
