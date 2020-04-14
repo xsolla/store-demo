@@ -1,69 +1,87 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Cookie, { parseJwt } from '../utils/cookie';
+import { useRouteMatch } from 'react-router-dom';
 
-export default class XLogin extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      shown: true,
-      logToken: null,
-      psToken: null,
-    };
+import {routes} from "../utils/routes";
+
+const XLogin = () => {
+  const [loginId, setLoginId] = useState();
+
+  const match = useRouteMatch({
+    path: routes.specificProjectAndLogin,
+    strict: false,
+    sensitive: true,
+  });
+
+  if (!match) {
+    console.log('noooo');
+    return '';
   }
 
-  unauthorizedFlow = () => {
-    this.setState({ logToken: null });
-    this.setState({ shown: true });
-  };
+  window.XL.init({
+    projectId: loginId,
+    loginUrl: window.location.href ,
+    locale: 'en_US',
+    onlyWidgets: true,
+    fields: 'email',
+    theme: 'https://cdn3.xsolla.com/files/uploaded/15924/bfe7e2a5a75fb6f53d04de645ec7c542.css'
+  });
 
-  authorizedFlow = tkn => {
-    this.setState({ logToken: tkn, shown: false });
-    this.user = parseJwt(tkn);
-  };
+  useEffect(() => {
+    if (loginId) {
+      const element_id = 'xl_auth';
+      const options = {
+        'width': 600,
+        'height': 550
+      };
+      window.XL.AuthWidget(element_id, options);
+    }
+  }, []);
 
-  render() {
+  if ((match.params.projectId && match.params.loginId) || loginId) {
+    if (!loginId) {
+      setLoginId(match.params.loginId);
+    }
+
     return (
-      <div>
-        <CssXpop style={{ display: this.state.shown ? 'flex' : 'none' }}>
-          <CssXpopB>
-            <CssLoginPop>
-              <div id='xl_auth' />
-            </CssLoginPop>
+        <div>
+          <CssXpop>
+            <CssXpopB>
+              <CssLoginPop>
+                <div id='xl_auth' />
+              </CssLoginPop>
 
-            <CssLoginInfo>
-              {myProjects.map((onePr, i) => {
-                let pr = onePr['project_id'];
-                let url = window.location.origin;
-                return (
-                  <div key={pr + i} style={{ marginBottom: '1em' }}>
-                    <div style={{ fontSize: '0.4em' }}>
-                      <a href={url}>
-                        {pr}: {onePr.projectName}
-                      </a>
-                    </div>
-                  </div>
-                );
-              })}
-              <p>
-                Open any Xsolla Store using GET parameters <br />
-                <b>project_id</b> and <b>login_id</b> (login must point back to
-                {window.location.origin})
-              </p>
-            </CssLoginInfo>
-          </CssXpopB>
-          <CssXpopZ />
-        </CssXpop>
-      </div>
+              <CssLoginInfo>
+                {myProjects.map((onePr, i) => {
+                  let pr = onePr['project_id'];
+                  let url = window.location.origin;
+                  return (
+                      <div key={pr + i} style={{ marginBottom: '1em' }}>
+                        <div style={{ fontSize: '0.4em' }}>
+                          <a href={url}>
+                            {pr}: {onePr.projectName}
+                          </a>
+                        </div>
+                      </div>
+                  );
+                })}
+                <p>
+                  Open any Xsolla Store using GET parameters <br />
+                  <b>project_id</b> and <b>login_id</b> (login must point back to
+                  {window.location.origin})
+                </p>
+              </CssLoginInfo>
+            </CssXpopB>
+            <CssXpopZ />
+          </CssXpop>
+        </div>
     );
   }
 
-  componentDidMount() {
-    window.XloginInit();
-    let cke = Cookie();
-    cke ? this.authorizedFlow(cke) : this.unauthorizedFlow();
-  }
-}
+  return '';
+};
+
+export default XLogin;
 
 const CssXpop = styled.div`
   position: fixed;

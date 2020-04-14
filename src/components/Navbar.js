@@ -13,7 +13,6 @@ import CartIcon from '@material-ui/icons/ShoppingCart';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
-import { useRouteMatch } from 'react-router-dom';
 
 import { routes, getRoutes } from '../utils/routes';
 import { device } from '../styles/devices';
@@ -49,18 +48,10 @@ const Navbar = React.memo(
       pathname,
     ]);
 
-      const match = useRouteMatch({
-          path: routes.specificProject,
-          strict: true,
-          sensitive: true,
-      });
-
-      const hasHashInUrl = window.location.hash === "" || window.location.hash === "#/";
-
       return React.useMemo(
       () => (
         <Header>
-          {(!match && !hasHashInUrl) && <XLogin />}
+          <XLogin />
           {!isPublic && (
             <>
               <Hidden mdDown>
