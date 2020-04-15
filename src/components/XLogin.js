@@ -53,7 +53,7 @@ const XLogin = () => {
               <CssLoginInfo>
                 {myProjects.map((onePr, i) => {
                   let pr = onePr['project_id'];
-                  let url = window.location.origin;
+                  let url = window.location.href;
                   return (
                       <div key={pr + i} style={{ marginBottom: '1em' }}>
                         <div style={{ fontSize: '0.4em' }}>
@@ -65,9 +65,10 @@ const XLogin = () => {
                   );
                 })}
                 <p>
-                  Open any Xsolla Store using GET parameters <br />
-                  <b>project_id</b> and <b>login_id</b> (login must point back to
-                  {window.location.origin})
+                  Open any Xsolla Store using params <br />
+                  /#/project/PROJECT_ID/login/LOGIN_ID
+                  <br />
+                  login must point back to {window.location.href}
                 </p>
               </CssLoginInfo>
             </CssXpopB>
