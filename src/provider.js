@@ -10,7 +10,6 @@ import { StoreProvider } from './store';
 import { mainTheme } from './styles/theme';
 import { device } from './styles/devices';
 import { routes } from './utils/routes';
-import { getStoreMode } from './utils/getStoreMode';
 import config from './appConfig.json';
 import {getCookie, setCookie} from "./utils/cookie";
 
@@ -40,14 +39,13 @@ const Provider = ({ children }) => {
       setCookie("project_id", projectId);
   }
 
-  const storeMode = getStoreMode(projectId, config.projectId);
+  const storeMode = matchSpecificProject ? 'public' : 'demo';
+
   const api = React.useMemo(
     () =>
       new Api({
         baseURL: 'https://store.xsolla.com/api',
         projectId,
-        isDemo: storeMode === 'demo',
-        isPublic: storeMode === 'public',
         paymentWidget: window.XPayStationWidget
       }),
     []

@@ -12,8 +12,8 @@ import { InventoryApi } from './inventory';
 import { EntitlementApi } from './entitlement';
 
 class Api {
-  constructor({ baseURL, projectId, isDemo, isPublic = false, paymentWidget }) {
-    const token = isDemo ? DEMO_TOKEN : eatCookie();
+  constructor({ baseURL, projectId, paymentWidget }) {
+    const token = eatCookie() || DEMO_TOKEN;
     const headers = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;

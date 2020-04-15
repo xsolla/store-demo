@@ -14,13 +14,12 @@ const XLogin = () => {
   });
 
   if (!match) {
-    console.log('noooo');
     return '';
   }
 
   window.XL.init({
     projectId: loginId,
-    loginUrl: window.location.href ,
+    loginUrl: window.location.href,
     locale: 'en_US',
     onlyWidgets: true,
     fields: 'email',
