@@ -35,7 +35,7 @@ const XLogin = () => {
       };
       window.XL.AuthWidget(element_id, options);
     }
-  }, []);
+  }, [loginId]);
 
   if ((match.params.projectId && match.params.loginId) || loginId) {
     if (!loginId) {
