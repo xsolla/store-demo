@@ -46,7 +46,8 @@ const Provider = ({ children }) => {
       new Api({
         baseURL: 'https://store.xsolla.com/api',
         projectId,
-        paymentWidget: window.XPayStationWidget
+        paymentWidget: window.XPayStationWidget,
+        isPhysicalGoodDemo: !!matchSpecificProject
       }),
     []
   );

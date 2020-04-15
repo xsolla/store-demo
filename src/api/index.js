@@ -12,13 +12,13 @@ import { InventoryApi } from './inventory';
 import { EntitlementApi } from './entitlement';
 
 class Api {
-  constructor({ baseURL, projectId, paymentWidget }) {
+  constructor({ baseURL, projectId, paymentWidget, isPhysicalGoodDemo = false }) {
     const token = eatCookie() || DEMO_TOKEN;
     const headers = {};
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    } else {
+    if (isPhysicalGoodDemo) {
       headers['x-unauthorized-id'] = v4();
+    } else {
+      headers['Authorization'] = `Bearer ${token}`;
     }
     const config = { baseURL, headers };
     const actions = axios.create(config);
