@@ -68,7 +68,7 @@ const XLogin = () => {
                   Open any Xsolla Store using params <br />
                   /#/project/PROJECT_ID/login/LOGIN_ID
                   <br />
-                  login must point back to {window.location.href}#/project/PROJECT_ID/login/LOGIN_ID
+                  login must point back to {window.location.href}project/PROJECT_ID/login/LOGIN_ID
                 </p>
               </CssLoginInfo>
             </CssXpopB>
