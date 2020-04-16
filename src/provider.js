@@ -11,7 +11,9 @@ import { mainTheme } from './styles/theme';
 import { device } from './styles/devices';
 import { routes } from './utils/routes';
 import config from './appConfig.json';
-import {getCookie, setCookie} from "./utils/cookie";
+import { getCookie, setCookie } from "./utils/cookie";
+import { useGetParamsMatch } from "./utils/useGetParamsMatch";
+import { snakeToCamel } from "./utils/converters";
 
 const notificationPosition = {
   vertical: 'bottom',
@@ -26,12 +28,7 @@ const Provider = ({ children }) => {
     sensitive: true,
   });
 
-  const matchSpecificProjectAndLogin = useRouteMatch({
-      path: routes.specificProjectAndLogin,
-      strict: false,
-      sensitive: true,
-  });
-
+  const matchSpecificProjectAndLogin = useGetParamsMatch(['project_id', 'login_id'], snakeToCamel);
   const match = matchSpecificProject || matchSpecificProjectAndLogin;
 
   const projectId = Number((match && match.params.projectId) || getCookie("project_id") || config.projectId);

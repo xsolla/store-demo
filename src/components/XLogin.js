@@ -1,33 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import { useRouteMatch } from 'react-router-dom';
 
-import {routes} from "../utils/routes";
+import {useGetParamsMatch} from "../utils/useGetParamsMatch";
+import {snakeToCamel} from "../utils/converters";
 
 const XLogin = () => {
   const [loginId, setLoginId] = useState();
-
-  const match = useRouteMatch({
-    path: routes.specificProjectAndLogin,
-    strict: false,
-    sensitive: true,
-  });
+  const match = useGetParamsMatch(['project_id', 'login_id'], snakeToCamel);
 
   if (!match) {
     return '';
   }
 
-  window.XL.init({
-    projectId: loginId,
-    loginUrl: window.location.href,
-    locale: 'en_US',
-    onlyWidgets: true,
-    fields: 'email',
-    theme: 'https://cdn3.xsolla.com/files/uploaded/15924/bfe7e2a5a75fb6f53d04de645ec7c542.css'
-  });
+  if (!loginId) {
+    setLoginId(match.params.loginId);
+  }
 
   useEffect(() => {
     if (loginId) {
+      window.XL.init({
+        projectId: loginId,
+        loginUrl: window.location.href,
+        locale: 'en_US',
+        onlyWidgets: true,
+        fields: 'email',
+        theme: 'https://cdn3.xsolla.com/files/uploaded/15924/bfe7e2a5a75fb6f53d04de645ec7c542.css'
+      });
+
       const element_id = 'xl_auth';
       const options = {
         'width': 600,
@@ -37,48 +36,38 @@ const XLogin = () => {
     }
   }, [loginId]);
 
-  if ((match.params.projectId && match.params.loginId) || loginId) {
-    if (!loginId) {
-      setLoginId(match.params.loginId);
-    }
-
-    return (
-        <div>
-          <CssXpop>
-            <CssXpopB>
-              <CssLoginPop>
-                <div id='xl_auth' />
-              </CssLoginPop>
-
-              <CssLoginInfo>
-                {myProjects.map((onePr, i) => {
-                  let pr = onePr['project_id'];
-                  let url = window.location.href;
-                  return (
-                      <div key={pr + i} style={{ marginBottom: '1em' }}>
-                        <div style={{ fontSize: '0.4em' }}>
-                          <a href={url}>
-                            {pr}: {onePr.projectName}
-                          </a>
-                        </div>
-                      </div>
-                  );
-                })}
-                <p>
-                  Open any Xsolla Store using params <br />
-                  /#/project/PROJECT_ID/login/LOGIN_ID
-                  <br />
-                  login must point back to {window.location.href}project/PROJECT_ID/login/LOGIN_ID
-                </p>
-              </CssLoginInfo>
-            </CssXpopB>
-            <CssXpopZ />
-          </CssXpop>
-        </div>
-    );
-  }
-
-  return '';
+  return (
+    <div>
+      <CssXpop>
+        <CssXpopB>
+          <CssLoginPop>
+            <div id='xl_auth'/>
+          </CssLoginPop>
+          <CssLoginInfo>
+            {myProjects.map((onePr, i) => {
+              let pr = onePr['project_id'];
+              let url = window.location.href;
+              return (
+                <div key={pr + i} style={{marginBottom: '1em'}}>
+                  <div style={{fontSize: '0.4em'}}>
+                    <a href={url}>
+                      {pr}: {onePr.projectName}
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+            <p>
+              Open any Xsolla Store using GET parameters <br/>
+              <b>project_id</b> and <b>login_id</b> (login must point back to
+              {window.location.href})
+            </p>
+          </CssLoginInfo>
+        </CssXpopB>
+        <CssXpopZ/>
+      </CssXpop>
+    </div>
+  );
 };
 
 export default XLogin;
