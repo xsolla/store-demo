@@ -8,16 +8,11 @@ const XLogin = () => {
   const [loginId, setLoginId] = useState();
   const match = useGetParamsMatch(['project_id', 'login_id'], snakeToCamel);
 
-  if (!match) {
-    return '';
-  }
-
-  if (!loginId) {
-    setLoginId(match.params.loginId);
-  }
-
   useEffect(() => {
     if (loginId) {
+
+      console.log(loginId);
+
       window.XL.init({
         projectId: loginId,
         loginUrl: window.location.href,
@@ -35,6 +30,14 @@ const XLogin = () => {
       window.XL.AuthWidget(element_id, options);
     }
   }, [loginId]);
+
+  if (!match) {
+    return '';
+  }
+
+  if (!loginId) {
+    setLoginId(match.params.loginId);
+  }
 
   return (
     <div>
