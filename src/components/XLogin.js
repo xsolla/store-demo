@@ -49,11 +49,13 @@ const XLogin = () => {
           <CssLoginInfo>
             {myProjects.map((onePr, i) => {
               let pr = onePr['project_id'];
-              let url = window.location.href;
+              let login = onePr['login_id'];
+              let url = window.location.href.split('/#/')[0] + '/#/';
+              let urlFull = `${url}?project_id=${pr}&login_id=${login}`;
               return (
                 <div key={pr + i} style={{marginBottom: '1em'}}>
                   <div style={{fontSize: '0.4em'}}>
-                    <a href={url}>
+                    <a href={urlFull}>
                       {pr}: {onePr.projectName}
                     </a>
                   </div>
@@ -62,8 +64,7 @@ const XLogin = () => {
             })}
             <p>
               Open any Xsolla Store using GET parameters <br/>
-              <b>project_id</b> and <b>login_id</b> (login must point back to
-              {window.location.href})
+              <b>project_id</b> and <b>login_id</b> (login must point back to {window.location.href})
             </p>
           </CssLoginInfo>
         </CssXpopB>
