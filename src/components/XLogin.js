@@ -13,7 +13,7 @@ const XLogin = () => {
     if (loginId) {
       window.XL.init({
         projectId: loginId,
-        loginUrl: window.location.href,
+        loginUrl: window.location.href.split('/#/')[0],
         locale: 'en_US',
         onlyWidgets: true,
         fields: 'email',
@@ -61,7 +61,7 @@ const XLogin = () => {
                 </div>
                 <p>
                   Open any Xsolla Store using GET parameters <br/>
-                  <b>project_id</b> and <b>login_id</b> (login must point back to {window.location.href})
+                  <b>project_id</b> and <b>login_id</b> (login must point back to {window.location.href.split('/#/')[0]})
                 </p>
               </CssLoginInfo>
             </CssXpopB>
