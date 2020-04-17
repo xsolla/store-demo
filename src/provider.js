@@ -32,8 +32,9 @@ const Provider = ({ children }) => {
   const match = matchSpecificProject || matchSpecificProjectAndLogin;
 
   const projectId = Number((match && match.params.projectId) || getCookie("project_id") || config.projectId);
-  if (Number(getCookie("project_id")) !== projectId && !matchSpecificProject && projectId !== config.projectId) {
-      setCookie("project_id", projectId);
+
+  if (matchSpecificProjectAndLogin) {
+    setCookie("project_id", projectId);
   }
 
   const storeMode = matchSpecificProject ? 'public' : 'demo';
