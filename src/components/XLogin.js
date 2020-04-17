@@ -13,7 +13,7 @@ const XLogin = () => {
     if (loginId) {
       window.XL.init({
         projectId: loginId,
-        loginUrl: window.location.href,
+        loginUrl: window.location.href.slice(0,window.location.href.indexOf("/#/")),
         locale: 'en_US',
         onlyWidgets: true,
         fields: 'email',
