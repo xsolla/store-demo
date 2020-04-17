@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import {useGetParamsMatch} from "../utils/useGetParamsMatch";
 import {snakeToCamel} from "../utils/converters";
+import config from './../appConfig.json';
 
 const XLogin = () => {
   const [loginId, setLoginId] = useState();
@@ -10,9 +11,6 @@ const XLogin = () => {
 
   useEffect(() => {
     if (loginId) {
-
-      console.log(loginId);
-
       window.XL.init({
         projectId: loginId,
         loginUrl: window.location.href,
@@ -31,46 +29,47 @@ const XLogin = () => {
     }
   }, [loginId]);
 
-  if (!match) {
-    return '';
-  }
-
-  if (!loginId) {
+  if (!loginId && match) {
     setLoginId(match.params.loginId);
   }
 
-  return (
-    <div>
-      <CssXpop>
-        <CssXpopB>
-          <CssLoginPop>
-            <div id='xl_auth'/>
-          </CssLoginPop>
-          <CssLoginInfo>
-            {myProjects.map((onePr, i) => {
-              let pr = onePr['project_id'];
-              let login = onePr['login_id'];
-              let url = window.location.href.split('/#/')[0] + '/#/';
-              let urlFull = `${url}?project_id=${pr}&login_id=${login}`;
-              return (
-                <div key={pr + i} style={{marginBottom: '1em'}}>
+  const {projectId: defaultProjectId, loginId: defaultLoginId} = config;
+  let url = window.location.href.split('/#/')[0] + '/#/';
+  let urlFull = `${url}?project_id=${defaultProjectId}&login_id=${defaultLoginId}`;
+
+  return React.useMemo(
+    () =>
+      match && (
+        <div>
+          <CssXpop>
+            <CssXpopB>
+              <CssLoginPop>
+                <div id='xl_auth'/>
+              </CssLoginPop>
+              <CssLoginInfo>
+                <div style={{marginBottom: '1em'}}>
                   <div style={{fontSize: '0.4em'}}>
-                    <a href={urlFull}>
-                      {pr}: {onePr.projectName}
+                    <a
+                      href={urlFull}
+                      onClick={() => {
+                      window.location.href = urlFull;
+                      window.location.reload();
+                    }}>
+                      {defaultProjectId}: Xsolla Store Demo
                     </a>
                   </div>
                 </div>
-              );
-            })}
-            <p>
-              Open any Xsolla Store using GET parameters <br/>
-              <b>project_id</b> and <b>login_id</b> (login must point back to {window.location.href})
-            </p>
-          </CssLoginInfo>
-        </CssXpopB>
-        <CssXpopZ/>
-      </CssXpop>
-    </div>
+                <p>
+                  Open any Xsolla Store using GET parameters <br/>
+                  <b>project_id</b> and <b>login_id</b> (login must point back to {window.location.href})
+                </p>
+              </CssLoginInfo>
+            </CssXpopB>
+            <CssXpopZ/>
+          </CssXpop>
+        </div>
+      ),
+    [loginId]
   );
 };
 
@@ -139,11 +138,3 @@ const CssLoginPop = styled.div`
   margin: 0 70px;
   border-radius: 8px;
 `;
-
-const myProjects = [
-  {
-    projectName: 'Xsolla Store Demo',
-    project_id: 47278,
-    login_id: 'fb2d7c69-bf25-11e9-9244-42010aa80004',
-  },
-];
