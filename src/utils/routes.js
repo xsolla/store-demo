@@ -6,7 +6,7 @@ const routes = {
   entitlement: '/entitlement',
   manage: '/manage',
   purchase: '/purchase',
-  specificProject: '/projects/:projectId',
+  specificProject: '/projects/:projectId'
 };
 
 const navItems = [
@@ -45,4 +45,4 @@ export const getRoutes = items =>
     .filter(x => items.includes(x.route))
     .sort((a, b) => items.indexOf(a.route) - items.indexOf(b.route));
 
-export { routes, navItems };
+export { routes };

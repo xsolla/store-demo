@@ -17,6 +17,7 @@ import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
 import { routes, getRoutes } from '../utils/routes';
 import { device } from '../styles/devices';
 import { eraseCookie } from '../utils/cookie';
+import XLogin from "./XLogin";
 
 const Navbar = React.memo(
   ({ isPublic, isLogged, isLogoutHide, userEmail, onMenuOpen, onCartOpen, renderUserBalances }) => {
@@ -47,9 +48,10 @@ const Navbar = React.memo(
       pathname,
     ]);
 
-    return React.useMemo(
+      return React.useMemo(
       () => (
         <Header>
+          <XLogin />
           {!isPublic && (
             <>
               <Hidden mdDown>

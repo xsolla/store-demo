@@ -12,18 +12,18 @@ import { InventoryApi } from './inventory';
 import { EntitlementApi } from './entitlement';
 
 class Api {
-  constructor({ baseURL, projectId, isDemo, isPublic = false, paymentWidget, loginWidget }) {
-    const token = isDemo ? DEMO_TOKEN : eatCookie();
+  constructor({ baseURL, projectId, paymentWidget, isPhysicalGoodDemo = false }) {
+    const token = eatCookie() || DEMO_TOKEN;
     const headers = {};
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    } else {
+    if (isPhysicalGoodDemo) {
       headers['x-unauthorized-id'] = v4();
+    } else {
+      headers['Authorization'] = `Bearer ${token}`;
     }
     const config = { baseURL, headers };
     const actions = axios.create(config);
 
-    this.userApi = new UserApi(actions, projectId, token, loginWidget);
+    this.userApi = new UserApi(actions, projectId, token);
     this.cartApi = new CartApi(actions, projectId, paymentWidget);
     this.inventoryApi = new InventoryApi(actions, projectId, token);
     this.physicalGoodApi = new PhysicalGoodApi(actions, projectId);

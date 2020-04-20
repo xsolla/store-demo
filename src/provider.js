@@ -10,8 +10,10 @@ import { StoreProvider } from './store';
 import { mainTheme } from './styles/theme';
 import { device } from './styles/devices';
 import { routes } from './utils/routes';
-import { getStoreMode } from './utils/getStoreMode';
 import config from './appConfig.json';
+import { getCookie, setCookie } from "./utils/cookie";
+import { useGetParamsMatch } from "./utils/useGetParamsMatch";
+import { snakeToCamel } from "./utils/converters";
 
 const notificationPosition = {
   vertical: 'bottom',
@@ -20,24 +22,30 @@ const notificationPosition = {
 
 const Provider = ({ children }) => {
   const isMobile = useMediaQuery(`@media ${device.mobileL}`);
-  const match = useRouteMatch({
+  const matchSpecificProject = useRouteMatch({
     path: routes.specificProject,
     strict: true,
     sensitive: true,
   });
 
-  const projectId = match ? match.params.projectId : config.projectId;
-  const storeMode = getStoreMode(projectId, config.projectId);
+  const matchSpecificProjectAndLogin = useGetParamsMatch(['project_id', 'login_id'], snakeToCamel);
+  const match = matchSpecificProject || matchSpecificProjectAndLogin;
+
+  const projectId = Number((match && match.params.projectId) || getCookie("project_id") || config.projectId);
+
+  if (matchSpecificProjectAndLogin) {
+    setCookie("project_id", projectId);
+  }
+
+  const storeMode = matchSpecificProject ? 'public' : 'demo';
 
   const api = React.useMemo(
     () =>
       new Api({
         baseURL: 'https://store.xsolla.com/api',
         projectId,
-        isDemo: storeMode === 'demo',
-        isPublic: storeMode === 'public',
         paymentWidget: window.XPayStationWidget,
-        loginWidget: window.XL,
+        isPhysicalGoodDemo: !!matchSpecificProject
       }),
     []
   );

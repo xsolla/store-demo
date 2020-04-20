@@ -52,6 +52,9 @@ function getLanguageOptions(locale) {
     ? currencyNumberFormat[formatLocale(locale)] || currencyNumberFormat[defaultLocale]
     : currencyNumberFormat[defaultLocale];
 }
+
+// maybe someone will need this in the future
+// eslint-disable-next-line
 function map2to5Locale(locale) {
   return locale && locale.length === 5 ? locale : localesMap[locale] || defaultLocale;
 }
