@@ -4,6 +4,7 @@ import ShoppingCart from '@material-ui/icons/ShoppingCart';
 
 import { ProductCard } from '../../../components/ProductCard';
 import { Currency } from '../../../components/Currency';
+import {formatRealAmount} from "../../../utils/formatCurrency";
 
 export const VirtualItem = React.memo(
   ({ product, order, isLoading, addToCart, buyByVC, isPurchased }) => {
@@ -33,7 +34,7 @@ export const VirtualItem = React.memo(
           return (
               <Currency
                   currency={product.price.currency}
-                  value={Math.round(product.price.amount * 100) / 100}
+                  value={formatRealAmount(product.price.amount)}
               />
           );
       }

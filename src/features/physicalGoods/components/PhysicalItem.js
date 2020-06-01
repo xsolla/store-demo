@@ -3,6 +3,7 @@ import ShoppingCart from '@material-ui/icons/ShoppingCart';
 
 import { ProductCard } from '../../../components/ProductCard';
 import { Currency } from '../../../components/Currency';
+import {formatRealAmount} from "../../../utils/formatCurrency";
 
 export const PhysicalItem = React.memo(({ item, order, isLoading, addToCart }) => {
   const handleItemAdd = React.useCallback(() => addToCart(item), [item, addToCart]);
@@ -11,7 +12,7 @@ export const PhysicalItem = React.memo(({ item, order, isLoading, addToCart }) =
       item.price ? (
         <Currency
           currency={item.price.currency}
-          value={Math.round(item.price.amount * 100) / 100}
+          value={formatRealAmount(item.price.amount)}
         />
       ) : null,
     [item]

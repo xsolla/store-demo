@@ -6,7 +6,8 @@ const routes = {
   entitlement: '/entitlement',
   manage: '/manage',
   purchase: '/purchase',
-  specificProject: '/projects/:projectId'
+  specificProject: '/projects/:projectId',
+  games: '/games',
 };
 
 const navItems = [
@@ -21,6 +22,10 @@ const navItems = [
   {
     route: routes.physical,
     label: 'Merchandise',
+  },
+  {
+    route: routes.games,
+    label: 'Games',
   },
   {
     route: routes.inventory,

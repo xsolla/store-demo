@@ -3,6 +3,7 @@ import ShoppingCart from '@material-ui/icons/ShoppingCart';
 
 import { ProductCard } from '../../../components/ProductCard';
 import { Currency } from '../../../components/Currency';
+import {formatRealAmount} from "../../../utils/formatCurrency";
 
 export const VCItem = React.memo(({ product, order, isLoading, addToCart }) => {
   const handleItemAdd = React.useCallback(() => addToCart(product), []);
@@ -12,7 +13,7 @@ export const VCItem = React.memo(({ product, order, isLoading, addToCart }) => {
     () => (
       <Currency
         currency={product.price.currency}
-        value={Math.round(product.price.amount * 100) / 100}
+        value={formatRealAmount(product.price.amount)}
       />
     ),
     [product]
