@@ -14,7 +14,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
 
-import { routes, getRoutes } from '../utils/routes';
+import { routes, getRoutes } from '../routes';
 import { device } from '../styles/devices';
 import { eraseCookie } from '../utils/cookie';
 import XLogin from "./XLogin";
@@ -34,7 +34,7 @@ const Navbar = React.memo(
     }, []);
 
     const generalMenuItems = React.useMemo(
-      () => getRoutes([routes.items, routes.currencies, routes.physical]),
+      () => getRoutes([routes.items, routes.currencies, routes.physical, routes.games]),
       []
     );
 

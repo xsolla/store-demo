@@ -9,6 +9,7 @@ import { PhysicalList } from './features/physicalGoods/components/PhysicalList';
 import { ManageInventory } from './features/manage/components/ManageInventory';
 import { VirtualList } from './features/virtualGoods/components/VirtualList';
 import { EntitlementList } from './features/entitlement/components/EntitlementList';
+import { GameList as GamesList } from './features/games/components/GameList';
 import { Cart } from './features/cart/components/Cart';
 import { Login } from './features/user/components/Login';
 import { UserBalances } from './features/user/components/Balances';
@@ -17,7 +18,7 @@ import { VCCart } from './features/vcCart/components/VCCart';
 import { VCList } from './features/virtualCurrencies/components/VCList';
 import { Navbar } from './components/Navbar';
 import { MobileNavbar } from './components/MobileNavbar';
-import { routes } from './utils/routes';
+import { routes } from './routes';
 import { useStore } from './store';
 
 const mapState = state => ({
@@ -69,6 +70,7 @@ const App = React.memo(() => {
             <Route path={routes.items} exact component={VirtualList} />
             <Route path={routes.currencies} component={VCList} />
             <Route path={routes.physical} component={PhysicalList} />
+            <Route path={routes.games} component={GamesList} />
             <Route path={routes.inventory} component={InventoryList} />
             <Route path={routes.manage} component={ManageInventory} />
             <Route path={routes.entitlement} component={EntitlementList} />

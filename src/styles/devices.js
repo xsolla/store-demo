@@ -1,3 +1,5 @@
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+
 const size = {
   mobileS: '320px',
   mobileM: '375px',
@@ -9,7 +11,7 @@ const size = {
   retina: '2560px',
 };
 
-export const device = {
+const device = {
   mobileS: `(max-width: ${size.mobileS})`,
   mobileM: `(max-width: ${size.mobileM})`,
   mobileL: `(max-width: ${size.mobileL})`,
@@ -19,3 +21,7 @@ export const device = {
   desktop: `(max-width: ${size.desktop})`,
   retina: `(max-width: ${size.retina})`,
 };
+
+const isMobile = () => useMediaQuery(`@media ${device.mobileL}`);
+
+export {device, isMobile};

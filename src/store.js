@@ -1,15 +1,16 @@
 import React from 'react';
-import { useSnackbar } from 'notistack';
+import {useSnackbar} from 'notistack';
 
-import { usePhysicalGoods } from './features/physicalGoods/store';
-import { useVirtualGoods } from './features/virtualGoods/store';
-import { useVirtualCurrencies } from './features/virtualCurrencies/store';
-import { useInventory } from './features/inventory/store';
-import { useEntitlement } from './features/entitlement/store';
-import { useCart } from './features/cart/store';
-import { useVCCart } from './features/vcCart/store';
-import { useManageInventory } from './features/manage/store';
-import { useUser } from './features/user/store';
+import {usePhysicalGoods} from './features/physicalGoods/store';
+import {useVirtualGoods} from './features/virtualGoods/store';
+import {useVirtualCurrencies} from './features/virtualCurrencies/store';
+import {useGames} from './features/games/store';
+import {useInventory} from './features/inventory/store';
+import {useEntitlement} from './features/entitlement/store';
+import {useCart} from './features/cart/store';
+import {useVCCart} from './features/vcCart/store';
+import {useManageInventory} from './features/manage/store';
+import {useUser} from './features/user/store';
 
 const StateContext = React.createContext();
 const ActionsContext = React.createContext();
@@ -27,15 +28,19 @@ const useStore = (mapState, mapActions) => {
   };
 };
 
-const StoreProvider = ({ storeMode, children, api }) => {
-  const { enqueueSnackbar } = useSnackbar();
+const StoreProvider = ({storeMode, children, api}) => {
+  const {enqueueSnackbar} = useSnackbar();
+
   const [userState, userActions] = useUser(api, enqueueSnackbar);
   const [cartState, cartActions] = useCart(api, enqueueSnackbar, userActions.loadBalances);
   const [vcCartState, vcCartActions] = useVCCart(api, enqueueSnackbar, userActions.loadBalances);
-  const [physicalGoodsState, physicalGoodsActions] = usePhysicalGoods(api, enqueueSnackbar);
-  const [entitlementState, entitlementActions] = useEntitlement(api, enqueueSnackbar);
+
   const [virtualGoodsState, virtualGoodsActions] = useVirtualGoods(api, enqueueSnackbar);
   const [virtualCurrenciesState, virtualCurrenciesActions] = useVirtualCurrencies(api, enqueueSnackbar);
+  const [physicalGoodsState, physicalGoodsActions] = usePhysicalGoods(api, enqueueSnackbar);
+  const [gamesState, gamesActions] = useGames(api, enqueueSnackbar);
+
+  const [entitlementState, entitlementActions] = useEntitlement(api, enqueueSnackbar);
   const [inventoryState, inventoryActions] = useInventory(api, enqueueSnackbar);
   const [manageInventoryState, manageInventoryActions] = useManageInventory(
     api,
@@ -43,36 +48,33 @@ const StoreProvider = ({ storeMode, children, api }) => {
     userActions.loadBalances
   );
 
-  const config = React.useMemo(
-    () => ({
-      storeMode,
-    }),
-    [storeMode]
-  );
+  const config = {storeMode};
 
   return (
     <StateContext.Provider
       value={{
         config,
-        cart: cartState,
         user: userState,
+        cart: cartState,
         vcCart: vcCartState,
-        physicalGoods: physicalGoodsState,
-        entitlement: entitlementState,
         virtualGoods: virtualGoodsState,
         virtualCurrencies: virtualCurrenciesState,
+        physicalGoods: physicalGoodsState,
+        games: gamesState,
+        entitlement: entitlementState,
         inventory: inventoryState,
         manageInventory: manageInventoryState,
       }}>
       <ActionsContext.Provider
         value={{
-          cart: cartActions,
           user: userActions,
+          cart: cartActions,
           vcCart: vcCartActions,
-          physicalGoods: physicalGoodsActions,
-          entitlement: entitlementActions,
           virtualGoods: virtualGoodsActions,
           virtualCurrencies: virtualCurrenciesActions,
+          physicalGoods: physicalGoodsActions,
+          games: gamesActions,
+          entitlement: entitlementActions,
           inventory: inventoryActions,
           manageInventory: manageInventoryActions,
         }}>
@@ -82,4 +84,4 @@ const StoreProvider = ({ storeMode, children, api }) => {
   );
 };
 
-export { StoreProvider, useStore };
+export {StoreProvider, useStore};
