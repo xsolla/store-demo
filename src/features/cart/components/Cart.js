@@ -13,7 +13,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { useStore } from '../../../store';
 import { getFormattedCurrency } from '../../../utils/formatCurrency';
 import { device } from '../../../styles/devices';
-import { routes } from '../../../utils/routes';
+import { routes } from '../../../routes';
 import { CartItem } from './CartItem';
 
 const mapState = state => ({

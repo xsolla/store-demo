@@ -8,6 +8,7 @@ import { UserApi } from './user';
 import { PhysicalGoodApi } from './physicalGoods';
 import { VirtualGoodsApi } from './virtualGoods';
 import { VirtualCurrenciesApi } from './virtualCurrencies';
+import { GamesApi } from './games';
 import { InventoryApi } from './inventory';
 import { EntitlementApi } from './entitlement';
 
@@ -21,15 +22,16 @@ class Api {
       headers['Authorization'] = `Bearer ${token}`;
     }
     const config = { baseURL, headers };
-    const actions = axios.create(config);
+    const httpClient = axios.create(config);
 
-    this.userApi = new UserApi(actions, projectId, token);
-    this.cartApi = new CartApi(actions, projectId, paymentWidget);
-    this.inventoryApi = new InventoryApi(actions, projectId, token);
-    this.physicalGoodApi = new PhysicalGoodApi(actions, projectId);
-    this.virtualGoodsApi = new VirtualGoodsApi(actions, projectId);
-    this.virtualCurrenciesApi = new VirtualCurrenciesApi(actions, projectId);
-    this.entitlementApi = new EntitlementApi(actions, projectId);
+    this.userApi = new UserApi(httpClient, projectId, token);
+    this.cartApi = new CartApi(httpClient, projectId, paymentWidget);
+    this.inventoryApi = new InventoryApi(httpClient, projectId, token);
+    this.physicalGoodApi = new PhysicalGoodApi(httpClient, projectId);
+    this.virtualGoodsApi = new VirtualGoodsApi(httpClient, projectId);
+    this.virtualCurrenciesApi = new VirtualCurrenciesApi(httpClient, projectId);
+    this.gamesApi = new GamesApi(httpClient, projectId);
+    this.entitlementApi = new EntitlementApi(httpClient, projectId);
   }
 }
 

@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const ProductCard = React.memo(
-  ({ image, order, name, value, description, actionButtonContent, onAction, isLoading }) => {
+  ({ image, order, name, value, description, actionButtonContent, onAction, isLoading, purchaseEnabled = true }) => {
     const [isShown, setShown] = React.useState(false);
     const showCard = () => setShown(true);
 
@@ -41,13 +41,13 @@ const ProductCard = React.memo(
             <CardFooter>
               {value && <CardQuantity>{value}</CardQuantity>}
               {onAction && (
-                <Button
+                <StyledButton
                   variant='contained'
                   color='secondary'
-                  disabled={isLoading}
+                  disabled={!purchaseEnabled || isLoading}
                   onClick={onAction}>
                   {isLoading ? <CircularProgress size={24} color='primary' /> : actionButtonContent}
-                </Button>
+                </StyledButton>
               )}
             </CardFooter>
           )}
@@ -126,6 +126,13 @@ const CardQuantity = styled.div`
   flex-grow: 1;
   color: ${({ theme }) => theme.palette.primary.main};
   font-weight: 600;
+`;
+
+const StyledButton = styled(Button)`
+  &.MuiButton-contained.Mui-disabled {
+    color: rgba(0, 0, 0, 0.52);
+    background-color: rgb(214, 224, 231, 0.12);
+  }
 `;
 
 export { ProductCard };

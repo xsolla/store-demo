@@ -10,7 +10,7 @@ import Tabs from '@material-ui/core/Tabs';
 import MUITab from '@material-ui/core/Tab';
 import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
 
-import { routes, getRoutes } from '../utils/routes';
+import { routes, getRoutes } from '../routes';
 import { eraseCookie } from '../utils/cookie';
 
 const MobileNavbar = React.memo(({ userEmail, isOpen, isLogged, onOpen, onClose }) => {
@@ -25,7 +25,7 @@ const MobileNavbar = React.memo(({ userEmail, isOpen, isLogged, onOpen, onClose 
   React.useEffect(() => onClose, []);
 
   const generalMenuItems = React.useMemo(
-    () => getRoutes([routes.items, routes.currencies, routes.physical]),
+    () => getRoutes([routes.items, routes.currencies, routes.physical, routes.games]),
     []
   );
 
