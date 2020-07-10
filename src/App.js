@@ -16,6 +16,7 @@ import { UserBalances } from './features/user/components/Balances';
 import { ServerPurchase } from './features/cart/components/ServerPurchase';
 import { VCCart } from './features/vcCart/components/VCCart';
 import { VCList } from './features/virtualCurrencies/components/VCList';
+import { Redeem } from "./features/redeem/components/Redeem";
 import { Navbar } from './components/Navbar';
 import { MobileNavbar } from './components/MobileNavbar';
 import { routes } from './routes';
@@ -29,6 +30,7 @@ const mapState = state => ({
 
 const mapActions = actions => ({
   showCart: actions.cart.show,
+  showRedeem: actions.redeemCoupon.show,
 });
 
 const App = React.memo(() => {
@@ -36,7 +38,7 @@ const App = React.memo(() => {
   const openMenu = React.useCallback(() => setMenuVisibility(true), []);
   const closeMenu = React.useCallback(() => setMenuVisibility(false), []);
 
-  const { user, isPublic, isDemo, showCart } = useStore(mapState, mapActions);
+  const { user, isPublic, isDemo, showCart, showRedeem } = useStore(mapState, mapActions);
   const renderUserBalances = React.useCallback(() => <UserBalances />, []);
 
   return React.useMemo(
@@ -49,6 +51,7 @@ const App = React.memo(() => {
           userEmail={user ? user.email : ''}
           onMenuOpen={openMenu}
           onCartOpen={showCart}
+          onRedeemOpen={showRedeem}
           renderUserBalances={renderUserBalances}
         />
         {!isPublic && (
@@ -65,6 +68,7 @@ const App = React.memo(() => {
         <Cart />
         <VCCart />
         <Login />
+        <Redeem />
         <Content>
           <Switch>
             <Route path={routes.items} exact component={VirtualList} />
@@ -81,7 +85,7 @@ const App = React.memo(() => {
         </Content>
       </Body>
     ),
-    [isPublic, isDemo, user, openMenu, showCart, renderUserBalances, isSideMenuOpen, closeMenu]
+    [isPublic, isDemo, user, openMenu, showCart, showRedeem, renderUserBalances, isSideMenuOpen, closeMenu]
   );
 });
 
