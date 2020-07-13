@@ -33,7 +33,10 @@ class Api {
     this.virtualCurrenciesApi = new VirtualCurrenciesApi(httpClient, projectId);
     this.gamesApi = new GamesApi(httpClient, projectId);
     this.entitlementApi = new EntitlementApi(httpClient, projectId);
-    this.redeemCouponApi = new RedeemCouponApi(httpClient, projectId);
+    this.redeemCouponApi = new RedeemCouponApi(axios.create({
+      ...config,
+      baseURL: 'https://499b70d9-4a5c-4d3e-8b9d-e8c3fde84d95.mock.pstmn.io'
+    }), projectId);
   }
 }
 
