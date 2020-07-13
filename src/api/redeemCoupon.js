@@ -13,7 +13,13 @@ class RedeemCouponApi {
       coupon_code: couponCode
     };
 
-    await this.actions.put(url, data);
+    const response = await this.actions.post(url, data);
+
+    if (response.data && response.data.items) {
+      return response.data.items;
+    }
+
+    throw new Error('Oops! Something went wrong!');
   };
 }
 

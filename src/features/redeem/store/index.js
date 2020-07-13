@@ -1,9 +1,16 @@
 import React from 'react';
 
+export const redeemStatuses = {
+  SUCCESS: 'success',
+  DEFAULT: 'default',
+  REDEEMING: 'redeeming'
+};
+
 const initialState = {
   isShown: false,
-  isRedeeming: false,
-  couponCode: null,
+  couponCode: '',
+  redeemStatus: redeemStatuses.DEFAULT,
+  redeemedItems: []
 };
 
 const SHOW_REDEEM = 'REDEEM_SHOW';
@@ -21,6 +28,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         isShown: true,
+        redeemStatus: redeemStatuses.DEFAULT,
       };
     case HIDE_REDEEM:
       return {
@@ -30,18 +38,18 @@ const reducer = (state, action) => {
     case COUPON_REDEEM:
       return {
         ...state,
-        isRedeeming: true,
+        redeemStatus: redeemStatuses.REDEEMING,
       };
     case COUPON_REDEEM_SUCCESS:
       return {
         ...state,
-        isRedeeming: false,
-        couponCode: null,
+        couponCode: '',
+        redeemStatus: redeemStatuses.SUCCESS,
+        redeemedItems: action.payload
       };
     case COUPON_REDEEM_FAIL:
       return {
         ...state,
-        isRedeeming: false,
       };
     case SET_COUPON_CODE:
       return {
@@ -66,8 +74,8 @@ export const useRedeem = (api, notify) => {
       async (couponCode) => {
         dispatch({ type: COUPON_REDEEM });
         try {
-          await api.redeemCouponApi.redeem(couponCode);
-          dispatch({ type: COUPON_REDEEM_SUCCESS });
+          const items = await api.redeemCouponApi.redeem(couponCode);
+          dispatch({ type: COUPON_REDEEM_SUCCESS, payload: items });
         } catch (error) {
           const errorMsg = error.response ? error.response.data.errorMessage : error.message;
           notify(errorMsg, { variant: 'error' });

@@ -7,16 +7,19 @@ import MUIModal from '@material-ui/core/Modal';
 import IconButton from '@material-ui/core/IconButton';
 import Grow from '@material-ui/core/Grow';
 import Backdrop from '@material-ui/core/Backdrop';
-
-import { useStore } from '../../../store';
-import { device } from '../../../styles/devices';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import MUITextField from "@material-ui/core/TextField";
 
+import { useStore } from '../../../store';
+import { device } from '../../../styles/devices';
+import {redeemStatuses} from "../store";
+import { RedeemItem } from "./RedeemItem";
+
 const mapState = state => ({
   isRedeemShown: state.redeemCoupon.isShown,
-  isRedeeming: state.redeemCoupon.isRedeeming,
   couponCode: state.redeemCoupon.couponCode,
+  redeemStatus: state.redeemCoupon.redeemStatus,
+  redeemedItems: state.redeemCoupon.redeemedItems
 });
 
 const mapActions = actions => ({
@@ -25,17 +28,32 @@ const mapActions = actions => ({
   setCouponCode: actions.redeemCoupon.setCouponCode,
 });
 
+const RedeemForm = (props) => (
+    <Form>
+      <TextField
+          color="primary"
+          placeholder="Enter your coupon code, for example: WINTER2021"
+          onChange={props.onChange}
+          value={props.value}>
+      </TextField>
+    </Form>
+);
+
+const isSuccessStatus = (redeemStatus) => redeemStatus === redeemStatuses.SUCCESS;
+const isDefaultStatus = (redeemStatus) => redeemStatus === redeemStatuses.DEFAULT;
+const isRedeemingStatus = (redeemStatus) => redeemStatus === redeemStatuses.REDEEMING;
+
 const Redeem = React.memo(() => {
   const {
     isRedeemShown,
     hideRedeem,
     redeem,
-    isRedeeming,
     couponCode,
     setCouponCode,
+    redeemStatus,
+    redeemedItems
   } = useStore(mapState, mapActions);
   const handleCouponCodeChange = React.useCallback(event => setCouponCode(event.target.value), []);
-
   const handleSubmit = React.useCallback(
       event => {
         event.preventDefault();
@@ -44,55 +62,41 @@ const Redeem = React.memo(() => {
       [redeem, couponCode]
   );
 
-  return React.useMemo(
-    () => (
-      <Modal
-        open={isRedeemShown}
-        onClose={hideRedeem}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{ timeout: 250 }}>
-        <Grow in={isRedeemShown} timeout={250}>
+  return <Modal
+      open={isRedeemShown}
+      onClose={hideRedeem}
+      closeAfterTransition
+      BackdropComponent={Backdrop}
+      BackdropProps={{ timeout: 250 }}>
+      <Grow in={isRedeemShown} timeout={250}>
           <RedeemContent>
-            <RedeemHeader>
-              <h4>Redeem coupon</h4>
-              <IconButton color="inherit" onClick={hideRedeem}>
-                <IconClose />
-              </IconButton>
-            </RedeemHeader>
-            <RedeemBody>
-              <Form>
-                <TextField
-                    color="primary"
-                    placeholder="Enter your coupon code"
-                    onChange={handleCouponCodeChange}
-                    value={couponCode}>
-                </TextField>
-              </Form>
-            </RedeemBody>
-            <RedeemFooter>
-              <RedeemActions>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    disabled={isRedeeming}
-                    onClick={handleSubmit}>
-                  {isRedeeming ? <CircularProgress size={24} color="primary" /> : 'Redeem Code'}
-                </Button>
-              </RedeemActions>
-            </RedeemFooter>
+              <RedeemHeader>
+                  <h4>{isSuccessStatus(redeemStatus) ? "You received the following items" : "Redeem coupon"}</h4>
+                  <IconButton color="inherit" onClick={hideRedeem}>
+                      <IconClose/>
+                  </IconButton>
+              </RedeemHeader>
+              <RedeemBody>
+                  {isSuccessStatus(redeemStatus)
+                    ? <ItemsList>{redeemedItems.map(item => <RedeemItem key={item.sku} item={item}/>)}</ItemsList>
+                    : <RedeemForm onChange={handleCouponCodeChange} value={couponCode || ''}/>}
+              </RedeemBody>
+              <RedeemFooter>
+                  <RedeemActions>
+                      <Button
+                          variant="contained"
+                          color="secondary"
+                          disabled={isRedeemingStatus(redeemStatus)}
+                          onClick={redeemStatuses.SUCCESS === redeemStatus ? hideRedeem : handleSubmit}>
+                          {isSuccessStatus(redeemStatus) && "Ok"}
+                          {isRedeemingStatus(redeemStatus) && <CircularProgress size={24} color="primary"/>}
+                          {isDefaultStatus(redeemStatus) && 'Redeem Code'}
+                      </Button>
+                  </RedeemActions>
+              </RedeemFooter>
           </RedeemContent>
-        </Grow>
-      </Modal>
-    ),
-    [
-      hideRedeem,
-      isRedeemShown,
-      redeem,
-      couponCode,
-      setCouponCode,
-    ]
-  );
+      </Grow>
+  </Modal>;
 });
 
 const Modal = styled(MUIModal)`
@@ -165,7 +169,7 @@ const RedeemActions = styled.div`
 `;
 
 const Form = styled.form`
-  max-width: 400px;
+  max-width: auto;
   width: 100%;
   padding: 20px;
 `;
@@ -175,6 +179,15 @@ const TextField = styled(MUITextField)`
     width: 100%;
     margin-bottom: 20px;
   }
+`;
+
+const ItemsList = styled.div`
+  display: grid;
+  grid-row-gap: 30px;
+  flex-grow: 1;
+  padding: 16px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 `;
 
 export { Redeem };
