@@ -29,7 +29,7 @@ const mapActions = actions => ({
 });
 
 const RedeemForm = (props) => (
-    <Form>
+    <Form id="redeem_coupon" onSubmit={props.onSubmit}>
       <TextField
           color="primary"
           placeholder="Enter your coupon code, for example: WINTER2021"
@@ -79,14 +79,16 @@ const Redeem = React.memo(() => {
               <RedeemBody>
                   {isSuccessStatus(redeemStatus)
                     ? <ItemsList>{redeemedItems.map(item => <RedeemItem key={item.sku} item={item}/>)}</ItemsList>
-                    : <RedeemForm onChange={handleCouponCodeChange} value={couponCode || ''}/>}
+                    : <RedeemForm onSubmit={handleSubmit} onChange={handleCouponCodeChange} value={couponCode || ''}/>}
               </RedeemBody>
               <RedeemFooter>
                   <RedeemActions>
                       <Button
+                          type="submit"
                           variant="contained"
                           color="secondary"
                           disabled={isRedeemingStatus(redeemStatus)}
+                          form="redeem_coupon"
                           onClick={redeemStatuses.SUCCESS === redeemStatus ? hideRedeem : handleSubmit}>
                           {isSuccessStatus(redeemStatus) && "Ok"}
                           {isRedeemingStatus(redeemStatus) && <CircularProgress size={24} color="primary"/>}
