@@ -13,6 +13,7 @@ import CartIcon from '@material-ui/icons/ShoppingCart';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
+import RedeemIcon from '@material-ui/icons/Redeem';
 
 import { routes, getRoutes } from '../routes';
 import { device } from '../styles/devices';
@@ -20,7 +21,7 @@ import { eraseCookie } from '../utils/cookie';
 import XLogin from "./XLogin";
 
 const Navbar = React.memo(
-  ({ isPublic, isLogged, isLogoutHide, userEmail, onMenuOpen, onCartOpen, renderUserBalances }) => {
+  ({ isPublic, isLogged, isLogoutHide, userEmail, onMenuOpen, onCartOpen, onRedeemOpen, renderUserBalances }) => {
     const { pathname } = useLocation();
 
     const [menuAnchor, setMenuAnchor] = React.useState(null);
@@ -107,10 +108,17 @@ const Navbar = React.memo(
             </>
           )}
 
-          <Button variant="contained" color="primary" size="small" onClick={onCartOpen}>
-            <CartIcon size="inherit" />
-            <Hidden xsDown>cart</Hidden>
-          </Button>
+          <MenuButtons>
+              <Button variant="contained" color="primary" size="small" onClick={onRedeemOpen}>
+                 <RedeemIcon size="inherit" />
+                 <Hidden xsDown>redeem</Hidden>
+              </Button>
+
+              <Button variant="contained" color="primary" size="small" onClick={onCartOpen}>
+                <CartIcon size="inherit" />
+                <Hidden xsDown>cart</Hidden>
+              </Button>
+          </MenuButtons>
         </Header>
       ),
       [
@@ -127,6 +135,7 @@ const Navbar = React.memo(
         logOutHandler,
         userMenuItems,
         onCartOpen,
+        onRedeemOpen
       ]
     );
   }
@@ -182,6 +191,12 @@ const Link = styled(NavLink)`
 const LogoutButton = styled(Button)`
   &.MuiButton-root {
     margin-right: 10px;
+  }
+`;
+
+const MenuButtons = styled.div`
+  button:not(:last-child) {
+    margin-right: 1rem;
   }
 `;
 
