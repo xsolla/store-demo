@@ -11,6 +11,7 @@ import {useCart} from './features/cart/store';
 import {useVCCart} from './features/vcCart/store';
 import {useManageInventory} from './features/manage/store';
 import {useUser} from './features/user/store';
+import {useRedeem} from "./features/redeem/store";
 
 const StateContext = React.createContext();
 const ActionsContext = React.createContext();
@@ -33,6 +34,7 @@ const StoreProvider = ({storeMode, children, api}) => {
 
   const [userState, userActions] = useUser(api, enqueueSnackbar);
   const [cartState, cartActions] = useCart(api, enqueueSnackbar, userActions.loadBalances);
+  const [redeemState, redeemActions] = useRedeem(api, enqueueSnackbar)
   const [vcCartState, vcCartActions] = useVCCart(api, enqueueSnackbar, userActions.loadBalances);
 
   const [virtualGoodsState, virtualGoodsActions] = useVirtualGoods(api, enqueueSnackbar);
@@ -64,6 +66,7 @@ const StoreProvider = ({storeMode, children, api}) => {
         entitlement: entitlementState,
         inventory: inventoryState,
         manageInventory: manageInventoryState,
+        redeemCoupon: redeemState,
       }}>
       <ActionsContext.Provider
         value={{
@@ -77,6 +80,7 @@ const StoreProvider = ({storeMode, children, api}) => {
           entitlement: entitlementActions,
           inventory: inventoryActions,
           manageInventory: manageInventoryActions,
+          redeemCoupon: redeemActions,
         }}>
         {children}
       </ActionsContext.Provider>
