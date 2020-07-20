@@ -11,6 +11,7 @@ import { VirtualCurrenciesApi } from './virtualCurrencies';
 import { GamesApi } from './games';
 import { InventoryApi } from './inventory';
 import { EntitlementApi } from './entitlement';
+import {RedeemCouponApi} from "./redeemCoupon";
 
 class Api {
   constructor({ baseURL, projectId, paymentWidget, isPhysicalGoodDemo = false }) {
@@ -32,6 +33,7 @@ class Api {
     this.virtualCurrenciesApi = new VirtualCurrenciesApi(httpClient, projectId);
     this.gamesApi = new GamesApi(httpClient, projectId);
     this.entitlementApi = new EntitlementApi(httpClient, projectId);
+    this.redeemCouponApi = new RedeemCouponApi(httpClient, projectId);
   }
 }
 
