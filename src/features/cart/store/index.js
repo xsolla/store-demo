@@ -2,6 +2,12 @@ import React from 'react';
 
 import { generateUUID } from '../../../utils/generateUUID';
 
+export const redeemStatuses = {
+  SUCCESS: 'success',
+  DEFAULT: 'default',
+  REDEEMING: 'redeeming'
+};
+
 const initialState = {
   id: null,
   items: [],
@@ -19,6 +25,8 @@ const initialState = {
   isItemAdding: false,
   isItemRemoving: false,
   isPaying: false,
+
+  redeemStatus: redeemStatuses.DEFAULT,
 };
 
 const SHOW_CART = 'CART_SHOW';
@@ -52,6 +60,10 @@ const PURCHASE = 'PURCHASE';
 const PURCHASE_SUCCESS = 'PURCHASE_SUCCESS';
 const PURCHASE_FAIL = 'PURCHASE_FAIL';
 
+const PROMO_CODE_REDEEM = 'PROMO_CODE_REDEEM';
+const PROMO_CODE_REDEEM_SUCCESS = 'PROMO_CODE_REDEEM_SUCCESS';
+const PROMO_CODE_REDEEM_FAIL = 'PROMO_CODE_REDEEM_FAIL';
+
 const compareItems = (a, b) => (a.sku > b.sku ? 1 : -1);
 
 const reducer = (state, action) => {
@@ -76,7 +88,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         id: action.payload.id,
-        items: action.payload.items.filter(item => Boolean(item.price)).sort(compareItems),
+        items: action.payload.items.sort(compareItems),
         price: action.payload.price || initialState.price,
         isLoading: false,
       };
@@ -209,7 +221,23 @@ const reducer = (state, action) => {
         ...state,
         isPurchasing: false,
       };
-
+    case PROMO_CODE_REDEEM:
+      return {
+        ...state,
+        redeemStatus: redeemStatuses.REDEEMING,
+      };
+    case PROMO_CODE_REDEEM_SUCCESS:
+      return {
+        ...state,
+        redeemStatus: redeemStatuses.SUCCESS,
+        id: action.payload.id,
+        items: action.payload.items.sort(compareItems),
+        price: action.payload.price || initialState.price,
+      };
+    case PROMO_CODE_REDEEM_FAIL:
+      return {
+        ...state,
+      };
     default:
       return state;
   }
@@ -359,21 +387,49 @@ export const useCart = (api, notify, callAfterPayment) => {
     }
   }, [api.cartApi, clearCart, notify, state.items, state.price]);
 
+  const redeem = React.useCallback(
+      async (couponCode) => {
+        dispatch({ type: PROMO_CODE_REDEEM });
+        try {
+          const cart = await api.cartApi.redeem(couponCode);
+          dispatch({ type: PROMO_CODE_REDEEM_SUCCESS, payload: cart });
+        } catch (error) {
+          const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+          notify(errorMsg, { variant: 'error' });
+          dispatch({ type: PROMO_CODE_REDEEM_FAIL });
+        }
+      },
+      [api.redeemPromoCodeApi, notify]
+  );
+
   return React.useMemo(
-    () => [
-      state,
-      {
-        show,
-        hide,
-        getCart,
+      () => [
+        state,
+        {
+          show,
+          hide,
+          getCart,
+          addItem,
+          changeItemQuantity,
+          removeItem,
+          clearCart,
+          payForGoods,
+          purchase,
+          redeem,
+        },
+      ],
+      [
         addItem,
         changeItemQuantity,
-        removeItem,
         clearCart,
+        getCart,
+        hide,
         payForGoods,
         purchase,
-      },
-    ],
-    [addItem, changeItemQuantity, clearCart, getCart, hide, payForGoods, purchase, removeItem, show, state]
+        removeItem,
+        show,
+        state,
+        redeem,
+      ]
   );
 };

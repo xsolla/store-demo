@@ -15,6 +15,7 @@ import { getFormattedCurrency } from '../../../utils/formatCurrency';
 import { device } from '../../../styles/devices';
 import { routes } from '../../../routes';
 import { CartItem } from './CartItem';
+import { PromoCode } from "../../promoCode/components/PromoCode";
 
 const mapState = state => ({
   isPublic: state.config.storeMode === 'public',
@@ -24,6 +25,7 @@ const mapState = state => ({
   isCartLoading: state.cart.isLoading,
   isItemRemoving: state.cart.isItemRemoving,
   isCartClearing: state.cart.isClearing,
+  redeemStatus: state.cart.redeemStatus,
 });
 
 const mapActions = actions => ({
@@ -34,6 +36,7 @@ const mapActions = actions => ({
   changeItemQuantity: actions.cart.changeItemQuantity,
   purchase: actions.cart.purchase,
   payForGoods: actions.cart.payForGoods,
+  redeem: actions.cart.redeem,
 });
 
 const Cart = React.memo(() => {
@@ -49,13 +52,15 @@ const Cart = React.memo(() => {
     hideCart,
     removeItem,
     payForGoods,
+    redeemStatus,
+    redeem,
   } = useStore(mapState, mapActions);
   const history = useHistory();
   const isLoading = isCartLoading || isItemRemoving;
 
   const cartSubtotal = React.useMemo(() => {
     const subtotal = cartItems
-      .filter(item => Boolean(item.price))
+      .filter(item => Boolean(item.price) && !item.isFree)
       .reduce((acc, item) => acc + item.price.amount * item.quantity, 0);
     return Math.round(subtotal * 100) / 100;
   }, [cartItems]);
@@ -68,6 +73,8 @@ const Cart = React.memo(() => {
   React.useEffect(() => {
     clearCart();
   }, []);
+
+  const cartHasItems = cartItems.length > 0;
 
   return React.useMemo(
     () => (
@@ -86,7 +93,7 @@ const Cart = React.memo(() => {
               </IconButton>
             </CartHeader>
             <CartList>
-              {cartItems.length > 0 ? (
+              {cartHasItems ? (
                 cartItems.map(item => (
                   <CartItem
                     key={item.sku}
@@ -100,8 +107,14 @@ const Cart = React.memo(() => {
               )}
             </CartList>
             <Loader>{isLoading && <Progress />}</Loader>
+            {cartHasItems && (
+                <PromoCode
+                    redeem={redeem}
+                    redeemStatus={redeemStatus}
+                />
+            )}
             <CartFooter>
-              {cartItems.length > 0 && (
+              {cartHasItems && (
                 <Subtotal>
                   Subtotal:
                   <Price>
@@ -112,24 +125,26 @@ const Cart = React.memo(() => {
                   </Price>
                 </Subtotal>
               )}
-              <CartActions>
-                {!isPublic && (
+              {cartHasItems &&
+                <CartActions>
+                  {!isPublic && (
+                      <Button
+                          variant="contained"
+                          color="secondary"
+                          disabled={cartItems.length === 0}
+                          onClick={buyAnotherPlatform}>
+                        Buy on PS4
+                      </Button>
+                  )}
                   <Button
-                    variant="contained"
-                    color="secondary"
-                    disabled={cartItems.length === 0}
-                    onClick={buyAnotherPlatform}>
-                    Buy on PS4
+                      variant="contained"
+                      color="secondary"
+                      disabled={cartItems.length === 0}
+                      onClick={payForGoods}>
+                    Buy on Xsolla
                   </Button>
-                )}
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  disabled={cartItems.length === 0}
-                  onClick={payForGoods}>
-                  Buy on Xsolla
-                </Button>
-              </CartActions>
+                </CartActions>
+              }
             </CartFooter>
           </CartContent>
         </Grow>
