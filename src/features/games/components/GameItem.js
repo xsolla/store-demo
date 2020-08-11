@@ -9,6 +9,16 @@ export const GameItem = React.memo(({item, order, isLoading, addToCart, buyByVC}
   const handleItemAdd = React.useCallback(() => addToCart(item), [item, addToCart]);
   const handleBuyByVC = React.useCallback(() => buyByVC(item), [item, buyByVC]);
 
+  const getButtonContent = (item) => {
+    if (item.isPreOrder) {
+      return 'Pre-order';
+    }
+    if (item.hasKeys) {
+      return item.virtualPrice ? 'Buy now' : <ShoppingCart />;
+    }
+    return 'Sold out';
+  };
+
   const title =
     <Fragment>
       <div>{item.name}</div>
@@ -34,7 +44,9 @@ export const GameItem = React.memo(({item, order, isLoading, addToCart, buyByVC}
     return null;
   }, [item]);
 
-  const buttonContent = item.hasKeys ? (item.virtualPrice ? 'Buy now' : <ShoppingCart />) : 'Sold out';
+  const isSoldOut = !item.isPreOrder && !item.hasKeys;
+
+  const buttonContent = getButtonContent(item);
   const buttonAction = item.virtualPrice ? handleBuyByVC : handleItemAdd;
 
   return (
@@ -47,7 +59,7 @@ export const GameItem = React.memo(({item, order, isLoading, addToCart, buyByVC}
       description={item.description}
       actionButtonContent={buttonContent}
       onAction={buttonAction}
-      purchaseEnabled={item.hasKeys}
+      purchaseEnabled={!isSoldOut}
     />
   );
 });
