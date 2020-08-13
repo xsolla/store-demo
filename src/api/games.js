@@ -41,7 +41,8 @@ const convertList = items =>
           : null,
       drmSku: unitItem.drm_sku,
       drmName: unitItem.drm_name,
-      hasKeys: unitItem.has_keys
+      hasKeys: unitItem.has_keys,
+      isPreOrder: unitItem.is_pre_order
     }))
   }));
 
