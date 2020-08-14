@@ -8,14 +8,20 @@ import MUIDecrementIcon from '@material-ui/icons/IndeterminateCheckBox';
 import { device } from '../../../styles/devices';
 
 const CartItem = React.memo(({ item, changeItemQuantity, removeItem }) => {
-  const price = React.useMemo(() => Math.round(item.price.amount * item.quantity * 100) / 100, [
-    item.price.amount,
-    item.quantity,
-  ]);
+  const isFreeItem = item.isFree || !item.price;
 
-  const priceForOne = React.useMemo(() => Math.round((item.price.amount * 100) / 100), [
-    item.price.amount,
-  ]);
+  const price = isFreeItem
+      ? null
+      : React.useMemo(() => Math.round(item.price.amount * item.quantity * 100) / 100, [
+        item.price.amount,
+        item.quantity,
+      ]);
+
+  const priceForOne = isFreeItem
+      ? null
+      : React.useMemo(() => Math.round((item.price.amount * 100) / 100), [
+        item.price.amount,
+      ]);
 
   const handleQuantityDec = React.useCallback(() => changeItemQuantity(item, item.quantity - 1), [
     item,
@@ -35,10 +41,17 @@ const CartItem = React.memo(({ item, changeItemQuantity, removeItem }) => {
       <Content>
         <Name>{item.name}</Name>
         <ItemPrice>
-          <CartItemTotal>
-            {item.price.currency} {price}
-          </CartItemTotal>
-          {item.quantity > 1 && (
+            {isFreeItem && (
+                <CartItemTotal>
+                    Bonus item
+                </CartItemTotal>
+            )}
+            {!isFreeItem && (
+                <CartItemTotal>
+                    {item.price.currency} {price}
+                </CartItemTotal>
+            )}
+          {item.quantity > 1 && !isFreeItem && (
             <CartItemPriceForOne>
               {item.price.currency} {priceForOne} for one item
             </CartItemPriceForOne>
@@ -46,21 +59,23 @@ const CartItem = React.memo(({ item, changeItemQuantity, removeItem }) => {
         </ItemPrice>
       </Content>
       <PriceInfo>
-        <QuantityActions>
-          {item.quantity > 1 ? (
-            <IconButton color='inherit' onClick={handleQuantityDec}>
-              <DecrementIcon />
-            </IconButton>
-          ) : (
-            <IconButton color='inherit' onClick={handelItemRemove}>
-              <DeleteIcon />
-            </IconButton>
+          {!isFreeItem && (
+              <QuantityActions>
+                  {item.quantity > 1 ? (
+                      <IconButton color='inherit' onClick={handleQuantityDec}>
+                          <DecrementIcon/>
+                      </IconButton>
+                  ) : (
+                      <IconButton color='inherit' onClick={handelItemRemove}>
+                          <DeleteIcon/>
+                      </IconButton>
+                  )}
+                  <ItemQuantity>{item.quantity}</ItemQuantity>
+                  <IconButton color='inherit' onClick={handleQuantityInc}>
+                      <IncrementIcon/>
+                  </IconButton>
+              </QuantityActions>
           )}
-          <ItemQuantity>{item.quantity}</ItemQuantity>
-          <IconButton color='inherit' onClick={handleQuantityInc}>
-            <IncrementIcon />
-          </IconButton>
-        </QuantityActions>
       </PriceInfo>
     </Body>
   );

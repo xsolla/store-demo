@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {init} from "store-js-sdk/src/init";
 
 class CartApi {
   constructor(actions, projectId, paymentWidget) {
@@ -104,6 +105,23 @@ class CartApi {
     const response = await axios.post(url, data);
 
     return response.data;
+  };
+
+  redeem = async (promoCode) => {
+    init({ projectId: this.projectId, version: 'v2' });
+    const url = `/v2/project/${this.projectId}/promocode/redeem`;
+    const data = {
+      coupon_code: promoCode,
+      cart: null
+    };
+
+    const response = await this.actions.post(url, data);
+
+    if (response.data) {
+      return convertCart(response.data);
+    }
+
+    throw new Error('Oops! Something went wrong!');
   };
 }
 

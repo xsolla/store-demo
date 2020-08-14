@@ -12,6 +12,7 @@ import {useVCCart} from './features/vcCart/store';
 import {useManageInventory} from './features/manage/store';
 import {useUser} from './features/user/store';
 import {useRedeem} from "./features/redeem/store";
+import {usePromoCode} from "./features/promoCode/store";
 
 const StateContext = React.createContext();
 const ActionsContext = React.createContext();
@@ -36,6 +37,7 @@ const StoreProvider = ({storeMode, children, api}) => {
   const [cartState, cartActions] = useCart(api, enqueueSnackbar, userActions.loadBalances);
   const [redeemState, redeemActions] = useRedeem(api, enqueueSnackbar)
   const [vcCartState, vcCartActions] = useVCCart(api, enqueueSnackbar, userActions.loadBalances);
+  const [promoCodeState, promoCodeAction] = usePromoCode();
 
   const [virtualGoodsState, virtualGoodsActions] = useVirtualGoods(api, enqueueSnackbar);
   const [virtualCurrenciesState, virtualCurrenciesActions] = useVirtualCurrencies(api, enqueueSnackbar);
@@ -67,6 +69,7 @@ const StoreProvider = ({storeMode, children, api}) => {
         inventory: inventoryState,
         manageInventory: manageInventoryState,
         redeemCoupon: redeemState,
+        promoCode: promoCodeState,
       }}>
       <ActionsContext.Provider
         value={{
@@ -81,6 +84,7 @@ const StoreProvider = ({storeMode, children, api}) => {
           inventory: inventoryActions,
           manageInventory: manageInventoryActions,
           redeemCoupon: redeemActions,
+          promoCode: promoCodeAction,
         }}>
         {children}
       </ActionsContext.Provider>

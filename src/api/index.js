@@ -11,7 +11,7 @@ import { VirtualCurrenciesApi } from './virtualCurrencies';
 import { GamesApi } from './games';
 import { InventoryApi } from './inventory';
 import { EntitlementApi } from './entitlement';
-import {RedeemCouponApi} from "./redeemCoupon";
+import { RedeemCouponApi } from "./redeemCoupon";
 
 class Api {
   constructor({ baseURL, projectId, paymentWidget, isPhysicalGoodDemo = false }) {
