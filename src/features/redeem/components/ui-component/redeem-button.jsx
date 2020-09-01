@@ -1,7 +1,7 @@
 import React from 'react';
-import Button from "@material-ui/core/Button";
-import {CircularProgress} from "@material-ui/core";
+import Button from '@material-ui/core/Button';
 
+import { CircularProgress } from '@material-ui/core';
 
 class RedeemButtonComponent extends React.Component {
   render() {

@@ -22,7 +22,7 @@ const defaultState = {
   rewards: [],
   areRewardsGetting: false,
   isSelectIsNeeded: false,
-  selectedReward: null
+  selectedReward: {}
 }
 
 export const RedeemFormReducer = (state = defaultState, action) => {
@@ -90,7 +90,7 @@ export const RedeemFormReducer = (state = defaultState, action) => {
         areRewardsGetting: false,
         areRewardsGot: null,
         isSelectIsNeeded: false,
-        selectedReward: null
+        selectedReward: {}
       }
     default:
       return state;

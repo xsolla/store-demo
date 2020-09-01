@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
-import MUITextField from "@material-ui/core/TextField";
+
+import { TextField } from "../style/redeem-style";
 
 class RedeemForm extends React.PureComponent {
   render() {
@@ -10,7 +10,9 @@ class RedeemForm extends React.PureComponent {
       <TextField
         color="primary"
         placeholder="Enter your coupon code, for example: WINTER2021, GAMEBONUS2020"
-        value={value}>
+        value={value}
+        autoFocus={true}
+      >
       </TextField>
     );
   }
@@ -18,9 +20,3 @@ class RedeemForm extends React.PureComponent {
 
 export default RedeemForm;
 
-const TextField = styled(MUITextField)`
-  && {
-    width: 100%;
-    margin-bottom: 20px;
-  }
-`;

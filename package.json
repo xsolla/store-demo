@@ -19,7 +19,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "2.1.3",
     "redux": "4.0.5",
-    "store-js-sdk": "git+https://github.com/xsolla/store-js-sdk.git",
+    "store-js-sdk": "git+ssh://git@gitlab.loc:game_commerce/store-js-sdk.git#IGS-679__add_coupon_promocode_redeem_rewards",
     "styled-components": "^4.1.3",
     "uuid": "^7.0.2"
   },

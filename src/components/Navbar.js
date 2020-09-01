@@ -14,12 +14,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import LogoutIcon from '@material-ui/icons/ExitToAppOutlined';
 import RedeemIcon from '@material-ui/icons/Redeem';
+import XLogin from './XLogin';
 
 import { routes, getRoutes } from '../routes';
 import { device } from '../styles/devices';
 import { eraseCookie } from '../utils/cookie';
-import XLogin from "./XLogin";
-import {withRedeemModalWindow} from "../redux/container/redeem-modal-container";
+import { withRedeemModalWindow } from '../redux/container/redeem-modal-container';
 
 const NavbarComponent = React.memo(
   ({ isPublic, isLogged, isLogoutHide, userEmail, onMenuOpen, onCartOpen, onRedeemOpen, renderUserBalances, openRedeemModal }) => {

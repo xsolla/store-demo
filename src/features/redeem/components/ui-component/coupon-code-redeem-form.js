@@ -1,8 +1,8 @@
 import React from 'react';
-import {CouponCodeFormHeader} from "./coupon-code-form-header";
-import {CouponCodeFormBody} from "./coupon-code-form-body";
-import {CouponCodeFormFooter} from "./coupon-code-form-footer";
-import styled from "styled-components";
+import { CouponCodeFormHeader } from './coupon-code-form-header';
+import { CouponCodeFormBody } from './coupon-code-form-body';
+import { CouponCodeFormFooter } from './coupon-code-form-footer';
+import { Form } from '../style/redeem-style';
 
 class CouponCodeRedeemFormComponent extends React.PureComponent {
   getHeaderText(isRedeemSuccess) {
@@ -30,9 +30,3 @@ class CouponCodeRedeemFormComponent extends React.PureComponent {
 }
 
 export const CouponCodeRedeemForm = CouponCodeRedeemFormComponent;
-
-const Form = styled.form`
-  max-width: auto;
-  width: 100%;
-  padding: 20px;
-`;

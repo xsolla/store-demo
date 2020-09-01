@@ -11,8 +11,8 @@ import { VirtualCurrenciesApi } from './virtualCurrencies';
 import { GamesApi } from './games';
 import { InventoryApi } from './inventory';
 import { EntitlementApi } from './entitlement';
-import { RedeemCouponApi } from "./redeemCoupon";
-import {SetRedeemApi} from "../redux/action/redeem-form-action";
+import { RedeemCouponApi } from './redeemCoupon';
+import { SetRedeemApi } from '../redux/action/redeem-form-action';
 
 class Api {
   constructor({ baseURL, projectId, paymentWidget, isPhysicalGoodDemo = false, reduxStore }) {
@@ -34,10 +34,8 @@ class Api {
     this.virtualCurrenciesApi = new VirtualCurrenciesApi(httpClient, projectId);
     this.gamesApi = new GamesApi(httpClient, projectId);
     this.entitlementApi = new EntitlementApi(httpClient, projectId);
-    reduxStore.dispatch(SetRedeemApi(new RedeemCouponApi(httpClient, projectId)));
+    reduxStore.dispatch(SetRedeemApi(new RedeemCouponApi(httpClient, projectId, token)));
   }
 }
-
-
 
 export { Api };

@@ -1,9 +1,9 @@
-import React from "react";
-import styled from "styled-components";
-import {device} from "../../../styles/devices";
-import {Select, MenuItem} from "@material-ui/core";
+import React from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {withRedeemForm} from "../../../redux/container/redeem-form-container";
+
+import { Select, MenuItem } from '@material-ui/core';
+import { withRedeemForm } from '../../../redux/container/redeem-form-container';
+import { Body, Content, Image, ItemQuantity, Name, SelectBonus } from './style/redeem-item-style';
 
 const RedeemItem = ({item}) => {
     return (
@@ -17,12 +17,13 @@ const RedeemItem = ({item}) => {
     );
 };
 
+
 class SelectableItemComponent extends React.PureComponent {
   getItemsForSelect(selectableItems) {
     let selectedItems = []
     selectableItems.forEach((item) => {
       selectedItems.push(
-        <MenuItem key={item.sku} value={item.sku} disableGutters={true}>
+        <MenuItem key={item.sku} value={item.sku}>
           {item.drm_name}
         </MenuItem>
       );
@@ -33,18 +34,32 @@ class SelectableItemComponent extends React.PureComponent {
 
   selectChangeHandler(event) {
     event.preventDefault();
-    const {unitItem, setSelectedReward} = this.props;
-    let select = {};
-    select[unitItem.sku] = event.target.value
+    const {unitItem, setSelectedReward, selectedReward} = this.props;
 
+    let select = JSON.parse(JSON.stringify(selectedReward));
+    select[unitItem.sku] = event.target.value
     setSelectedReward(select)
   }
 
-  render() {
-    const {unitItem, quantity, selectedReward} = this.props;
+  getSelectedReward() {
+    const {selectedReward, setSelectedReward, initialRewards} = this.props;
+    let select = {};
+    if (Object.keys(selectedReward).length === 0) {
+      setSelectedReward(initialRewards);
+      select = initialRewards;
+    } else {
+      select = selectedReward;
+    }
 
-    const selectableItems = unitItem.unit_items;
-    const selectedItem = selectedReward && selectedReward[unitItem.sku];
+    return select
+  }
+
+  render() {
+    const {unitItem, quantity} = this.props;
+
+    const selectedReward = this.getSelectedReward();
+    const selectableItems = unitItem.unit_items
+
     return (
       <Body>
         <Image image={unitItem.image_url} />
@@ -56,8 +71,7 @@ class SelectableItemComponent extends React.PureComponent {
           <div>Choose your DRM:</div>
           <Select
             id="selectable_items"
-            label="DRM"
-            value={selectedItem ? selectedItem : selectableItems[0].sku}
+            value={selectedReward[unitItem.sku]}
             onChange={this.selectChangeHandler.bind(this)}
             IconComponent={() => (<ExpandMoreIcon/>)}
             variant={"standard"}
@@ -70,46 +84,5 @@ class SelectableItemComponent extends React.PureComponent {
   }
 }
 
-
-const Body = styled.div`
-  display: grid;
-  grid-template-columns: 0.7fr 1.3fr 1fr;
-  color: ${({ theme }) => theme.palette.text.primary};
-  overflow: hidden;
-  height: 130px;
-
-  @media ${device.mobileL} {
-    height: 185px;
-    grid-template-columns: 0.9fr 1.1fr;
-    grid-template-rows: 120px 1fr;
-  }
-`;
-
-const Image = styled.div`
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-image: url(${props => props.image});
-`;
-
-const Content = styled.div`
-  padding: 10px;
-`;
-
-const Name = styled.div`
-  font-weight: bolder;
-  margin-bottom: 5px;
-`;
-
-const ItemQuantity = styled.div`
-  color: ${({ theme }) => theme.palette.primary.main};
-  font-weight: 600;
-`;
-
-const SelectBonus = styled.div`
-  font-weight: bolder;
-  padding: 10px;
-`
-export const SelectableItem = withRedeemForm(SelectableItemComponent);
-
-export { RedeemItem };
+const SelectableItem = withRedeemForm(SelectableItemComponent);
+export { RedeemItem, SelectableItem };

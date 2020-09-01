@@ -1,8 +1,8 @@
 import React from 'react';
-import styled from 'styled-components';
-import Colorer from 'color';
-import {RedeemButton} from "./redeem-button";
-import {withRedeemForm} from "../../../../redux/container/redeem-form-container";
+
+import { RedeemButton } from './redeem-button';
+import { withRedeemForm } from '../../../../redux/container/redeem-form-container';
+import { RedeemActions, RedeemFooter } from '../style/redeem-style';
 
 class CouponCodeFormFooterComponent extends React.PureComponent {
   isSuccessRedeem() {
@@ -26,21 +26,3 @@ class CouponCodeFormFooterComponent extends React.PureComponent {
 
 export const CouponCodeFormFooter = withRedeemForm(CouponCodeFormFooterComponent);
 
-const RedeemFooter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  border-top: 1px solid
-    ${({ theme }) =>
-      Colorer(theme.palette.text.primary)
-        .alpha(0.1)
-        .string()};
-  padding: 24px 0 24px 0;
-`;
-
-const RedeemActions = styled.div`
-  display: grid;
-  grid-auto-flow: column;
-  grid-column-gap: 7px;
-`;

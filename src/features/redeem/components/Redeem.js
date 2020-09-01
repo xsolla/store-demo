@@ -1,20 +1,26 @@
 import React from 'react';
-import {withRedeemModalWindow} from '../../../redux/container/redeem-modal-container';
 
-import MUIModal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Grow from '@material-ui/core/Grow';
 
-import styled from 'styled-components';
-import {CouponCodeForm} from "./ui-component/coupon-code-form";
+import { CouponCodeForm } from "./ui-component/coupon-code-form";
+import { withRedeemModalWindow } from '../../../redux/container/redeem-modal-container';
+import { Modal } from './style/redeem-style';
+import { withRedeemForm } from '../../../redux/container/redeem-form-container';
 
 class Redeem extends React.Component {
+  handleOnClose() {
+    const {closeRedeemModal, clearCouponForm} = this.props;
+    clearCouponForm();
+    closeRedeemModal();
+  }
+
   render() {
-    const {isRedeemShown, closeRedeemModal} = this.props;
+    const {isRedeemShown} = this.props;
 
     return <Modal
       open={isRedeemShown}
-      onClose={closeRedeemModal}
+      onClose={this.handleOnClose.bind(this)}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{ timeout: 250 }}
@@ -25,11 +31,5 @@ class Redeem extends React.Component {
   </Modal>;
   }
 }
-const Modal = styled(MUIModal)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 
-
-export const RedeemModalWindow = withRedeemModalWindow(Redeem);
+export const RedeemModalWindow = withRedeemModalWindow(withRedeemForm(Redeem));

@@ -1,7 +1,8 @@
-import React from "react";
-import styled from 'styled-components';
-import {RedeemItem} from "../RedeemItem";
-import {withRedeemForm} from "../../../../redux/container/redeem-form-container";
+import React from 'react';
+
+import { RedeemItem } from '../RedeemItem';
+import { withRedeemForm } from '../../../../redux/container/redeem-form-container';
+import { ItemsList } from '../style/redeem-style';
 
 class CouponRedeemResultComponent extends React.PureComponent {
   render() {
@@ -11,14 +12,5 @@ class CouponRedeemResultComponent extends React.PureComponent {
     );
   }
 }
-
-const ItemsList = styled.div`
-  display: grid;
-  grid-row-gap: 30px;
-  flex-grow: 1;
-  padding: 16px 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-`;
 
 export const CouponRedeemResult = withRedeemForm(CouponRedeemResultComponent);

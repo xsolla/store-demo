@@ -8288,9 +8288,9 @@ stealthy-require@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
 
-"store-js-sdk@git+https://github.com/xsolla/store-js-sdk.git":
+"store-js-sdk@git+ssh://git@gitlab.loc:game_commerce/store-js-sdk.git#IGS-679__add_coupon_promocode_redeem_rewards":
   version "1.0.0"
-  resolved "git+https://github.com/xsolla/store-js-sdk.git#ee53343fa3932f7943af181c485f6d93617c4bb4"
+  resolved "git+ssh://git@gitlab.loc:game_commerce/store-js-sdk.git#6fc37a9ca8eec0ec116fb4e1a7041ada87fb54ff"
   dependencies:
     axios "0.19.0"
 
