@@ -1,4 +1,5 @@
 {
   "projectId": 44056,
-  "loginId": "e6dfaac6-78a8-11e9-9244-42010aa80004"
+  "loginId": "e6dfaac6-78a8-11e9-9244-42010aa80004",
+  "apiUrl": "https://store.xsolla.com/api"
 }

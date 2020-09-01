@@ -19,9 +19,10 @@ import { routes, getRoutes } from '../routes';
 import { device } from '../styles/devices';
 import { eraseCookie } from '../utils/cookie';
 import XLogin from "./XLogin";
+import {withRedeemModalWindow} from "../redux/container/redeem-modal-container";
 
-const Navbar = React.memo(
-  ({ isPublic, isLogged, isLogoutHide, userEmail, onMenuOpen, onCartOpen, onRedeemOpen, renderUserBalances }) => {
+const NavbarComponent = React.memo(
+  ({ isPublic, isLogged, isLogoutHide, userEmail, onMenuOpen, onCartOpen, onRedeemOpen, renderUserBalances, openRedeemModal }) => {
     const { pathname } = useLocation();
 
     const [menuAnchor, setMenuAnchor] = React.useState(null);
@@ -109,7 +110,7 @@ const Navbar = React.memo(
           )}
 
           <MenuButtons>
-              <Button variant="contained" color="primary" size="small" onClick={onRedeemOpen}>
+              <Button variant="contained" color="primary" size="small" onClick={openRedeemModal}>
                  <RedeemIcon size="inherit" />
                  <Hidden xsDown>redeem</Hidden>
               </Button>
@@ -232,4 +233,4 @@ const Header = styled.header`
   background-color: ${({ theme }) => theme.palette.background.default};
 `;
 
-export { Navbar };
+export const Navbar = withRedeemModalWindow(NavbarComponent);
