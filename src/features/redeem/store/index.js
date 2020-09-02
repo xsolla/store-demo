@@ -10,7 +10,9 @@ const initialState = {
   isShown: false,
   couponCode: '',
   redeemStatus: redeemStatuses.DEFAULT,
-  redeemedItems: []
+  redeemedItems: [],
+  selectableItems: [],
+  chosenBonus: ''
 };
 
 const SHOW_REDEEM = 'REDEEM_SHOW';
@@ -20,7 +22,13 @@ const COUPON_REDEEM = 'COUPON_REDEEM';
 const COUPON_REDEEM_SUCCESS = 'COUPON_REDEEM_SUCCESS';
 const COUPON_REDEEM_FAIL = 'COUPON_REDEEM_FAIL';
 
+const COUPON_REWARDS = 'COUPON_REWARDS';
+
+const COUPON_REWARDS_SUCCESS = 'COUPON_REWARDS_SUCCESS';
+const COUPON_REWARDS_FAIL = 'COUPON_REWARDS_FAIL';
+
 const SET_COUPON_CODE = 'SET_COUPON_CODE';
+const SET_CHOSEN_BONUS = 'SET_CHOSEN_BONUS';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -40,6 +48,11 @@ const reducer = (state, action) => {
         ...state,
         redeemStatus: redeemStatuses.REDEEMING,
       };
+    case COUPON_REWARDS:
+      return {
+        ...state,
+        redeemStatus: redeemStatuses.REDEEMING,
+      };
     case COUPON_REDEEM_SUCCESS:
       return {
         ...state,
@@ -47,7 +60,18 @@ const reducer = (state, action) => {
         redeemStatus: redeemStatuses.SUCCESS,
         redeemedItems: action.payload
       };
+    case COUPON_REWARDS_SUCCESS:
+      return {
+        ...state,
+        couponCode: '',
+        redeemStatus: redeemStatuses.SUCCESS,
+        selectableItems: action.payload
+      };
     case COUPON_REDEEM_FAIL:
+      return {
+        ...state,
+      };
+    case COUPON_REWARDS_FAIL:
       return {
         ...state,
       };
@@ -69,7 +93,9 @@ export const useRedeem = (api, notify) => {
   const setCouponCode = React.useCallback(
       (couponCode) => dispatch({ type: SET_COUPON_CODE, payload: couponCode }), []
   );
-
+  const setChosenBonus = React.useCallback(
+    (chosenBonus) => dispatch({ type: SET_CHOSEN_BONUS, payload: chosenBonus }), []
+  );
   const redeem = React.useCallback(
       async (couponCode) => {
         dispatch({ type: COUPON_REDEEM });
@@ -85,6 +111,21 @@ export const useRedeem = (api, notify) => {
       [api.redeemCouponApi, notify]
   );
 
+  const rewards = React.useCallback(
+      async (couponCode) => {
+        dispatch({ type: COUPON_REWARDS });
+        try {
+          const selectableItems = await api.redeemCouponApi.rewards(couponCode);
+          dispatch({ type: COUPON_REWARDS_SUCCESS, payload: selectableItems });
+        } catch (error) {
+          const errorMsg = error.response ? error.response.data.errorMessage : error.message;
+          notify(errorMsg, { variant: 'error' });
+          dispatch({ type: COUPON_REWARDS_FAIL });
+        }
+      },
+      [api.redeemCouponApi, notify]
+  );
+
   return React.useMemo(
     () => [
       state,
@@ -92,9 +133,11 @@ export const useRedeem = (api, notify) => {
         show,
         hide,
         redeem,
+        rewards,
         setCouponCode,
+        setChosenBonus
       },
     ],
-    [hide, show, redeem, setCouponCode, state]
+    [hide, show, redeem, rewards, setCouponCode, setChosenBonus, state]
   );
 };

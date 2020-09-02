@@ -43,6 +43,7 @@ const PromoCode = React.memo(({redeem, redeemStatus}) => {
                 color="primary"
                 placeholder="Enter your promo code, for example: NEWGAMER2020"
                 onChange={handlePromoCodeChange}
+                autoFocus={true}
             >
             </PromoCodeTextField>
             <Button

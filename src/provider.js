@@ -13,13 +13,14 @@ import config from './appConfig.json';
 import {getCookie, setCookie} from "./utils/cookie";
 import {useGetParamsMatch} from "./utils/useGetParamsMatch";
 import {snakeToCamel} from "./utils/converters";
+import {SnackbarUtilsConfigurator} from "./components/snackbar-utils";
 
 const notificationPosition = {
   vertical: 'bottom',
   horizontal: 'right',
 };
 
-const Provider = ({children}) => {
+const Provider = ({children, reduxStore}) => {
   const matchSpecificProject = useRouteMatch({
     path: routes.specificProject,
     strict: true,
@@ -40,10 +41,11 @@ const Provider = ({children}) => {
   const api = React.useMemo(
     () =>
       new Api({
-        baseURL: 'https://store.xsolla.com/api',
+        baseURL: config.apiUrl,
         projectId,
         paymentWidget: window.XPayStationWidget,
-        isPhysicalGoodDemo: !!matchSpecificProject
+        isPhysicalGoodDemo: !!matchSpecificProject,
+        reduxStore: reduxStore
       }),
     [projectId, window.XPayStationWidget, matchSpecificProject]
   );
@@ -54,6 +56,7 @@ const Provider = ({children}) => {
       dense={isMobile()}
       maxSnack={3}
       preventDuplicate={isMobile()}>
+      <SnackbarUtilsConfigurator />
       <MuiThemeProvider theme={mainTheme}>
         <ThemeProvider theme={mainTheme}>
           <StoreProvider storeMode={storeMode} api={api}>

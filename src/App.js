@@ -16,7 +16,7 @@ import { UserBalances } from './features/user/components/Balances';
 import { ServerPurchase } from './features/cart/components/ServerPurchase';
 import { VCCart } from './features/vcCart/components/VCCart';
 import { VCList } from './features/virtualCurrencies/components/VCList';
-import { Redeem } from "./features/redeem/components/Redeem";
+import { RedeemModalWindow } from "./features/redeem/components/Redeem";
 import { Navbar } from './components/Navbar';
 import { MobileNavbar } from './components/MobileNavbar';
 import { routes } from './routes';
@@ -68,7 +68,7 @@ const App = React.memo(() => {
         <Cart />
         <VCCart />
         <Login />
-        <Redeem />
+        <RedeemModalWindow />
         <Content>
           <Switch>
             <Route path={routes.items} exact component={VirtualList} />
