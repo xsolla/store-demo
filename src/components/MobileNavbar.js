@@ -25,7 +25,7 @@ const MobileNavbar = React.memo(({ userEmail, isOpen, isLogged, onOpen, onClose 
   React.useEffect(() => onClose, []);
 
   const generalMenuItems = React.useMemo(
-    () => getRoutes([routes.items, routes.currencies, routes.physical, routes.games]),
+    () => getRoutes([routes.items, routes.bundles, routes.currencies, routes.physical, routes.games]),
     []
   );
 

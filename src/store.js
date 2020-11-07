@@ -3,6 +3,7 @@ import {useSnackbar} from 'notistack';
 
 import {usePhysicalGoods} from './features/physicalGoods/store';
 import {useVirtualGoods} from './features/virtualGoods/store';
+import {useBundles} from './features/bundles/store';
 import {useVirtualCurrencies} from './features/virtualCurrencies/store';
 import {useGames} from './features/games/store';
 import {useInventory} from './features/inventory/store';
@@ -40,6 +41,7 @@ const StoreProvider = ({storeMode, children, api}) => {
   const [promoCodeState, promoCodeAction] = usePromoCode();
 
   const [virtualGoodsState, virtualGoodsActions] = useVirtualGoods(api, enqueueSnackbar);
+  const [bundlesState, bundlesActions] = useBundles(api, enqueueSnackbar);
   const [virtualCurrenciesState, virtualCurrenciesActions] = useVirtualCurrencies(api, enqueueSnackbar);
   const [physicalGoodsState, physicalGoodsActions] = usePhysicalGoods(api, enqueueSnackbar);
   const [gamesState, gamesActions] = useGames(api, enqueueSnackbar);
@@ -62,6 +64,7 @@ const StoreProvider = ({storeMode, children, api}) => {
         cart: cartState,
         vcCart: vcCartState,
         virtualGoods: virtualGoodsState,
+        bundles: bundlesState,
         virtualCurrencies: virtualCurrenciesState,
         physicalGoods: physicalGoodsState,
         games: gamesState,
@@ -77,6 +80,7 @@ const StoreProvider = ({storeMode, children, api}) => {
           cart: cartActions,
           vcCart: vcCartActions,
           virtualGoods: virtualGoodsActions,
+          bundles: bundlesActions,
           virtualCurrencies: virtualCurrenciesActions,
           physicalGoods: physicalGoodsActions,
           games: gamesActions,

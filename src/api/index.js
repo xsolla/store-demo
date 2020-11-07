@@ -7,6 +7,7 @@ import { CartApi } from './cart';
 import { UserApi } from './user';
 import { PhysicalGoodApi } from './physicalGoods';
 import { VirtualGoodsApi } from './virtualGoods';
+import BundleApi from './BundleApi.js';
 import { VirtualCurrenciesApi } from './virtualCurrencies';
 import { GamesApi } from './games';
 import { InventoryApi } from './inventory';
@@ -31,6 +32,7 @@ class Api {
     this.inventoryApi = new InventoryApi(httpClient, projectId, token);
     this.physicalGoodApi = new PhysicalGoodApi(httpClient, projectId);
     this.virtualGoodsApi = new VirtualGoodsApi(httpClient, projectId);
+    this.bundleApi = new BundleApi(httpClient, projectId);
     this.virtualCurrenciesApi = new VirtualCurrenciesApi(httpClient, projectId);
     this.gamesApi = new GamesApi(httpClient, projectId);
     this.entitlementApi = new EntitlementApi(httpClient, projectId);
