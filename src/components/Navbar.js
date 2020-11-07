@@ -36,7 +36,7 @@ const NavbarComponent = React.memo(
     }, []);
 
     const generalMenuItems = React.useMemo(
-      () => getRoutes([routes.items, routes.currencies, routes.physical, routes.games]),
+      () => getRoutes([routes.items, routes.bundles, routes.currencies, routes.physical, routes.games]),
       []
     );
 

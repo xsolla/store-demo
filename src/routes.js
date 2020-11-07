@@ -1,5 +1,6 @@
 const routes = {
   items: '/',
+  bundles: '/bundles',
   currencies: '/crystals',
   physical: '/physical',
   inventory: '/inventory',
@@ -14,6 +15,10 @@ const navItems = [
   {
     route: routes.items,
     label: 'Items',
+  },
+  {
+    route: routes.bundles,
+    label: 'Bundles',
   },
   {
     route: routes.currencies,

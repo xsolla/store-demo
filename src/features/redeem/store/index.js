@@ -87,7 +87,6 @@ const reducer = (state, action) => {
 
 export const useRedeem = (api, notify) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
-
   const show = React.useCallback(() => dispatch({ type: SHOW_REDEEM }), []);
   const hide = React.useCallback(() => dispatch({ type: HIDE_REDEEM }), []);
   const setCouponCode = React.useCallback(
