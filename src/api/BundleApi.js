@@ -14,20 +14,27 @@ export default class BundleApi {
       description,
       image_url,
       price,
+      content,
+      total_content_price: totalContentPrice,
       virtual_prices: [virtual_price]
-    }) => ({
-      sku,
-      name,
-      description,
-      imageUrl: image_url,
-      price: price || null,
-      virtual_price: virtual_price
+    }) => {
+      const virtualPrice = virtual_price
         ? {
-            sku: virtual_price.sku,
-            imageUrl: virtual_price.image_url,
-            amount: virtual_price.amount,
-          }
-        : null,
-    }));
+          sku: virtual_price.sku,
+          imageUrl: virtual_price.image_url,
+          amount: virtual_price.amount,
+        }
+        : null;
+      return {
+        sku,
+        name,
+        description,
+        imageUrl: image_url,
+        price: price || null,
+        virtualPrice,
+        content,
+        totalContentPrice
+      };
+    });
   }
 }

@@ -8,7 +8,7 @@ import { InventoryList } from './features/inventory/components/InventoryList';
 import { PhysicalList } from './features/physicalGoods/components/PhysicalList';
 import { ManageInventory } from './features/manage/components/ManageInventory';
 import { VirtualList } from './features/virtualGoods/components/VirtualList';
-import { BundleList } from './features/bundles/components/BundleList';
+import { BundleList } from './features/bundles/components/BundleList.jsx';
 import { EntitlementList } from './features/entitlement/components/EntitlementList';
 import { GameList as GamesList } from './features/games/components/GameList';
 import { Cart } from './features/cart/components/Cart';

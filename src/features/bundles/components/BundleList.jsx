@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { useStore } from '../../../store';
 import { Preloader } from '../../../components/Preloader.js';
-import { Bundle } from './BundleItem';
+import { Bundle } from './BundleItem.jsx';
 
 const mapState = ({
   bundles,
