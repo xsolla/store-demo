@@ -28,6 +28,7 @@ export const PhysicalItem = React.memo(({ item, order, isLoading, addToCart }) =
       description={item.description}
       actionButtonContent={<ShoppingCart />}
       onAction={handleItemAdd}
+      attributes={item.attributes}
     />
   );
 });

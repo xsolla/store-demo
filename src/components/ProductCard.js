@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const ProductCard = React.memo(
-  ({ image, order, name, value, description, actionButtonContent, onAction, isLoading, purchaseEnabled = true }) => {
+  ({ attributes, image, order, name, value, description, actionButtonContent, onAction, isLoading, purchaseEnabled = true }) => {
     const [isShown, setShown] = React.useState(false);
     const showCard = () => setShown(true);
 
@@ -21,10 +21,24 @@ const ProductCard = React.memo(
       setTimeout(showCard, order * 100);
     }, []);
 
+    const renderAttributes = (attributes) => {
+      if (!attributes.length) {
+        return null;
+      }
+
+      return (
+        <small>
+          {attributes.map(({external_id, name, values}) => (
+            <p key={external_id}>{name}: {values.map(({value}) => value).join(', ')}</p>
+          ))}
+        </small>
+      );
+    }
+
     return (
       <CardAppear shown={isShown} hovered={isHovered}>
         <Card hovered={isHovered} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <CardImage image={image} />
+          <CardImage image={image}/>
           <CardContent>
             <CardTitle>{name}</CardTitle>
             <Collapse in={isHovered} timeout='auto' collapsedHeight='50px'>
@@ -36,6 +50,7 @@ const ProductCard = React.memo(
                 </Dotdotdot>
               )}
             </Collapse>
+            {renderAttributes(attributes)}
           </CardContent>
           {(onAction || value) && (
             <CardFooter>
@@ -46,7 +61,7 @@ const ProductCard = React.memo(
                   color='secondary'
                   disabled={!purchaseEnabled || isLoading}
                   onClick={onAction}>
-                  {isLoading ? <CircularProgress size={24} color='primary' /> : actionButtonContent}
+                  {isLoading ? <CircularProgress size={24} color='primary'/> : actionButtonContent}
                 </StyledButton>
               )}
             </CardFooter>
@@ -75,7 +90,7 @@ const Card = styled.div`
   width: ${({ theme }) => theme.shape.cardWidth};
   min-height: ${({ theme }) => theme.shape.cardWidth};
   background-color: ${({ theme, hovered }) =>
-    hovered ? theme.palette.background.default : 'transparent'};
+  hovered ? theme.palette.background.default : 'transparent'};
   box-shadow: ${({ theme, hovered }) => (hovered ? theme.shadows[8] : 'none')};
   transition: ${({ theme }) => theme.transitions.create(['box-shadow', 'background-color'])};
   border-radius: ${({ theme }) => `${theme.shape.borderRadius}px`};
@@ -103,9 +118,9 @@ const CardFooter = styled.div`
   justify-content: flex-end;
   border-top: 1px solid
     ${({ theme }) =>
-      Colorer(theme.palette.text.primary)
-        .alpha(0.1)
-        .string()};
+  Colorer(theme.palette.text.primary)
+    .alpha(0.1)
+    .string()};
   padding: 8px 0;
   height: 53px;
   margin: 0px 16px 0 16px;

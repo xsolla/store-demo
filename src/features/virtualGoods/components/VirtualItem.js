@@ -50,6 +50,7 @@ export const VirtualItem = React.memo(
         description={product.description}
         actionButtonContent={buttonContent}
         onAction={!isPurchased ? buttonAction : undefined}
+        attributes={product.attributes}
       />
     );
   }

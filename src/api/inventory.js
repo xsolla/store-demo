@@ -73,6 +73,7 @@ const convertVirtualItems = items =>
           }
         : null,
     isConsumable: Boolean(x.inventory_options.consumable),
+    attributes: x.attributes
   }));
 
 const convertVirtualCurrencies = items =>
@@ -102,6 +103,7 @@ const convertInventoryItems = items =>
       imageUrl: x.image_url,
       quantity: x.quantity,
       remainingUses: x.remaining_uses,
+      attributes: x.attributes
     }));
 
 export { InventoryApi };

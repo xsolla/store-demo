@@ -25,6 +25,7 @@ const convertVirtualCurrencies = items =>
           currency: x.price.currency,
         }
       : null,
+    attributes: x.attributes
   }));
 
 export { VirtualCurrenciesApi };

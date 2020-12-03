@@ -27,9 +27,9 @@ export const Bundle = React.memo(
 
       if (bundle.virtualPrice) {
         const { imageUrl, amount } = bundle.virtualPrice;
-        console.log(amount);
+
         return (
-          <Currency image={imageUrl} value={amount}></Currency>
+          <Currency image={imageUrl} value={amount}/>
         );
       }
 
@@ -52,6 +52,12 @@ export const Bundle = React.memo(
       return (<ul>{items}</ul>);
     };
 
+    const description = (
+      <div>
+        {bundle.description}
+        {renderBundleContent(bundle.content)}
+      </div>
+    );
     return (
       <ProductCard
         image={bundle.imageUrl}
@@ -59,8 +65,9 @@ export const Bundle = React.memo(
         order={order}
         value={Price}
         isLoading={isLoading}
-        description={[bundle.description, renderBundleContent(bundle.content)]}
+        description={description}
         actionButtonContent={buttonContent}
+        attributes={bundle.attributes}
         onAction={!isPurchased ? buttonAction : undefined}
       />
     );

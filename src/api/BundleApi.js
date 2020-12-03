@@ -16,7 +16,8 @@ export default class BundleApi {
       price,
       content,
       total_content_price: totalContentPrice,
-      virtual_prices: [virtual_price]
+      virtual_prices: [virtual_price],
+      attributes
     }) => {
       const virtualPrice = virtual_price
         ? {
@@ -33,7 +34,8 @@ export default class BundleApi {
         price: price || null,
         virtualPrice,
         content,
-        totalContentPrice
+        totalContentPrice,
+        attributes
       };
     });
   }

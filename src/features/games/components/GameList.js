@@ -52,6 +52,7 @@ const GameList = React.memo(() => {
                   order={index}
                   key={unitItem.sku}
                   item={unitItem}
+                  attributes={item.attributes}
                   isLoading={isItemAdding && activeItemID === unitItem.sku}
                   addToCart={handleItemAdding}
                   buyByVC={addItemToVCCart}

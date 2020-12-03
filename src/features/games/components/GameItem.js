@@ -5,7 +5,7 @@ import {ProductCard} from '../../../components/ProductCard';
 import {Currency} from '../../../components/Currency';
 import {formatRealAmount} from "../../../utils/formatCurrency";
 
-export const GameItem = React.memo(({item, order, isLoading, addToCart, buyByVC}) => {
+export const GameItem = React.memo(({item, attributes, order, isLoading, addToCart, buyByVC}) => {
   const handleItemAdd = React.useCallback(() => addToCart(item), [item, addToCart]);
   const handleBuyByVC = React.useCallback(() => buyByVC(item), [item, buyByVC]);
 
@@ -60,6 +60,7 @@ export const GameItem = React.memo(({item, order, isLoading, addToCart, buyByVC}
       actionButtonContent={buttonContent}
       onAction={buttonAction}
       purchaseEnabled={!isSoldOut}
+      attributes={attributes}
     />
   );
 });

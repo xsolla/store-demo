@@ -29,6 +29,7 @@ export const VCItem = React.memo(({ product, order, isLoading, addToCart }) => {
       description={product.description}
       actionButtonContent={actionButtonContent}
       onAction={handleItemAdd}
+      attributes={product.attributes}
     />
   );
 });

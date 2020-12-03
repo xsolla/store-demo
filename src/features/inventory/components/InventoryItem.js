@@ -15,6 +15,7 @@ export const InventoryItem = React.memo(({ item, order, isLoading, onConsume }) 
       description={item.description}
       actionButtonContent='Consume'
       onAction={item.remainingUses ? handleItemConsume : undefined}
+      attributes={item.attributes}
     />
   );
 });

@@ -54,6 +54,7 @@ const convertVirtualGoods = items =>
           }
         : null,
     isConsumable: Boolean(x.inventory_options.consumable),
+    attributes: x.attributes
   }));
 
 export { VirtualGoodsApi };
