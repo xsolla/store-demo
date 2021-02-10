@@ -69,6 +69,20 @@ class CartApi {
           theme: 'dark',
         },
       },
+      shipping_data: {
+        country: 'US',
+        first_name: '1',
+        last_name: '1',
+        city: '1',
+        state: 'NY',
+        region: 'NY',
+        postal_code: '111111',
+        address1: '1',
+        address2: '2',
+        address3: '3',
+        phone: '+1111111111',
+        email: 'support@xsolla.com'
+      }
     };
 
     const response = await this.actions.post(url, data);
