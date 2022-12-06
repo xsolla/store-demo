@@ -11,7 +11,7 @@
     "currency-number-format": "1.1.0",
     "gh-pages": "^2.1.1",
     "notistack": "^0.9.7",
-    "qs": "^6.6.0",
+    "qs": "^6.6.1",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-dotdotdot": "^1.3.1",
